@@ -7,7 +7,7 @@
     <em:version>0.3</em:version>
     <em:creator>Senicar</em:creator>
     <em:contributor></em:contributor>
-    <em:description>Display history menu, tab list menu or assign other actions to middle mouse button.</em:description>
+    <em:description>Display history menu, tab list menu or toggle various sidebars with middle mouse button.</em:description>
     <em:optionsURL>chrome://enhancedmiddleclick/content/options.xul</em:optionsURL>
     <em:targetApplication>
       <Description>
