@@ -1,0 +1,10 @@
+<!ENTITY labelSetMainMenu "Select a primary action for middle mouse button:">
+<!ENTITY labelUseSecondaryMenu "Enable secondary action">
+<!ENTITY descUseSecondaryMenu "Select a secondary action (shift+middle mouse button):">
+<!ENTITY labelHistory "Display History">
+<!ENTITY labelTabsGroups "Display all tabs (groups)">
+<!ENTITY labelTabs "Display currently visible tabs">
+<!ENTITY labelBookmarksToolbar "Bookmarks toolbar">
+<!ENTITY labelToggleBookmarksSidebar "Toggle Bookmarks sidebar">
+<!ENTITY labelToggleHistorySidebar "Toggle History sidebar">
+<!ENTITY labelToggleDownloadsSidebar "Toggle Downloads sidebar">

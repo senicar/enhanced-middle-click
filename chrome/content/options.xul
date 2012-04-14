@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>   
+<!DOCTYPE prefwindow SYSTEM "chrome://enhancedmiddleclick/locale/options.dtd">
+
+<prefwindow 
+     title="Enhanced Middle Click Preferences"
+     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+ 	
+ 	<prefpane id="pane1" label="Enhanced Middle Click Preferences">
+	 	<preferences>
+	 		<preference id="useSecondaryMenu" name="extensions.enhancedmiddleclick.useSecondaryMenu" type="bool" />
+	 		<preference id="mainMenu" name="extensions.enhancedmiddleclick.mainMenu" type="string" />
+	 		<preference id="secondaryMenu" name="extensions.enhancedmiddleclick.secondaryMenu" type="string" />
+	 	</preferences>
+	 	
+	 	<label value="&labelSetMainMenu;" />
+	 	<menulist preference="mainMenu">
+			<menupopup>
+				<menuitem label="&labelHistory;" value="history" />
+				<menuitem label="&labelTabs;" value="tabs" />
+				<menuitem label="&labelTabsGroups;" value="tabsGroupsMenu" />
+				<menuitem label="&labelToggleBookmarksSidebar;" value="toggleBookmarksSidebar" />
+				<menuitem label="&labelToggleHistorySidebar;" value="toggleHistorySidebar" />
+				<menuitem label="&labelToggleDownloadsSidebar;" value="toggleDownloadsSidebar" />
+			</menupopup>
+		</menulist>
+		
+		<separator orient="horizontal"/>
+		
+		<label value="&descUseSecondaryMenu;" />
+
+	 	<menulist preference="secondaryMenu">
+			<menupopup>
+				<menuitem label="&labelHistory;" value="history" />
+				<menuitem label="&labelTabs;" value="tabs" />
+				<menuitem label="&labelTabsGroups;" value="tabsGroupsMenu" />
+				<menuitem label="&labelToggleBookmarksSidebar;" value="toggleBookmarksSidebar" />
+				<menuitem label="&labelToggleHistorySidebar;" value="toggleHistorySidebar" />
+				<menuitem label="&labelToggleDownloadsSidebar;" value="toggleDownloadsSidebar" />
+			</menupopup>
+		</menulist>
+	 	<checkbox label="&labelUseSecondaryMenu;" preference="useSecondaryMenu" checked="true" />
+	 	
+ 	</prefpane>
+ 	
+</prefwindow>

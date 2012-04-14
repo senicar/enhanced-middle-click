@@ -1,0 +1,29 @@
+Version 0.3
++ Display currently visible tabs
++ Display tabs by groups
++ Code refactored
+- Dropping support below firefox 4
+
+Version 0.2.4
++ Toggle download sidebar
++ enable firefox 4.0
+
+Version 0.2.3
++ Fixed menuitem icon bug with Firefox 4.0b (menuitem-iconic class)
++ Fixed HTMLAnchorElement bug
+
+Version 0.2.2:
++ Toggle history sidebar
++ Toggle bookmarks sidebar
++ Enable Firefox 4.0b8
+- Removed about dialog
+
+Version 0.2.1:
++ Enable Firefox 4.0b1
+
+Version 0.2:
++ Tab list menu (can be set in extension preferences)
++ Secondary menu on shift + mmb (can be set in extension preferences)
+
+Version 0.1:
++ Tab history menu
