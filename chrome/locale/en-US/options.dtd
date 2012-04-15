@@ -2,8 +2,8 @@
 <!ENTITY labelUseSecondaryMenu "Enable secondary action">
 <!ENTITY descUseSecondaryMenu "Select a secondary action (shift+middle mouse button):">
 <!ENTITY labelHistory "Display History">
+<!ENTITY labelTabs "Display visible tabs (current tab group)">
 <!ENTITY labelTabsGroups "Display all tabs (groups)">
-<!ENTITY labelTabs "Display currently visible tabs">
 <!ENTITY labelBookmarksToolbar "Bookmarks toolbar">
 <!ENTITY labelToggleBookmarksSidebar "Toggle Bookmarks sidebar">
 <!ENTITY labelToggleHistorySidebar "Toggle History sidebar">
