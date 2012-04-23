@@ -15,7 +15,7 @@ if(!senicar.emc) senicar.emc = {};
 senicar.emc = (function (emc)
 {
 	var pref = {}
-	var preferences = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("extensions.enhancedmiddleclick."); 
+	var preferences = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("extensions.enhancedmiddleclick.");
 
 	pref.primaryMenu = preferences.getCharPref("mainMenu");
 	pref.secondaryMenu = preferences.getCharPref("secondaryMenu");
@@ -62,23 +62,23 @@ senicar.emc = (function (emc)
 
 	var uniqueArr = function(origArr)
 	{
-		var newArr = [],  
-			origLen = origArr.length,  
-			found,  
-			x, y;  
+		var newArr = [],
+			origLen = origArr.length,
+			found,
+			x, y;
 	  
-		for ( x = 0; x < origLen; x++ ) {  
+		for ( x = 0; x < origLen; x++ ) {
 			found = undefined;  
-			for ( y = 0; y < newArr.length; y++ ) {  
-				if ( origArr[x] === newArr[y] ) {  
-				  found = true;  
-				  break;  
-				}  
-			}  
-			if ( !found) newArr.push( origArr[x] );  
-		}  
-	   return newArr;  
-	}  
+			for ( y = 0; y < newArr.length; y++ ) {
+				if ( origArr[x] === newArr[y] ) {
+				  found = true;
+				  break;
+				}
+			}
+			if ( !found) newArr.push( origArr[x] );
+		}
+	   return newArr;
+	}
 
 
 	var returnAction = function ()
@@ -129,6 +129,41 @@ senicar.emc = (function (emc)
 
 	//////////////////
 	//
+	// Public functions
+	//
+	//////////////////
+
+
+	emc.init = function (event)
+	{
+		// init tabview in the background so _tabViewTabItem gets added to tabs
+		TabView._initFrame(event);
+	}
+
+
+	emc.click = function (e)
+	{
+		mouseEvent = e;
+
+		if( clickValid() )
+			display();
+	}
+
+
+	emc.closeTab = function(object, event)
+	{
+		var tab = gBrowser.tabContainer.getItemAtIndex(event.target.getAttribute('index'));
+		if(event.button == 1)
+		{
+			object.hidePopup();
+			gBrowser.removeTab(tab);
+			// TODO: object.removeChild(event.target); and refresh menu
+		}
+	}
+
+
+	//////////////////
+	//
 	// Actions
 	//
 	//////////////////
@@ -139,10 +174,11 @@ senicar.emc = (function (emc)
 	{
 		var tabs_popup = document.createElement("menupopup");
 		tabs_popup.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
-		tabs_popup.setAttribute("onclick", "checkForMiddleClick(this, event);");
+		//tabs_popup.setAttribute("onclick", "checkForMiddleClick(this, event);");
+		tabs_popup.setAttribute("onclick", "senicar.emc.closeTab(this, event);");
 		document.getElementById("mainPopupSet").appendChild(tabs_popup);
 
-		var num = gBrowser.visibleTabs.length;		
+		var num = gBrowser.visibleTabs.length;
 		for ( var i = 0; i< num; i++) {
 			var tab = gBrowser.visibleTabs[i];
 			var item = tabs_popup.appendChild(document.createElement("menuitem"));
@@ -173,10 +209,10 @@ senicar.emc = (function (emc)
 	{
 		var tabs_popup = document.createElement("menupopup");
 		tabs_popup.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
-		tabs_popup.setAttribute("onclick", "checkForMiddleClick(this, event);");
+		tabs_popup.setAttribute("onclick", "senicar.emc.closeTab(this, event);");
 		document.getElementById("mainPopupSet").appendChild(tabs_popup);
 
-		var num = gBrowser.browsers.length;		
+		var num = gBrowser.browsers.length;
 
 		var tab_id;
 		var parent_id;
@@ -286,29 +322,6 @@ senicar.emc = (function (emc)
 	var bookmarksSidebarToggle = function ()
 	{
 		toggleSidebar("viewBookmarksSidebar");
-	}
-
-
-	//////////////////
-	//
-	// Public functions
-	//
-	//////////////////
-
-
-	emc.init = function (event)
-	{
-		// init tabview in the background so _tabViewTabItem gets added to tabs
-		TabView._initFrame(event);		
-	}
-
-
-	emc.click = function (e)
-	{
-		mouseEvent = e;
-
-		if( clickValid() )
-			display();
 	}
 
 	return emc;
