@@ -23,8 +23,9 @@ senicar.emc = (function (emc)
 
 	// where click event is stored
 	var mouseEvent;
+	var screenX;
+	var screenY;
 	
-
 	// used for debuging
 	var report = function (msg)
 	{
@@ -150,13 +151,20 @@ senicar.emc = (function (emc)
 	}
 
 
-	emc.closeTab = function(object, event)
+	emc.closeTab = function(menu, item)
 	{
-		var tab = gBrowser.tabContainer.getItemAtIndex(event.target.getAttribute('index'));
-		if(event.button == 1)
+		var action = returnAction();
+		var tab = gBrowser.tabContainer.getItemAtIndex(item.target.getAttribute('index'));
+		if(item.button == 1)
 		{
-			object.hidePopup();
+			menu.hidePopup();
 			gBrowser.removeTab(tab);
+
+			if( action == 'tabs' || action == 'visibleTabsMenu' )
+				visibleTabsMenu(true);
+
+			if( action  == 'tabsGroupsMenu')
+				tabsGroupsMenu(true);
 			// TODO: object.removeChild(event.target); and refresh menu
 		}
 	}
@@ -170,8 +178,10 @@ senicar.emc = (function (emc)
 
 
 	// Display currently visible tabs
-	var visibleTabsMenu= function ()
+	var visibleTabsMenu= function (refresh)
 	{
+		refresh = ( typeof refresh == 'undefined' ) ? false : true;
+
 		var tabs_popup = document.createElement("menupopup");
 		tabs_popup.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
 		//tabs_popup.setAttribute("onclick", "checkForMiddleClick(this, event);");
@@ -201,12 +211,21 @@ senicar.emc = (function (emc)
 			var bundle_browser = document.getElementById("bundle_browser");
 		}
 
-		tabs_popup.openPopupAtScreen(mouseEvent.screenX, mouseEvent.screenY, true);
+		if(refresh)
+			tabs_popup.openPopupAtScreen(screenX, screenY, true);
+		else
+		{
+			screenX = mouseEvent.screenX;
+			screenY = mouseEvent.screenY;
+			tabs_popup.openPopupAtScreen(mouseEvent.screenX, mouseEvent.screenY, true);
+		}
 	}
 
 
-	var tabsGroupsMenu = function ()
+	var tabsGroupsMenu = function (refresh)
 	{
+		refresh = ( typeof refresh == 'undefined' ) ? false : true;
+
 		var tabs_popup = document.createElement("menupopup");
 		tabs_popup.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
 		tabs_popup.setAttribute("onclick", "senicar.emc.closeTab(this, event);");
@@ -280,7 +299,14 @@ senicar.emc = (function (emc)
 			}
 		}
 
-		tabs_popup.openPopupAtScreen(mouseEvent.screenX, mouseEvent.screenY, true);
+		if(refresh)
+			tabs_popup.openPopupAtScreen(screenX, screenY, true);
+		else
+		{
+			screenX = mouseEvent.screenX;
+			screenY = mouseEvent.screenY;
+			tabs_popup.openPopupAtScreen(mouseEvent.screenX, mouseEvent.screenY, true);
+		}
 	}
 
 
