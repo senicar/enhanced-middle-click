@@ -220,13 +220,14 @@ senicar.emc = (function (emc)
 		for ( var x = 0; x< num; x++) {
 			tab_id = gBrowser.tabContainer.getItemAtIndex(x);
 			if(tab_id.pinned) {
+				groups.push(0);
 			}
 			else {
 				parent_id = tab_id._tabViewTabItem.parent.id;
 				groups.push(parent_id);
 			}
 		}
-		
+
 		var uniq = uniqueArr(groups);
 
 		for (var x = 0; x < uniq.length; x++) {
@@ -235,6 +236,8 @@ senicar.emc = (function (emc)
 			for ( var y = 0; y < num; y++) {
 				tab_id = gBrowser.tabContainer.getItemAtIndex(y);
 				if(tab_id.pinned) {
+					if(parent_id == 0)
+						uniq[x].push(tab_id);
 				}
 				else {
 					if(tab_id._tabViewTabItem.parent.id == parent_id) {
