@@ -185,6 +185,9 @@ senicar.emc = (function (emc)
 			item.setAttribute("index", tab._tPos);
 			item.setAttribute("label", tab.label);
             
+			if(tab.selected)
+				item.className = "unified-nav-current";
+
             // if page has no favicon show default
 			if(!tab.getAttribute("image")) {
 				item.setAttribute("image", 'chrome://mozapps/skin/places/defaultFavicon.png');
@@ -262,6 +265,9 @@ senicar.emc = (function (emc)
 				var item = tabs_popup.appendChild(document.createElement("menuitem"));
 				item.setAttribute("index", tab._tPos);
 				item.setAttribute("label", tab.label);
+
+				if(tab.selected)
+					item.className = "unified-nav-current";
 				
 				// if page has no favicon show default
 				if(!tab.getAttribute("image")) {
