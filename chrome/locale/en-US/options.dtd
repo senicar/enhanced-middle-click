@@ -8,3 +8,4 @@
 <!ENTITY labelToggleBookmarksSidebar "Toggle Bookmarks sidebar">
 <!ENTITY labelToggleHistorySidebar "Toggle History sidebar">
 <!ENTITY labelToggleDownloadsSidebar "Toggle Downloads sidebar">
+<!ENTITY labelRefreshOnTabClose "Don't close the menu when closing a tab with middle click">

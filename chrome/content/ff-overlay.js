@@ -20,6 +20,7 @@ senicar.emc = (function (emc)
 	pref.primaryMenu = preferences.getCharPref("mainMenu");
 	pref.secondaryMenu = preferences.getCharPref("secondaryMenu");
 	pref.secondaryMenuEnabled = preferences.getBoolPref("useSecondaryMenu");
+	pref.refreshOnTabClose = preferences.getBoolPref("refreshOnTabClose");
 
 	// where click event is stored
 	var mouseEvent;
@@ -39,6 +40,7 @@ senicar.emc = (function (emc)
 		pref.primaryMenu = preferences.getCharPref("mainMenu");
 		pref.secondaryMenu = preferences.getCharPref("secondaryMenu");
 		pref.secondaryMenuEnabled = preferences.getBoolPref("useSecondaryMenu");
+		pref.refreshOnTabClose = preferences.getBoolPref("refreshOnTabClose");
 	}
 
 
@@ -174,7 +176,6 @@ senicar.emc = (function (emc)
 			screenY = mouseEvent.screenY;
 			tabs_popup.openPopupAtScreen(mouseEvent.screenX, mouseEvent.screenY, true);
 		}
-
 	}
 
 
@@ -205,15 +206,21 @@ senicar.emc = (function (emc)
 	{
 		var action = returnAction();
 		var tab = gBrowser.tabContainer.getItemAtIndex(item.target.getAttribute('index'));
+		var refresh = pref.refreshOnTabClose; 
+
 		if(item.button == 1)
 		{
 			gBrowser.removeTab(tab);
 			menu.hidePopup();
-			if( action == 'tabs' || action == 'visibleTabsMenu' )
-				visibleTabsMenu(true);
 
-			if( action  == 'tabsGroupsMenu')
-				tabsGroupsMenu(true);
+			if(refresh)
+			{
+				if( action == 'tabs' || action == 'visibleTabsMenu' )
+					visibleTabsMenu(refresh);
+
+				if( action  == 'tabsGroupsMenu')
+					tabsGroupsMenu(refresh);
+			}
 		}
 	}
 
@@ -227,14 +234,14 @@ senicar.emc = (function (emc)
 
 	var visibleTabsMenu= function (refresh)
 	{
-		refresh = ( typeof refresh == 'undefined' ) ? false : true;
+		if( typeof refresh == 'undefined' ) refresh = false;
 		makePopupMenu(gBrowser.visibleTabs, refresh);
 	}
 
 
 	var tabsGroupsMenu = function (refresh)
 	{
-		refresh = ( typeof refresh == 'undefined' ) ? false : true;
+		if( typeof refresh == 'undefined' ) refresh = false;
 		var num = gBrowser.browsers.length;
 		var tab_id;
 		var parent_id;

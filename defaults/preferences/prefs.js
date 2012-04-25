@@ -1,3 +1,4 @@
+pref("extensions.enhancedmiddleclick.refreshOnTabClose", false);
 pref("extensions.enhancedmiddleclick.autoscrolling", false);
 pref("extensions.enhancedmiddleclick.mainMenu", "history");
 pref("extensions.enhancedmiddleclick.secondaryMenu", "tabs");

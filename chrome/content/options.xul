@@ -11,6 +11,7 @@
 	 		<preference id="useSecondaryMenu" name="extensions.enhancedmiddleclick.useSecondaryMenu" type="bool" />
 	 		<preference id="mainMenu" name="extensions.enhancedmiddleclick.mainMenu" type="string" />
 	 		<preference id="secondaryMenu" name="extensions.enhancedmiddleclick.secondaryMenu" type="string" />
+	 		<preference id="refreshOnTabClose" name="extensions.enhancedmiddleclick.refreshOnTabClose" type="bool" />
 	 	</preferences>
 	 	
 	 	<label value="&labelSetMainMenu;" />
@@ -40,6 +41,9 @@
 			</menupopup>
 		</menulist>
 	 	<checkbox label="&labelUseSecondaryMenu;" preference="useSecondaryMenu" checked="true" />
+
+		<separator orient="horizontal"/>
+	 	<checkbox label="&labelRefreshOnTabClose;" preference="refreshOnTabClose" checked="true" />
 	 	
  	</prefpane>
  	
