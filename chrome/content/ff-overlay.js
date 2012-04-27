@@ -132,11 +132,13 @@ senicar.emc = (function (emc)
 			historySidebarToggle();
 	}
 
-	var makePopupMenu = function(items, refresh)
+
+	var makePopupMenu = function(action, items, refresh)
 	{
 		items = ( typeof items == 'undefined' ) ? false : items;
 
 		var tabs_popup = document.createElement("menupopup");
+		tabs_popup.setAttribute("id", "senicar.emc" + action);
 		tabs_popup.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
 		//tabs_popup.setAttribute("onclick", "checkForMiddleClick(this, event);");
 		tabs_popup.setAttribute("onclick", "senicar.emc.closeTab(this, event);");
@@ -204,7 +206,7 @@ senicar.emc = (function (emc)
 
 	emc.closeTab = function(menu, item)
 	{
-		var action = returnAction();
+		var action = menu.id.replace(/senicar.emc/g,'');
 		var tab = gBrowser.tabContainer.getItemAtIndex(item.target.getAttribute('index'));
 		var refresh = pref.refreshOnTabClose; 
 
@@ -235,7 +237,7 @@ senicar.emc = (function (emc)
 	var visibleTabsMenu= function (refresh)
 	{
 		if( typeof refresh == 'undefined' ) refresh = false;
-		makePopupMenu(gBrowser.visibleTabs, refresh);
+		makePopupMenu("visibleTabsMenu", gBrowser.visibleTabs, refresh);
 	}
 
 
@@ -282,7 +284,7 @@ senicar.emc = (function (emc)
 			}
 		}
 
-		makePopupMenu(tabs, refresh);
+		makePopupMenu("tabsGroupsMenu", tabs, refresh);
 	}
 
 
