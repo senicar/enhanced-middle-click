@@ -138,7 +138,7 @@ senicar.emc = (function (emc)
 		items = ( typeof items == 'undefined' ) ? false : items;
 
 		var tabs_popup = document.createElement("menupopup");
-		tabs_popup.setAttribute("id", "senicar.emc" + action);
+		tabs_popup.setAttribute("id", "senicar.emc." + action);
 		tabs_popup.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
 		//tabs_popup.setAttribute("onclick", "checkForMiddleClick(this, event);");
 		tabs_popup.setAttribute("onclick", "senicar.emc.closeTab(this, event);");
@@ -206,7 +206,7 @@ senicar.emc = (function (emc)
 
 	emc.closeTab = function(menu, item)
 	{
-		var action = menu.id.replace(/senicar.emc/g,'');
+		var action = menu.id.replace(/senicar.emc./g,'');
 		var tab = gBrowser.tabContainer.getItemAtIndex(item.target.getAttribute('index'));
 		var refresh = pref.refreshOnTabClose; 
 
