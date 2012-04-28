@@ -22,6 +22,25 @@ senicar.emc = (function (emc)
 	pref.secondaryMenuEnabled = preferences.getBoolPref("useSecondaryMenu");
 	pref.refreshOnTabClose = preferences.getBoolPref("refreshOnTabClose");
 
+	var visibleTabsPopup = document.createElement("menupopup");
+	visibleTabsPopup.setAttribute("id", "senicar.emc.visibleTabsMenu");
+	visibleTabsPopup.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
+	visibleTabsPopup.setAttribute("onclick", "senicar.emc.closeTab(this, event);");
+	document.getElementById("mainPopupSet").appendChild(visibleTabsPopup);
+
+	var tabsGroupsPopup = document.createElement("menupopup");
+	tabsGroupsPopup.setAttribute("id", "senicar.emc.tabsGroupsMenu");
+	tabsGroupsPopup.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
+	tabsGroupsPopup.setAttribute("onclick", "senicar.emc.closeTab(this, event);");
+	document.getElementById("mainPopupSet").appendChild(tabsGroupsPopup);
+
+	var history_popup = document.createElement("menupopup");
+	history_popup.setAttribute("id", "senicar.emc.historyMenu");
+	history_popup.setAttribute("oncommand", "gotoHistoryIndex(event); event.stopPropagation();");
+	history_popup.setAttribute("onclick", "checkForMiddleClick(this, event);");
+	document.getElementById("mainPopupSet").appendChild(history_popup);
+		
+
 	// where click event is stored
 	var mouseEvent;
 	var screenX;
@@ -137,12 +156,11 @@ senicar.emc = (function (emc)
 	{
 		items = ( typeof items == 'undefined' ) ? false : items;
 
-		var tabs_popup = document.createElement("menupopup");
-		tabs_popup.setAttribute("id", "senicar.emc." + action);
-		tabs_popup.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
-		//tabs_popup.setAttribute("onclick", "checkForMiddleClick(this, event);");
-		tabs_popup.setAttribute("onclick", "senicar.emc.closeTab(this, event);");
-		document.getElementById("mainPopupSet").appendChild(tabs_popup);
+		var tabs_popup = document.getElementById("senicar.emc." + action);
+		report(tabs_popup);
+
+		while(tabs_popup.hasChildNodes())
+			tabs_popup.removeChild(tabs_popup.firstChild);
 
 		for ( var i = 0; i< items.length; i++)
 		{
@@ -290,17 +308,14 @@ senicar.emc = (function (emc)
 
 	var historyMenu = function ()
 	{
-		var history_popup = document.createElement("menupopup");
-		history_popup.setAttribute("oncommand", "gotoHistoryIndex(event); event.stopPropagation();");
-		history_popup.setAttribute("onclick", "checkForMiddleClick(this, event);");
-		document.getElementById("mainPopupSet").appendChild(history_popup);
-		
+		while(history_popup.hasChildNodes())
+			history_popup.removeChild(history_popup.firstChild);
+
 		var hasHistory = FillHistoryMenu(history_popup);
 		var selectedTab = gBrowser.tabContainer.selectedItem;
 		
 		if(!hasHistory)
 		{
-
 			var menuitem = history_popup.appendChild(document.createElement("menuitem"));
 			menuitem.setAttribute("index", "0");
 			menuitem.setAttribute("label", selectedTab.label);
