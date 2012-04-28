@@ -188,9 +188,7 @@ senicar.emc = (function (emc)
 			}
 		}
 
-		if(refresh)
-			tabs_popup.openPopupAtScreen(screenX, screenY, true);
-		else 
+		if(!refresh)
 		{
 			screenX = mouseEvent.screenX;
 			screenY = mouseEvent.screenY;
@@ -231,7 +229,6 @@ senicar.emc = (function (emc)
 		if(item.button == 1)
 		{
 			gBrowser.removeTab(tab);
-			menu.hidePopup();
 
 			if(refresh)
 			{
@@ -241,6 +238,8 @@ senicar.emc = (function (emc)
 				if( action  == 'tabsGroupsMenu')
 					tabsGroupsMenu(refresh);
 			}
+			else
+				menu.hidePopup();
 		}
 	}
 
