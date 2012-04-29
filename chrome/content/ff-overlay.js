@@ -22,6 +22,7 @@ senicar.emc = (function (emc)
 	pref.secondaryMenuEnabled = preferences.getBoolPref("useSecondaryMenu");
 	pref.refreshOnTabClose = preferences.getBoolPref("refreshOnTabClose");
 
+	// create all the menus
 	var visibleTabsPopup = document.createElement("menupopup");
 	visibleTabsPopup.setAttribute("id", "senicar.emc.visibleTabsMenu");
 	visibleTabsPopup.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
@@ -63,7 +64,7 @@ senicar.emc = (function (emc)
 	}
 
 
-	// it validates only on empty page areas
+	// it validates only on empty page areas, at least it tries
 	var clickValid = function ()
 	{
 		var t = mouseEvent.target
@@ -157,7 +158,6 @@ senicar.emc = (function (emc)
 		items = ( typeof items == 'undefined' ) ? false : items;
 
 		var tabs_popup = document.getElementById("senicar.emc." + action);
-		report(tabs_popup);
 
 		while(tabs_popup.hasChildNodes())
 			tabs_popup.removeChild(tabs_popup.firstChild);
@@ -216,7 +216,12 @@ senicar.emc = (function (emc)
 		mouseEvent = e;
 
 		if( clickValid() )
+		{
 			display();
+			// fix: linux selection buffer, if there's URL in buffer it doesn't try to open it
+			// e.cancelBubble = true;
+			e.stopPropagation();
+		}
 	}
 
 
@@ -351,8 +356,8 @@ senicar.emc = (function (emc)
 }(senicar.emc));
 
 
-
-document.addEventListener("click", senicar.emc.click, false);
+// true, to execute before selection buffer on linux
+document.addEventListener("click", senicar.emc.click, true);
 
 // if loaded to soon panorama won't work due to "redeclared const Cu" bug
 // it has to load after the page is done to work in firefox
