@@ -2,6 +2,7 @@ Version 0.3.1
 + Highlight current tab in tabs popup
 + Pinned tabs as their own group (all tabs menu)
 + Middle click closes tab
++ New option in preferences: refresh/close menu on tab close
 
 Version 0.3
 + Display currently visible tabs
