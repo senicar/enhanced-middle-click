@@ -67,18 +67,39 @@ senicar.emc = (function (emc)
 	// it validates only on empty page areas, at least it tries
 	var clickValid = function ()
 	{
-		var t = mouseEvent.target
-		var node = mouseEvent.target
+		var t = mouseEvent.target;
 
-		while(node && !(node instanceof HTMLAnchorElement)) {
-			node = node.parentNode;
-			if(node instanceof HTMLAnchorElement) {
+		// check if element is child of anchor
+		while(t && !(t instanceof HTMLAnchorElement)) {
+			t = t.parentNode;
+			if(t instanceof HTMLAnchorElement) {
 				return false;
 			}
 		}
-		
-		if(!(t instanceof HTMLInputElement || t instanceof HTMLAnchorElement || t instanceof XULElement) && (t instanceof HTMLElement || t instanceof Element)) {
+
+		// reset t
+		t = mouseEvent.target;
+
+		if( !(t instanceof HTMLInputElement ||
+			  t instanceof HTMLAnchorElement ||
+			  t instanceof HTMLButtonElement ||
+			  t instanceof HTMLVideoElement ||
+			  t instanceof HTMLAudioElement ||
+			  t instanceof HTMLTextAreaElement ||
+			  t instanceof HTMLCanvasElement ||
+			  t instanceof HTMLAppletElement ||
+			  t instanceof HTMLSelectElement ||
+			  t instanceof HTMLOptionElement ||
+			  t instanceof HTMLAreaElement ||
+			  t instanceof XULElement) &&
+			  t instanceof HTMLElement &&
+			  mouseEvent.button == 1 )
+		{
 			return true;
+		}
+		else
+		{
+			return false;
 		}
 	}
 
