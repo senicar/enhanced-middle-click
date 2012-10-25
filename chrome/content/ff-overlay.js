@@ -90,9 +90,9 @@ senicar.emc = (function (emc)
 			  t instanceof HTMLAppletElement ||
 			  t instanceof HTMLSelectElement ||
 			  t instanceof HTMLOptionElement ||
-			  t instanceof HTMLAreaElement ||
 			  t instanceof XULElement) &&
-			  t instanceof HTMLElement &&
+			  (t instanceof HTMLElement ||
+			  t instanceof SVGElement) &&
 			  mouseEvent.button == 1 )
 		{
 			return true;
