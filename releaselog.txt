@@ -1,6 +1,7 @@
 Version 0.3.2
 + fixed disabled "Tabs Groups" button
 + added "Display tab group title" 
++ works in addon manager
 
 Version 0.3.1
 + Highlight current tab in tabs popup
