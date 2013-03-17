@@ -1,3 +1,7 @@
+Version 0.3.2
++ fixed disabled "Tabs Groups" button
++ added "Display group titles" only in "all tabs menu"
+
 Version 0.3.1
 + Highlight current tab in tabs popup
 + Pinned tabs as their own group (all tabs menu)
