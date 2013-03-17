@@ -14,6 +14,8 @@ if(!senicar.emc) senicar.emc = {};
 
 senicar.emc = (function (emc)
 {
+	var debug = true;
+
 	var pref = {}
 	var preferences = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("extensions.enhancedmiddleclick.");
 
@@ -50,8 +52,10 @@ senicar.emc = (function (emc)
 	// used for debuging
 	var report = function (msg)
 	{
-		Firebug.Console.log(msg);
-		dump(msg);
+		// check if firebug even available, if you try to "report" and firebug
+		// is not opened it will break addon
+		if(typeof Firebug.Console == 'object' && debug)
+			Firebug.Console.log(msg);
 	}
 
 
@@ -102,31 +106,6 @@ senicar.emc = (function (emc)
 			return false;
 		}
 	}
-
-
-	var uniqueArr = function(origArr)
-	{
-		var newArr = [],
-			origLen = origArr.length,
-			found,
-			x, y;
-	  
-		for ( x = 0; x < origLen; x++ )
-		{
-			found = undefined;  
-			for ( y = 0; y < newArr.length; y++ )
-			{
-				if ( origArr[x] === newArr[y] )
-				{
-				  found = true;
-				  break;
-				}
-			}
-			if ( !found) newArr.push( origArr[x] );
-		}
-	   return newArr;
-	}
-
 
 	var returnAction = function ()
 	{
@@ -217,6 +196,50 @@ senicar.emc = (function (emc)
 		}
 	}
 
+	var getTabGroup = function(tab)
+	{
+		var groupID;
+		var tabviewtab;
+
+		report(tab);
+
+		// use _tabViewTabItem if available its more predictable
+		if(typeof tab._tabViewTabItem != 'undefined' && !tab.pinned)
+		{
+			report("using _tabViewTabItem");
+			groupID = tab._tabViewTabItem.parent.id
+			return groupID;
+		}
+		else if(typeof tab.__SS_extdata != 'undefined' && !tab.pinned)
+		{
+			// __SS_extdata is undefined when no groups
+			report("using __SS_extdata");
+
+			// is null when tab is pinned
+			if(tab.__SS_extdata["tabview-tab"] != 'null')
+			{
+				// sometimes groupID is not set, like when creating new tab
+				tabviewtab = JSON.parse(tab.__SS_extdata["tabview-tab"]);
+				if(typeof tabviewtab.groupID != 'undefined')
+				{
+					if(tabviewtab.groupID % 1 === 0)
+					{
+						return tabviewtab.groupID;
+					}
+					else { return false; }
+				}
+				else { return false; }
+			}
+			else { return false; }
+		}
+		else if (tab.pinned) 
+		{
+			return 0;
+		}
+		else { return false; }
+	}
+
+
 
 	//////////////////
 	//
@@ -288,42 +311,37 @@ senicar.emc = (function (emc)
 	{
 		if( typeof refresh == 'undefined' ) refresh = false;
 		var num = gBrowser.browsers.length;
-		var tab_id;
+		var tab;
+		var tab_group;
 		var parent_id;
 		var groups = [];
 		var tabs = [];
 
 		for ( var x = 0; x< num; x++)
 		{
-			tab_id = gBrowser.tabContainer.getItemAtIndex(x);
-			if(tab_id.pinned)
-				groups.push(0);
-			else
-				groups.push(tab_id._tabViewTabItem.parent.id);
+			tab = gBrowser.tabContainer.getItemAtIndex(x);
+			tab_group = getTabGroup(tab);
+			report(tab);
+
+			// make unique array of groups
+			if(groups.indexOf(tab_group) == -1)
+				groups.push(tab_group);
 		}
 
-		var uniq = uniqueArr(groups);
-
-		for (var x = 0; x < uniq.length; x++)
+		for (var x = 0; x < groups.length; x++)
 		{
-			parent_id=uniq[x];
-			uniq[x] = [];
+			parent_id=groups[x];
 
 			if(x != 0)
 				tabs.push('separator');
 
-			for ( var y = 0; y < num; y++) {
-				tab_id = gBrowser.tabContainer.getItemAtIndex(y);
-				if(tab_id.pinned)
-				{
-					if(parent_id == 0)
-						tabs.push(tab_id);
-				}
-				else
-				{
-					if(tab_id._tabViewTabItem.parent.id == parent_id)
-						tabs.push(tab_id);
-				}
+			for ( var y = 0; y < num; y++) 
+			{
+				tab = gBrowser.tabContainer.getItemAtIndex(y);
+				tab_group = getTabGroup(tab);
+
+				if(tab_group >= 0 && tab_group == parent_id)
+					tabs.push(tab);
 			}
 		}
 
@@ -382,4 +400,9 @@ document.addEventListener("click", senicar.emc.click, true);
 
 // if loaded to soon panorama won't work due to "redeclared const Cu" bug
 // it has to load after the page is done to work in firefox
-window.addEventListener("load", senicar.emc.init, false);
+// 
+// had to change to SSWindowStateReady in Firefox 19, before it worked with "load"
+window.addEventListener("SSWindowStateReady", function load(event){
+    window.removeEventListener("SSWindowStateReady", load, false); //remove listener, no longer needed
+    senicar.emc.init(); 
+},false);
