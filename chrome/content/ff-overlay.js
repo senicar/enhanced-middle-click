@@ -14,7 +14,7 @@ if(!senicar.emc) senicar.emc = {};
 
 senicar.emc = (function (emc)
 {
-	var debug = true;
+	var debug = false;
 
 	var pref = {}
 	var preferences = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("extensions.enhancedmiddleclick.");
@@ -73,40 +73,60 @@ senicar.emc = (function (emc)
 	// it validates only on empty page areas, at least it tries
 	var clickValid = function ()
 	{
-		var t = mouseEvent.target;
+		// by default disable all target areas
+		var disallow = {};
+		var allow = {};
 
-		// check if element is child of anchor
-		while(t && !(t instanceof HTMLAnchorElement)) {
-			t = t.parentNode;
-			if(t instanceof HTMLAnchorElement) {
-				return false;
-			}
-		}
+		disallow .html = false;
+		disallow .xul = false;
+		allow .html = false;
+		allow .xul = false;
+
+		var t = mouseEvent.target;
 
 		// reset t
 		t = mouseEvent.target;
 
-		if( !(t instanceof HTMLInputElement ||
-			  t instanceof HTMLAnchorElement ||
-			  t instanceof HTMLButtonElement ||
-			  t instanceof HTMLVideoElement ||
-			  t instanceof HTMLAudioElement ||
-			  t instanceof HTMLTextAreaElement ||
-			  t instanceof HTMLCanvasElement ||
-			  t instanceof HTMLAppletElement ||
-			  t instanceof HTMLSelectElement ||
-			  t instanceof HTMLOptionElement ||
-			  t instanceof XULElement) &&
-			  (t instanceof HTMLElement ||
-			  t instanceof SVGElement) &&
-			  mouseEvent.button == 1 )
-		{
+		// https://developer.mozilla.org/en-US/docs/Gecko_DOM_Reference
+		if( t instanceof HTMLInputElement ||
+			t instanceof HTMLAnchorElement ||
+			t instanceof HTMLButtonElement ||
+			t instanceof HTMLVideoElement ||
+			t instanceof HTMLAudioElement ||
+			t instanceof HTMLTextAreaElement ||
+			t instanceof HTMLCanvasElement ||
+			t instanceof HTMLAppletElement ||
+			t instanceof HTMLSelectElement ||
+			t instanceof HTMLOptionElement
+		) { disallow.html = true; }
+
+		// best way to disable all xul elements is by instanceof XULElement
+		if( t instanceof XULControllers ||
+			t.nodeName == 'textbox' ||
+			t.nodeName == 'toolbarbutton' ||
+			t.nodeName == 'richlistitem' ||
+			t.nodeName == 'menuitem'
+		) { disallow.xul = true; }
+
+		if( t.baseURI == 'about:addons'
+		) { allow.xul = true ; }
+
+		if( t instanceof HTMLElement ||
+			t instanceof SVGElement
+		) { allow.html = true; }
+
+		// check if element is child of anchor
+		// we realy dont want to break links
+		while(t && !(t instanceof HTMLAnchorElement)) {
+			t = t.parentNode;
+			if(t instanceof HTMLAnchorElement)
+				disallow.html = true;
+		}
+
+		if( (allow.html || allow.xul) && !(disallow.html || disallow.xul) && mouseEvent.button == 1 )
 			return true;
-		}
 		else
-		{
 			return false;
-		}
 	}
 
 	var returnAction = function ()
@@ -327,7 +347,6 @@ senicar.emc = (function (emc)
 		// if tabs=gBrowser.visibleTabs there is another title added each time you open popup
 		tabs.push.apply(tabs,gBrowser.visibleTabs);
 
-		report(tabs);
 		if( typeof refresh == 'undefined' ) refresh = false;
 
 		// pick last tab, less possible to be pinned
