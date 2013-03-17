@@ -167,8 +167,18 @@ senicar.emc = (function (emc)
 			var tab = items[i];
 
 			if(tab == 'separator')
+			{
 				var menuseparator = tabs_popup.appendChild(document.createElement("menuseparator"));
-			else
+			}
+			else if (typeof tab == 'string' && tab)
+			{
+				// if tab is string it's most probably a group name
+				var item = tabs_popup.appendChild(document.createElement("menuitem"));
+				item.setAttribute("label", tab);
+				item.setAttribute("disabled", true);
+				item.classList.add("emc-grouptitle");
+			}
+			else if (typeof tab == 'object')
 			{
 				var item = tabs_popup.appendChild(document.createElement("menuitem"));
 
@@ -198,17 +208,16 @@ senicar.emc = (function (emc)
 
 	var getTabGroup = function(tab)
 	{
-		var groupID;
+		var group = {};
 		var tabviewtab;
-
-		report(tab);
 
 		// use _tabViewTabItem if available its more predictable
 		if(typeof tab._tabViewTabItem != 'undefined' && !tab.pinned)
 		{
-			report("using _tabViewTabItem");
-			groupID = tab._tabViewTabItem.parent.id
-			return groupID;
+			group.id = tab._tabViewTabItem.parent.id
+			group.title = tab._tabViewTabItem.parent.getTitle();
+
+			return group;
 		}
 		else if(typeof tab.__SS_extdata != 'undefined' && !tab.pinned)
 		{
@@ -224,7 +233,9 @@ senicar.emc = (function (emc)
 				{
 					if(tabviewtab.groupID % 1 === 0)
 					{
-						return tabviewtab.groupID;
+						group.id = tabviewtab.groupID;
+						group.title = null;
+						return group;
 					}
 					else { return false; }
 				}
@@ -234,7 +245,9 @@ senicar.emc = (function (emc)
 		}
 		else if (tab.pinned) 
 		{
-			return 0;
+			group.id = 0;
+			group.title = null;
+			return group;
 		}
 		else { return false; }
 	}
@@ -321,11 +334,10 @@ senicar.emc = (function (emc)
 		{
 			tab = gBrowser.tabContainer.getItemAtIndex(x);
 			tab_group = getTabGroup(tab);
-			report(tab);
 
 			// make unique array of groups
-			if(groups.indexOf(tab_group) == -1)
-				groups.push(tab_group);
+			if(groups.indexOf(tab_group.id) == -1)
+				groups.push(tab_group.id);
 		}
 
 		for (var x = 0; x < groups.length; x++)
@@ -335,13 +347,22 @@ senicar.emc = (function (emc)
 			if(x != 0)
 				tabs.push('separator');
 
+			var first_group_item = true;
 			for ( var y = 0; y < num; y++) 
 			{
 				tab = gBrowser.tabContainer.getItemAtIndex(y);
 				tab_group = getTabGroup(tab);
 
-				if(tab_group >= 0 && tab_group == parent_id)
+				report(tab_group);
+				if(typeof tab_group.title == 'string' && tab_group.id == parent_id && first_group_item)
+				{
+					tabs.push(tab_group.title);
+					first_group_item = false;
+				}
+
+				if(tab_group.id >= 0 && tab_group.id == parent_id)
 					tabs.push(tab);
+
 			}
 		}
 
