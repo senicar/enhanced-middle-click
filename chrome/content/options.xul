@@ -12,6 +12,7 @@
 	 		<preference id="mainMenu" name="extensions.enhancedmiddleclick.mainMenu" type="string" />
 	 		<preference id="secondaryMenu" name="extensions.enhancedmiddleclick.secondaryMenu" type="string" />
 	 		<preference id="refreshOnTabClose" name="extensions.enhancedmiddleclick.refreshOnTabClose" type="bool" />
+	 		<preference id="displayGroupTitles" name="extensions.enhancedmiddleclick.displayGroupTitles" type="bool" />
 	 	</preferences>
 	 	
 	 	<label value="&labelSetMainMenu;" />
@@ -44,6 +45,7 @@
 
 		<separator orient="horizontal"/>
 	 	<checkbox label="&labelRefreshOnTabClose;" preference="refreshOnTabClose" checked="true" />
+	 	<checkbox label="&labelDisplayGroupTitles;" preference="displayGroupTitles" checked="false" />
 	 	
  	</prefpane>
  	
