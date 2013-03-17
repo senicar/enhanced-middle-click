@@ -1,5 +1,9 @@
-/* This is just an example.  You shouldn't do this. */
-.emc-current
+.emc-grouptitle
 {
-  color: red ! important;
+	text-align: center !important;
+	/* not working
+	 * https://bugzilla.mozilla.org/show_bug.cgi?id=101800
+	 *
+	 * text-transform: uppercase !important;
+	*/
 }
