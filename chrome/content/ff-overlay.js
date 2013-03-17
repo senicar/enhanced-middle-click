@@ -14,7 +14,7 @@ if(!senicar.emc) senicar.emc = {};
 
 senicar.emc = (function (emc)
 {
-	var debug = false;
+	var debug = true;
 
 	var pref = {}
 	var preferences = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("extensions.enhancedmiddleclick.");
@@ -213,43 +213,47 @@ senicar.emc = (function (emc)
 		var group = {};
 		var tabviewtab;
 
-		// use _tabViewTabItem if available its more predictable
-		if(typeof tab._tabViewTabItem != 'undefined' && !tab.pinned)
+		if(typeof tab != 'undefined')
 		{
-			group.id = tab._tabViewTabItem.parent.id
-			group.title = tab._tabViewTabItem.parent.getTitle();
-
-			return group;
-		}
-		else if(typeof tab.__SS_extdata != 'undefined' && !tab.pinned)
-		{
-			// __SS_extdata is undefined when no groups
-			report("using __SS_extdata");
-
-			// is null when tab is pinned
-			if(tab.__SS_extdata["tabview-tab"] != 'null')
+			// use _tabViewTabItem if available its more predictable
+			if(typeof tab._tabViewTabItem != 'undefined' && !tab.pinned)
 			{
-				// sometimes groupID is not set, like when creating new tab
-				tabviewtab = JSON.parse(tab.__SS_extdata["tabview-tab"]);
-				if(typeof tabviewtab.groupID != 'undefined')
+				group.id = tab._tabViewTabItem.parent.id
+				group.title = tab._tabViewTabItem.parent.getTitle();
+
+				return group;
+			}
+			else if(typeof tab.__SS_extdata != 'undefined' && !tab.pinned)
+			{
+				// __SS_extdata is undefined when no groups
+				report("using __SS_extdata");
+
+				// is null when tab is pinned
+				if(tab.__SS_extdata["tabview-tab"] != 'null')
 				{
-					if(tabviewtab.groupID % 1 === 0)
+					// sometimes groupID is not set, like when creating new tab
+					tabviewtab = JSON.parse(tab.__SS_extdata["tabview-tab"]);
+					if(typeof tabviewtab.groupID != 'undefined')
 					{
-						group.id = tabviewtab.groupID;
-						group.title = null;
-						return group;
+						if(tabviewtab.groupID % 1 === 0)
+						{
+							group.id = tabviewtab.groupID;
+							group.title = null;
+							return group;
+						}
+						else { return false; }
 					}
 					else { return false; }
 				}
 				else { return false; }
 			}
+			else if (tab.pinned) 
+			{
+				group.id = 0;
+				group.title = null;
+				return group;
+			}
 			else { return false; }
-		}
-		else if (tab.pinned) 
-		{
-			group.id = 0;
-			group.title = null;
-			return group;
 		}
 		else { return false; }
 	}
@@ -317,8 +321,22 @@ senicar.emc = (function (emc)
 
 	var visibleTabsMenu= function (refresh)
 	{
+		var group;
+		var tabs = [];
+
+		// if tabs=gBrowser.visibleTabs there is another title added each time you open popup
+		tabs.push.apply(tabs,gBrowser.visibleTabs);
+
+		report(tabs);
 		if( typeof refresh == 'undefined' ) refresh = false;
-		makePopupMenu("visibleTabsMenu", gBrowser.visibleTabs, refresh);
+
+		// pick last tab, less possible to be pinned
+		// and prepend title if exists
+		group = getTabGroup(tabs[tabs.length-1]);
+		if(typeof group.title == 'string')
+			tabs.unshift(group.title);
+
+		makePopupMenu("visibleTabsMenu", tabs, refresh);
 	}
 
 

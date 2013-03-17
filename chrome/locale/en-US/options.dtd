@@ -9,4 +9,4 @@
 <!ENTITY labelToggleHistorySidebar "Toggle History sidebar">
 <!ENTITY labelToggleDownloadsSidebar "Toggle Downloads sidebar">
 <!ENTITY labelRefreshOnTabClose "Don't close the menu when closing a tab with middle click">
-<!ENTITY labelDisplayGroupTitles "Display group titles if they exists (in Display all tabs)">
+<!ENTITY labelDisplayGroupTitles "Display tab group title if it exist">
