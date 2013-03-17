@@ -14,7 +14,7 @@ if(!senicar.emc) senicar.emc = {};
 
 senicar.emc = (function (emc)
 {
-	var debug = true;
+	var debug = false;
 
 	var pref = {}
 	var preferences = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("extensions.enhancedmiddleclick.");
@@ -175,7 +175,7 @@ senicar.emc = (function (emc)
 			else if (typeof tab == 'string' && tab && pref.displayGroupTitles)
 			{
 				// if tab is string it's most probably a group name
-				var item = tabs_popup.appendChild(document.createElement("menuitem"));
+				var item = tabs_popup.appendChild(document.createElement("caption"));
 				item.setAttribute("label", tab);
 				item.setAttribute("disabled", true);
 				item.classList.add("emc-grouptitle");
@@ -355,7 +355,6 @@ senicar.emc = (function (emc)
 				tab = gBrowser.tabContainer.getItemAtIndex(y);
 				tab_group = getTabGroup(tab);
 
-				report(tab_group);
 				if(typeof tab_group.title == 'string' && tab_group.id == parent_id && first_group_item)
 				{
 					tabs.push(tab_group.title);

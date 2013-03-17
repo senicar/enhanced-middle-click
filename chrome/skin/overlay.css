@@ -1,9 +1,16 @@
+.emc-grouptitle:hover,
 .emc-grouptitle
 {
+	font-weight: normal;
+	opacity: 0.3;
 	text-align: center !important;
+	margin: 2px;
 	/* not working
 	 * https://bugzilla.mozilla.org/show_bug.cgi?id=101800
 	 *
 	 * text-transform: uppercase !important;
 	*/
+	background: none !important;
+	background-image: none !important;
+	border: none !important;
 }
