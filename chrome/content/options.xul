@@ -4,6 +4,7 @@
 
 <prefwindow 
      title="Enhanced Middle Click Preferences"
+	 id="enhancedmiddleclick-preferences"
      xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
  	
  	<prefpane id="pane1" label="Enhanced Middle Click Preferences">

@@ -16,14 +16,14 @@ senicar.emc = (function (emc)
 {
 	var debug = false;
 
-	var pref = {}
+	var emcpref = {}
 	var preferences = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("extensions.enhancedmiddleclick.");
 
-	pref.primaryMenu = preferences.getCharPref("mainMenu");
-	pref.secondaryMenu = preferences.getCharPref("secondaryMenu");
-	pref.secondaryMenuEnabled = preferences.getBoolPref("useSecondaryMenu");
-	pref.refreshOnTabClose = preferences.getBoolPref("refreshOnTabClose");
-	pref.displayGroupTitles = preferences.getBoolPref("displayGroupTitles");
+	emcpref.primaryMenu = preferences.getCharPref("mainMenu");
+	emcpref.secondaryMenu = preferences.getCharPref("secondaryMenu");
+	emcpref.secondaryMenuEnabled = preferences.getBoolPref("useSecondaryMenu");
+	emcpref.refreshOnTabClose = preferences.getBoolPref("refreshOnTabClose");
+	emcpref.displayGroupTitles = preferences.getBoolPref("displayGroupTitles");
 
 	// create all the menus
 	var visibleTabsPopup = document.createElement("menupopup");
@@ -46,9 +46,9 @@ senicar.emc = (function (emc)
 		
 
 	// where click event is stored
-	var mouseEvent;
-	var screenX;
-	var screenY;
+	var emcmouseEvent;
+	var emcscreenX;
+	var emcscreenY;
 	
 	// used for debuging
 	var report = function (msg)
@@ -62,11 +62,11 @@ senicar.emc = (function (emc)
 
 	var updateAndReset = function ()
 	{
-		pref.primaryMenu = preferences.getCharPref("mainMenu");
-		pref.secondaryMenu = preferences.getCharPref("secondaryMenu");
-		pref.secondaryMenuEnabled = preferences.getBoolPref("useSecondaryMenu");
-		pref.refreshOnTabClose = preferences.getBoolPref("refreshOnTabClose");
-		pref.displayGroupTitles = preferences.getBoolPref("displayGroupTitles");
+		emcpref.primaryMenu = preferences.getCharPref("mainMenu");
+		emcpref.secondaryMenu = preferences.getCharPref("secondaryMenu");
+		emcpref.secondaryMenuEnabled = preferences.getBoolPref("useSecondaryMenu");
+		emcpref.refreshOnTabClose = preferences.getBoolPref("refreshOnTabClose");
+		emcpref.displayGroupTitles = preferences.getBoolPref("displayGroupTitles");
 	}
 
 
@@ -82,10 +82,10 @@ senicar.emc = (function (emc)
 		allow .html = false;
 		allow .xul = false;
 
-		var t = mouseEvent.target;
+		var t = emcmouseEvent.target;
 
 		// reset t
-		t = mouseEvent.target;
+		t = emcmouseEvent.target;
 
 		// https://developer.mozilla.org/en-US/docs/Gecko_DOM_Reference
 		if( t instanceof HTMLInputElement ||
@@ -123,7 +123,7 @@ senicar.emc = (function (emc)
 				disallow.html = true;
 		}
 
-		if( (allow.html || allow.xul) && !(disallow.html || disallow.xul) && mouseEvent.button == 1 )
+		if( (allow.html || allow.xul) && !(disallow.html || disallow.xul) && emcmouseEvent.button == 1 )
 			return true;
 		else
 			return false;
@@ -131,13 +131,13 @@ senicar.emc = (function (emc)
 
 	var returnAction = function ()
 	{
-		if(mouseEvent.button == 1)
+		if(emcmouseEvent.button == 1)
 		{
-			if(!mouseEvent.ctrlKey && !mouseEvent.shiftKey)
-				return pref.primaryMenu;
+			if(!emcmouseEvent.ctrlKey && !emcmouseEvent.shiftKey)
+				return emcpref.primaryMenu;
 
-			else if(!mouseEvent.ctrlKey && mouseEvent.shiftKey && pref.secondaryMenuEnabled)
-				return pref.secondaryMenu;
+			else if(!emcmouseEvent.ctrlKey && emcmouseEvent.shiftKey && emcpref.secondaryMenuEnabled)
+				return emcpref.secondaryMenu;
 
 			else
 				return false;
@@ -192,7 +192,7 @@ senicar.emc = (function (emc)
 			{
 				var menuseparator = tabs_popup.appendChild(document.createElement("menuseparator"));
 			}
-			else if (typeof tab == 'string' && tab && pref.displayGroupTitles)
+			else if (typeof tab == 'string' && tab && emcpref.displayGroupTitles)
 			{
 				// if tab is string it's most probably a group name
 				var item = tabs_popup.appendChild(document.createElement("caption"));
@@ -222,9 +222,9 @@ senicar.emc = (function (emc)
 
 		if(!refresh)
 		{
-			screenX = mouseEvent.screenX;
-			screenY = mouseEvent.screenY;
-			tabs_popup.openPopupAtScreen(mouseEvent.screenX, mouseEvent.screenY, true);
+			emcscreenX = emcmouseEvent.screenX;
+			emcscreenY = emcmouseEvent.screenY;
+			tabs_popup.openPopupAtScreen(emcmouseEvent.screenX, emcmouseEvent.screenY, true);
 		}
 	}
 
@@ -296,7 +296,7 @@ senicar.emc = (function (emc)
 
 	emc.click = function (e)
 	{
-		mouseEvent = e;
+		emcmouseEvent = e;
 
 		if( clickValid() )
 		{
@@ -312,7 +312,7 @@ senicar.emc = (function (emc)
 	{
 		var action = menu.id.replace(/senicar.emc./g,'');
 		var tab = gBrowser.tabContainer.getItemAtIndex(item.target.getAttribute('index'));
-		var refresh = pref.refreshOnTabClose; 
+		var refresh = emcpref.refreshOnTabClose; 
 
 		if(item.button == 1)
 		{
@@ -428,7 +428,7 @@ senicar.emc = (function (emc)
 
 		}
 		
-		history_popup.openPopupAtScreen(mouseEvent.screenX, mouseEvent.screenY, true);
+		history_popup.openPopupAtScreen(emcmouseEvent.screenX, emcmouseEvent.screenY, true);
 	}
 
 
