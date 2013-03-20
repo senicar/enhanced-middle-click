@@ -2,52 +2,33 @@
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>   
 <!DOCTYPE prefwindow SYSTEM "chrome://enhancedmiddleclick/locale/options.dtd">
 
-<prefwindow 
-     title="Enhanced Middle Click Preferences"
-	 id="enhancedmiddleclick-preferences"
-     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
- 	
- 	<prefpane id="pane1" label="Enhanced Middle Click Preferences">
-	 	<preferences>
-	 		<preference id="useSecondaryMenu" name="extensions.enhancedmiddleclick.useSecondaryMenu" type="bool" />
-	 		<preference id="mainMenu" name="extensions.enhancedmiddleclick.mainMenu" type="string" />
-	 		<preference id="secondaryMenu" name="extensions.enhancedmiddleclick.secondaryMenu" type="string" />
-	 		<preference id="refreshOnTabClose" name="extensions.enhancedmiddleclick.refreshOnTabClose" type="bool" />
-	 		<preference id="displayGroupTitles" name="extensions.enhancedmiddleclick.displayGroupTitles" type="bool" />
-	 	</preferences>
-	 	
-	 	<label value="&labelSetMainMenu;" />
-	 	<menulist preference="mainMenu">
+<vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	<setting pref="extensions.enhancedmiddleclick.mainMenu" type="menulist" title="&title-mainMenu;" desc="&desc-mainMenu;">
+		<menulist>
 			<menupopup>
-				<menuitem label="&labelHistory;" value="history" />
-				<menuitem label="&labelTabs;" value="tabs" />
-				<menuitem label="&labelTabsGroups;" value="tabsGroupsMenu" />
-				<menuitem label="&labelToggleBookmarksSidebar;" value="toggleBookmarksSidebar" />
-				<menuitem label="&labelToggleHistorySidebar;" value="toggleHistorySidebar" />
-				<menuitem label="&labelToggleDownloadsSidebar;" value="toggleDownloadsSidebar" />
+				<menuitem label="&label-history;" value="history" />
+				<menuitem label="&label-tabs;" value="tabs" />
+				<menuitem label="&label-tabsGroups;" value="tabsGroupsMenu" />
+				<menuitem label="&label-toggleBookmarksSidebar;" value="toggleBookmarksSidebar" />
+				<menuitem label="&label-toggleHistorySidebar;" value="toggleHistorySidebar" />
+				<menuitem label="&label-toggleDownloadsSidebar;" value="toggleDownloadsSidebar" />
 			</menupopup>
 		</menulist>
-		
-		<separator orient="horizontal"/>
-		
-		<label value="&descUseSecondaryMenu;" />
+	</setting>
 
-	 	<menulist preference="secondaryMenu">
+	<setting pref="extensions.enhancedmiddleclick.secondaryMenu" type="menulist" title="&title-secondaryMenu;" desc="&desc-secondaryMenu;">
+		<menulist>
 			<menupopup>
-				<menuitem label="&labelHistory;" value="history" />
-				<menuitem label="&labelTabs;" value="tabs" />
-				<menuitem label="&labelTabsGroups;" value="tabsGroupsMenu" />
-				<menuitem label="&labelToggleBookmarksSidebar;" value="toggleBookmarksSidebar" />
-				<menuitem label="&labelToggleHistorySidebar;" value="toggleHistorySidebar" />
-				<menuitem label="&labelToggleDownloadsSidebar;" value="toggleDownloadsSidebar" />
+				<menuitem label="&label-history;" value="history" />
+				<menuitem label="&label-tabs;" value="tabs" />
+				<menuitem label="&label-tabsGroups;" value="tabsGroupsMenu" />
+				<menuitem label="&label-toggleBookmarksSidebar;" value="toggleBookmarksSidebar" />
+				<menuitem label="&label-toggleHistorySidebar;" value="toggleHistorySidebar" />
+				<menuitem label="&label-toggleDownloadsSidebar;" value="toggleDownloadsSidebar" />
 			</menupopup>
 		</menulist>
-	 	<checkbox label="&labelUseSecondaryMenu;" preference="useSecondaryMenu" checked="true" />
-
-		<separator orient="horizontal"/>
-	 	<checkbox label="&labelRefreshOnTabClose;" preference="refreshOnTabClose" checked="true" />
-	 	<checkbox label="&labelDisplayGroupTitles;" preference="displayGroupTitles" checked="false" />
-	 	
- 	</prefpane>
- 	
-</prefwindow>
+	</setting>
+	<setting type="bool" pref="extensions.enhancedmiddleclick.useSecondaryMenu" title="&title-useSecondaryMenu;" desc="&desc-useSecondaryMenu;" />
+	<setting type="bool" pref="extensions.enhancedmiddleclick.refreshOnTabClose" title="&title-refreshOnTabClose;" desc="&desc-refreshOnTabClose;" />
+	<setting type="bool" pref="extensions.enhancedmiddleclick.displayGroupTitles" title="&title-displayGroupTitles;" desc="&desc-displayGroupTitles;" />
+</vbox>
