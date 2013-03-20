@@ -1,6 +1,7 @@
 Version 0.3.3
 + inline preferences
 + new window bugfix
++ disable general.autoScroll on first install
 
 Version 0.3.2
 + fixed disabled "Tabs Groups" button
