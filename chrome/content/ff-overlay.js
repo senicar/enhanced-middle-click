@@ -102,7 +102,8 @@ senicar.emc = (function (emc)
 			t instanceof HTMLCanvasElement ||
 			t instanceof HTMLAppletElement ||
 			t instanceof HTMLSelectElement ||
-			t instanceof HTMLOptionElement
+			t instanceof HTMLOptionElement ||
+			t.attributes["g_editable"]
 		) { disallow.html = true; }
 
 		// best way to disable all xul elements is by instanceof XULElement
@@ -113,7 +114,8 @@ senicar.emc = (function (emc)
 			t.nodeName == 'menuitem'
 		) { disallow.xul = true; }
 
-		if( t.baseURI == 'about:addons'
+		if( t.baseURI == 'about:addons' ||
+			t.localName == 'tabbrowser'
 		) { allow.xul = true ; }
 
 		if( t instanceof HTMLElement ||
