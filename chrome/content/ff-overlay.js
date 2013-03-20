@@ -434,6 +434,40 @@ senicar.emc = (function (emc)
 }(senicar.emc));
 
 
+// upgrade or install gracefully
+Application.getExtensions(function(extensions) {
+	var emcinfo = extensions.get("enhancedmiddleclick@senicar.net");
+
+	if (emcinfo.firstRun)
+	{
+		/* Code related to firstrun */
+		Services.prefs.setCharPref("extensions.enhancedmiddleclick.version",emcinfo.version);
+	} else
+	{
+		try {
+			var version = Services.prefs.getCharPref("extensions.enhancedmiddleclick.version");
+			if (emcinfo.version > version) {
+				/* Code related to upgrade */
+				Services.prefs.setCharPref("extensions.enhancedmiddleclick.version", emcinfo.version);
+			}
+		} catch (ex) {
+			/* Code related to a reinstall or upgrade old version, one without enhancedmiddleclick.version pref */
+			Services.prefs.setCharPref("extensions.enhancedmiddleclick.version", emcinfo.version);
+			try {
+				// this setting was used before inline preferences and enhancedmiddleclick.version
+				var useSecondaryMenu = Services.prefs.getBoolPref("extensions.enhancedmiddleclick.useSecondaryMenu");
+				if(! useSecondaryMenu)
+				{
+					//Services.prefs.setCharPref("extensions.enhancedmiddleclick.secondaryMenu", "disable");
+				}
+			}
+			catch (ex) {
+			}
+		}
+	}
+});
+
+
 // true, to execute before selection buffer on linux
 document.addEventListener("click", senicar.emc.click, true);
 
