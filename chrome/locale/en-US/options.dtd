@@ -12,9 +12,6 @@
 <!ENTITY label-toggleHistorySidebar "Toggle History sidebar">
 <!ENTITY label-toggleDownloadsSidebar "Toggle Downloads sidebar">
 
-<!ENTITY title-useSecondaryMenu "Enable Secondary menu">
-<!ENTITY desc-useSecondaryMenu "">
-
 <!ENTITY title-refreshOnTabClose "Refresh menu on tab close">
 <!ENTITY desc-refreshOnTabClose "Don't close the menu when closing a tab with middle click">
 

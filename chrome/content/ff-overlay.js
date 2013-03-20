@@ -22,7 +22,12 @@ senicar.emc = (function (emc)
 
 	emcpref.primaryMenu = preferences.getCharPref("mainMenu");
 	emcpref.secondaryMenu = preferences.getCharPref("secondaryMenu");
-	emcpref.secondaryMenuEnabled = preferences.getBoolPref("useSecondaryMenu");
+
+	if(emcpref.secondaryMenu != 'disable')
+		emcpref.secondaryMenuEnabled = true;
+	else
+		emcpref.secondaryMenuEnabled = true;
+
 	emcpref.refreshOnTabClose = preferences.getBoolPref("refreshOnTabClose");
 	emcpref.displayGroupTitles = preferences.getBoolPref("displayGroupTitles");
 
@@ -458,7 +463,7 @@ Application.getExtensions(function(extensions) {
 				var useSecondaryMenu = Services.prefs.getBoolPref("extensions.enhancedmiddleclick.useSecondaryMenu");
 				if(! useSecondaryMenu)
 				{
-					//Services.prefs.setCharPref("extensions.enhancedmiddleclick.secondaryMenu", "disable");
+					Services.prefs.setCharPref("extensions.enhancedmiddleclick.secondaryMenu", "disable");
 				}
 			}
 			catch (ex) {

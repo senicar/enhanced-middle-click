@@ -19,6 +19,7 @@
 	<setting pref="extensions.enhancedmiddleclick.secondaryMenu" type="menulist" title="&title-secondaryMenu;" desc="&desc-secondaryMenu;">
 		<menulist>
 			<menupopup>
+				<menuitem label="&label-disable;" value="disable" />
 				<menuitem label="&label-history;" value="history" />
 				<menuitem label="&label-tabs;" value="tabs" />
 				<menuitem label="&label-tabsGroups;" value="tabsGroupsMenu" />
@@ -28,7 +29,6 @@
 			</menupopup>
 		</menulist>
 	</setting>
-	<setting type="bool" pref="extensions.enhancedmiddleclick.useSecondaryMenu" title="&title-useSecondaryMenu;" desc="&desc-useSecondaryMenu;" />
 	<setting type="bool" pref="extensions.enhancedmiddleclick.refreshOnTabClose" title="&title-refreshOnTabClose;" desc="&desc-refreshOnTabClose;" />
 	<setting type="bool" pref="extensions.enhancedmiddleclick.displayGroupTitles" title="&title-displayGroupTitles;" desc="&desc-displayGroupTitles;" />
 </vbox>
