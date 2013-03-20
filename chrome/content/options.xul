@@ -30,5 +30,5 @@
 		</menulist>
 	</setting>
 	<setting type="bool" pref="extensions.enhancedmiddleclick.refreshOnTabClose" title="&title-refreshOnTabClose;" desc="&desc-refreshOnTabClose;" />
-	<setting type="bool" pref="extensions.enhancedmiddleclick.displayGroupTitles" title="&title-displayGroupTitles;" desc="&desc-displayGroupTitles;" />
+	<setting type="bool" pref="extensions.enhancedmiddleclick.displayGroupName" title="&title-displayGroupName;" desc="&desc-displayGroupName;" />
 </vbox>

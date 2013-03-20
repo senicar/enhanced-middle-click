@@ -32,7 +32,7 @@ senicar.emc = (function (emc)
 		emc.pref.secondaryMenuEnabled = false;
 
 	emc.pref.refreshOnTabClose = preferences.getBoolPref("refreshOnTabClose");
-	emc.pref.displayGroupTitles = preferences.getBoolPref("displayGroupTitles");
+	emc.pref.displayGroupName = preferences.getBoolPref("displayGroupName");
 
 	// create all the menus
 	var visibleTabsPopup = document.createElement("menupopup");
@@ -71,7 +71,7 @@ senicar.emc = (function (emc)
 		emc.pref.primaryMenu = preferences.getCharPref("mainMenu");
 		emc.pref.secondaryMenu = preferences.getCharPref("secondaryMenu");
 		emc.pref.refreshOnTabClose = preferences.getBoolPref("refreshOnTabClose");
-		emc.pref.displayGroupTitles = preferences.getBoolPref("displayGroupTitles");
+		emc.pref.displayGroupName = preferences.getBoolPref("displayGroupName");
 	}
 
 
@@ -199,7 +199,7 @@ senicar.emc = (function (emc)
 			{
 				var menuseparator = tabs_popup.appendChild(document.createElement("menuseparator"));
 			}
-			else if (typeof tab == 'string' && tab && emc.pref.displayGroupTitles)
+			else if (typeof tab == 'string' && tab && emc.pref.displayGroupName)
 			{
 				// if tab is string it's most probably a group name
 				var item = tabs_popup.appendChild(document.createElement("caption"));
