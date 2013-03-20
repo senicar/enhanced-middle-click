@@ -14,10 +14,11 @@ if(!senicar.emc) senicar.emc = {};
 
 senicar.emc = (function (emc)
 {
-	var debug = false;
+	var debug = true;
 
 	var emcpref = {}
 	var preferences = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("extensions.enhancedmiddleclick.");
+	var consoleService = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
 
 	emcpref.primaryMenu = preferences.getCharPref("mainMenu");
 	emcpref.secondaryMenu = preferences.getCharPref("secondaryMenu");
@@ -57,6 +58,8 @@ senicar.emc = (function (emc)
 		// is not opened it will break addon
 		if(typeof Firebug.Console == 'object' && debug)
 			Firebug.Console.log(msg);
+
+  		consoleService.logStringMessage("enhancedmiddleclick: " + msg);
 	}
 
 
@@ -233,6 +236,7 @@ senicar.emc = (function (emc)
 		var group = {};
 		var tabviewtab;
 
+		report(tab);
 		if(typeof tab != 'undefined')
 		{
 			// use _tabViewTabItem if available its more predictable
@@ -242,30 +246,6 @@ senicar.emc = (function (emc)
 				group.title = tab._tabViewTabItem.parent.getTitle();
 
 				return group;
-			}
-			else if(typeof tab.__SS_extdata != 'undefined' && !tab.pinned)
-			{
-				// __SS_extdata is undefined when no groups
-				report("using __SS_extdata");
-
-				// is null when tab is pinned
-				if(tab.__SS_extdata["tabview-tab"] != 'null')
-				{
-					// sometimes groupID is not set, like when creating new tab
-					tabviewtab = JSON.parse(tab.__SS_extdata["tabview-tab"]);
-					if(typeof tabviewtab.groupID != 'undefined')
-					{
-						if(tabviewtab.groupID % 1 === 0)
-						{
-							group.id = tabviewtab.groupID;
-							group.title = null;
-							return group;
-						}
-						else { return false; }
-					}
-					else { return false; }
-				}
-				else { return false; }
 			}
 			else if (tab.pinned) 
 			{
@@ -290,7 +270,12 @@ senicar.emc = (function (emc)
 	emc.init = function (event)
 	{
 		// init tabview in the background so _tabViewTabItem gets added to tabs
-		TabView._initFrame(event);
+		// had to add SSWindowStateReady in Firefox 19, before it worked only with "load"
+		// now it waits until tabview library is properly loaded, among other things
+		window.addEventListener("SSWindowStateReady", function load(event){
+			window.removeEventListener("SSWindowStateReady", load, false); //remove listener, no longer needed
+			TabView._initFrame(event);
+		},false);
 	}
 
 
@@ -372,6 +357,10 @@ senicar.emc = (function (emc)
 		for ( var x = 0; x< num; x++)
 		{
 			tab = gBrowser.tabContainer.getItemAtIndex(x);
+			report(tab._tabViewTabItem);
+			if(typeof tab._tabViewTabItem == 'undefined')
+				emc.init();
+
 			tab_group = getTabGroup(tab);
 
 			// make unique array of groups
@@ -459,9 +448,11 @@ document.addEventListener("click", senicar.emc.click, true);
 
 // if loaded to soon panorama won't work due to "redeclared const Cu" bug
 // it has to load after the page is done to work in firefox
+//
+// needs eventListener on load so it runs on every new window
 // 
-// had to change to SSWindowStateReady in Firefox 19, before it worked with "load"
-window.addEventListener("SSWindowStateReady", function load(event){
-    window.removeEventListener("SSWindowStateReady", load, false); //remove listener, no longer needed
-    senicar.emc.init(); 
+// https://developer.mozilla.org/en-US/docs/DOM/Mozilla_event_reference
+window.addEventListener("load", function load(event){
+    window.removeEventListener("load", load, false); //remove listener, no longer needed
+	senicar.emc.init();
 },false);
