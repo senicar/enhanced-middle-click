@@ -16,20 +16,23 @@ senicar.emc = (function (emc)
 {
 	var debug = true;
 
-	var emcpref = {}
+	emc.pref = {}
 	var preferences = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("extensions.enhancedmiddleclick.");
-	var consoleService = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
+	emc.consoleService = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
 
-	emcpref.primaryMenu = preferences.getCharPref("mainMenu");
-	emcpref.secondaryMenu = preferences.getCharPref("secondaryMenu");
+	// where click event is stored
+	emc.mouseEvent = null;
+	
+	emc.pref.primaryMenu = preferences.getCharPref("mainMenu");
+	emc.pref.secondaryMenu = preferences.getCharPref("secondaryMenu");
 
-	if(emcpref.secondaryMenu != 'disable')
-		emcpref.secondaryMenuEnabled = true;
+	if(emc.pref.secondaryMenu != 'disable')
+		emc.pref.secondaryMenuEnabled = true;
 	else
-		emcpref.secondaryMenuEnabled = true;
+		emc.pref.secondaryMenuEnabled = false;
 
-	emcpref.refreshOnTabClose = preferences.getBoolPref("refreshOnTabClose");
-	emcpref.displayGroupTitles = preferences.getBoolPref("displayGroupTitles");
+	emc.pref.refreshOnTabClose = preferences.getBoolPref("refreshOnTabClose");
+	emc.pref.displayGroupTitles = preferences.getBoolPref("displayGroupTitles");
 
 	// create all the menus
 	var visibleTabsPopup = document.createElement("menupopup");
@@ -51,11 +54,6 @@ senicar.emc = (function (emc)
 	document.getElementById("mainPopupSet").appendChild(history_popup);
 		
 
-	// where click event is stored
-	var emcmouseEvent;
-	var emcscreenX;
-	var emcscreenY;
-	
 	// used for debuging
 	var report = function (msg)
 	{
@@ -64,17 +62,16 @@ senicar.emc = (function (emc)
 		if(typeof Firebug.Console == 'object' && debug)
 			Firebug.Console.log(msg);
 
-  		consoleService.logStringMessage("enhancedmiddleclick: " + msg);
+  		emc.consoleService.logStringMessage("enhancedmiddleclick: " + msg);
 	}
 
 
 	var updateAndReset = function ()
 	{
-		emcpref.primaryMenu = preferences.getCharPref("mainMenu");
-		emcpref.secondaryMenu = preferences.getCharPref("secondaryMenu");
-		emcpref.secondaryMenuEnabled = preferences.getBoolPref("useSecondaryMenu");
-		emcpref.refreshOnTabClose = preferences.getBoolPref("refreshOnTabClose");
-		emcpref.displayGroupTitles = preferences.getBoolPref("displayGroupTitles");
+		emc.pref.primaryMenu = preferences.getCharPref("mainMenu");
+		emc.pref.secondaryMenu = preferences.getCharPref("secondaryMenu");
+		emc.pref.refreshOnTabClose = preferences.getBoolPref("refreshOnTabClose");
+		emc.pref.displayGroupTitles = preferences.getBoolPref("displayGroupTitles");
 	}
 
 
@@ -85,15 +82,15 @@ senicar.emc = (function (emc)
 		var disallow = {};
 		var allow = {};
 
-		disallow .html = false;
-		disallow .xul = false;
-		allow .html = false;
-		allow .xul = false;
+		disallow.html = false;
+		disallow.xul = false;
+		allow.html = false;
+		allow.xul = false;
 
-		var t = emcmouseEvent.target;
+		var t = emc.mouseEvent.target;
 
 		// reset t
-		t = emcmouseEvent.target;
+		t = emc.mouseEvent.target;
 
 		// https://developer.mozilla.org/en-US/docs/Gecko_DOM_Reference
 		if( t instanceof HTMLInputElement ||
@@ -131,7 +128,7 @@ senicar.emc = (function (emc)
 				disallow.html = true;
 		}
 
-		if( (allow.html || allow.xul) && !(disallow.html || disallow.xul) && emcmouseEvent.button == 1 )
+		if( (allow.html || allow.xul) && !(disallow.html || disallow.xul) && emc.mouseEvent.button == 1 )
 			return true;
 		else
 			return false;
@@ -139,13 +136,13 @@ senicar.emc = (function (emc)
 
 	var returnAction = function ()
 	{
-		if(emcmouseEvent.button == 1)
+		if(emc.mouseEvent.button == 1)
 		{
-			if(!emcmouseEvent.ctrlKey && !emcmouseEvent.shiftKey)
-				return emcpref.primaryMenu;
+			if(!emc.mouseEvent.ctrlKey && !emc.mouseEvent.shiftKey)
+				return emc.pref.primaryMenu;
 
-			else if(!emcmouseEvent.ctrlKey && emcmouseEvent.shiftKey && emcpref.secondaryMenuEnabled)
-				return emcpref.secondaryMenu;
+			else if(!emc.mouseEvent.ctrlKey && emc.mouseEvent.shiftKey && emc.pref.secondaryMenuEnabled)
+				return emc.pref.secondaryMenu;
 
 			else
 				return false;
@@ -200,7 +197,7 @@ senicar.emc = (function (emc)
 			{
 				var menuseparator = tabs_popup.appendChild(document.createElement("menuseparator"));
 			}
-			else if (typeof tab == 'string' && tab && emcpref.displayGroupTitles)
+			else if (typeof tab == 'string' && tab && emc.pref.displayGroupTitles)
 			{
 				// if tab is string it's most probably a group name
 				var item = tabs_popup.appendChild(document.createElement("caption"));
@@ -230,9 +227,7 @@ senicar.emc = (function (emc)
 
 		if(!refresh)
 		{
-			emcscreenX = emcmouseEvent.screenX;
-			emcscreenY = emcmouseEvent.screenY;
-			tabs_popup.openPopupAtScreen(emcmouseEvent.screenX, emcmouseEvent.screenY, true);
+			tabs_popup.openPopupAtScreen(emc.mouseEvent.screenX, emc.mouseEvent.screenY, true);
 		}
 	}
 
@@ -280,7 +275,7 @@ senicar.emc = (function (emc)
 
 	emc.click = function (e)
 	{
-		emcmouseEvent = e;
+		emc.mouseEvent = e;
 
 		if( clickValid() )
 		{
@@ -296,7 +291,7 @@ senicar.emc = (function (emc)
 	{
 		var action = menu.id.replace(/senicar.emc./g,'');
 		var tab = gBrowser.tabContainer.getItemAtIndex(item.target.getAttribute('index'));
-		var refresh = emcpref.refreshOnTabClose; 
+		var refresh = emc.pref.refreshOnTabClose; 
 
 		if(item.button == 1)
 		{
@@ -315,6 +310,29 @@ senicar.emc = (function (emc)
 		}
 	}
 
+	// https://developer.mozilla.org/en/docs/Observer_Notifications
+	emc.observerDelayedStartup = {
+		register: function() {
+				var observerService = Components.classes["@mozilla.org/observer-service;1"]
+					.getService(Components.interfaces.nsIObserverService);
+				observerService.addObserver(senicar.emc.observerDelayedStartup, "browser-delayed-startup-finished", false);
+			},
+
+		observe: function(subject, topic, data) {
+				switch (topic) {
+					case 'browser-delayed-startup-finished':
+						emc.init();
+						this.unregister();
+						break;
+				}
+			},
+
+		unregister: function() {
+				var observerService = Components.classes["@mozilla.org/observer-service;1"]
+					.getService(Components.interfaces.nsIObserverService);
+				observerService.removeObserver(senicar.emc.observerDelayedStartup, "browser-delayed-startup-finished");
+			}
+	}
 
 	//////////////////
 	//
@@ -413,7 +431,7 @@ senicar.emc = (function (emc)
 
 		}
 		
-		history_popup.openPopupAtScreen(emcmouseEvent.screenX, emcmouseEvent.screenY, true);
+		history_popup.openPopupAtScreen(emc.mouseEvent.screenX, emc.mouseEvent.screenY, true);
 	}
 
 
@@ -483,30 +501,7 @@ document.addEventListener("click", senicar.emc.click, true);
 // needs observer to listen for browser-delayed-startup-finished, SSWindowStateReady doesn't fire in new windows
 // 
 // https://developer.mozilla.org/en-US/docs/DOM/Mozilla_event_reference
-var ObserverDelayedStartup = {
 
-register: function() {
-		var observerService = Components.classes["@mozilla.org/observer-service;1"]
-			.getService(Components.interfaces.nsIObserverService);
-		observerService.addObserver(ObserverDelayedStartup, "browser-delayed-startup-finished", false);
-	},
-
-observe: function(subject, topic, data) {
-		switch (topic) {
-			case 'browser-delayed-startup-finished':
-				senicar.emc.init();
-				this.unregister();
-				break;
-		}
-	},
-
-unregister: function() {
-		var observerService = Components.classes["@mozilla.org/observer-service;1"]
-			.getService(Components.interfaces.nsIObserverService);
-		observerService.removeObserver(ObserverDelayedStartup, "browser-delayed-startup-finished");
-	}
-}
-
-window.addEventListener("load", ObserverDelayedStartup.register, false);
-window.addEventListener("unload", ObserverDelayedStartup.unregister, false);
+window.addEventListener("load", senicar.emc.observerDelayedStartup.register, false);
+window.addEventListener("unload", senicar.emc.observerDelayedStartup.unregister, false);
 
