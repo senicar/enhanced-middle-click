@@ -236,7 +236,6 @@ senicar.emc = (function (emc)
 		var group = {};
 		var tabviewtab;
 
-		report(tab);
 		if(typeof tab != 'undefined')
 		{
 			// use _tabViewTabItem if available its more predictable
@@ -270,12 +269,7 @@ senicar.emc = (function (emc)
 	emc.init = function (event)
 	{
 		// init tabview in the background so _tabViewTabItem gets added to tabs
-		// had to add SSWindowStateReady in Firefox 19, before it worked only with "load"
-		// now it waits until tabview library is properly loaded, among other things
-		window.addEventListener("SSWindowStateReady", function load(event){
-			window.removeEventListener("SSWindowStateReady", load, false); //remove listener, no longer needed
-			TabView._initFrame(event);
-		},false);
+		TabView._initFrame(event);
 	}
 
 
@@ -357,9 +351,6 @@ senicar.emc = (function (emc)
 		for ( var x = 0; x< num; x++)
 		{
 			tab = gBrowser.tabContainer.getItemAtIndex(x);
-			report(tab._tabViewTabItem);
-			if(typeof tab._tabViewTabItem == 'undefined')
-				emc.init();
 
 			tab_group = getTabGroup(tab);
 
@@ -449,10 +440,34 @@ document.addEventListener("click", senicar.emc.click, true);
 // if loaded to soon panorama won't work due to "redeclared const Cu" bug
 // it has to load after the page is done to work in firefox
 //
-// needs eventListener on load so it runs on every new window
+// needs eventListener on "load" so it runs on every new window
+// needs observer to listen for browser-delayed-startup-finished, SSWindowStateReady doesn't fire in new windows
 // 
 // https://developer.mozilla.org/en-US/docs/DOM/Mozilla_event_reference
-window.addEventListener("load", function load(event){
-    window.removeEventListener("load", load, false); //remove listener, no longer needed
-	senicar.emc.init();
-},false);
+var ObserverDelayedStartup = {
+
+register: function() {
+		var observerService = Components.classes["@mozilla.org/observer-service;1"]
+			.getService(Components.interfaces.nsIObserverService);
+		observerService.addObserver(ObserverDelayedStartup, "browser-delayed-startup-finished", false);
+	},
+
+observe: function(subject, topic, data) {
+		switch (topic) {
+			case 'browser-delayed-startup-finished':
+				senicar.emc.init();
+				this.unregister();
+				break;
+		}
+	},
+
+unregister: function() {
+		var observerService = Components.classes["@mozilla.org/observer-service;1"]
+			.getService(Components.interfaces.nsIObserverService);
+		observerService.removeObserver(ObserverDelayedStartup, "browser-delayed-startup-finished");
+	}
+}
+
+window.addEventListener("load", ObserverDelayedStartup.register, false);
+window.addEventListener("unload", ObserverDelayedStartup.unregister, false);
+
