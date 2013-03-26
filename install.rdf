@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
   <Description about="urn:mozilla:install-manifest">
     <em:id>enhancedmiddleclick@senicar.net</em:id>
+    <em:version>0.4.0</em:version>
     <em:type>2</em:type>
-    <em:name>Enhanced Middle Click</em:name>
-    <em:version>0.3.3</em:version>
-    <em:creator>Senicar</em:creator>
-    <em:contributor></em:contributor>
-    <em:description>Display history menu, tab list menu or toggle various sidebars with middle mouse button.</em:description>
-    <em:optionsURL>chrome://enhancedmiddleclick/content/options.xul</em:optionsURL>
-    <em:optionsType>2</em:optionsType>
+    <em:bootstrap>true</em:bootstrap>
+
+    <!-- Target Application this extension can install into, 
+         with minimum and maximum supported versions. --> 
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!-- Firefox -->
@@ -17,5 +17,14 @@
         <em:maxVersion>19.0</em:maxVersion>
       </Description>
     </em:targetApplication>
+
+    <!-- Options -->
+    <em:optionsURL>chrome://enhancedmiddleclick/content/options.xul</em:optionsURL>
+    <em:optionsType>2</em:optionsType>
+
+    <!-- Front End MetaData -->
+    <em:creator>Senicar</em:creator>
+    <em:name>Enhanced Middle Click</em:name>
+    <em:description>Display history menu, tab list menu or toggle various sidebars with middle mouse button.</em:description>
   </Description>
 </RDF>
