@@ -1,16 +1,30 @@
-/* See license.txt for terms of usage */
+/*******************************************************************************
+*
+*  Extension: Enhanced Middle Click
+*  Author: senicar
+*
+*  Thanks to: 
+*  ttaubert ( #fx-team )
+*  mfinkle ( #extdev )
+*  gMinus (Tab History Menu)
+*  keremonal (Middle Click To Go Back)
+* 
+*******************************************************************************/
 
-// ********************************************************************************************* //
+// ************************************************************************** //
 // XPCOM
 
 var {classes: Cc, interfaces: Ci, utils: Cu} = Components;
+
+// https://developer.mozilla.org/en-US/docs/Mozilla/JavaScript_code_modules/Services.jsm
+// Gives access to prefs, console, cookies...
 Cu.import("resource://gre/modules/Services.jsm");
 
 
 
 
 
-// ********************************************************************************************* //
+// ************************************************************************** //
 // Constants
 
 
@@ -49,25 +63,29 @@ function setDefaultPrefs() {
 
 
 
-// ********************************************************************************************* //
+// ************************************************************************** //
 // Main EMC functions
 
 
-// used for debuging
+/**
+ * It's responible for proper output of debug messages to error console
+ */
 var emclogger = function(msg)
 {
 	// check if firebug even available, if you try to "report" and firebug
 	// is not opened it will break addon
 	if(DBG_EMC) {
-		if(typeof Firebug == 'object')
-			Firebug.Console.log(msg);
+		//if(typeof Firebug == 'object')
+		//	Firebug.Console.log(msg);
 
 		Services.console.logStringMessage("enhancedmiddleclick: " + msg);
 	}
 }
 
 
-// this function is called by addEventListener click
+/**
+ * It is called by addEventListener when click event is triggered
+ */
 var clicker = function(e) {
 	emclogger("clicker");
 	let window = this.window;
@@ -81,7 +99,10 @@ var clicker = function(e) {
 };
 
 
-// it validates only on empty page areas, at least it tries
+/**
+ * Validates clicked areas if they are valid, have no interaction.
+ * It validates only on empty page areas, at least it tries
+ */
 var areaValidator = function(e, window)
 {
 	let t = e.target;
@@ -183,14 +204,14 @@ var windowListener = {
 
 
 
-// ********************************************************************************************* //
+// ************************************************************************** //
 // Actions
 
 
 
 
 
-// ********************************************************************************************* //
+// ************************************************************************** //
 // Firefox Bootstrap API
 
 
