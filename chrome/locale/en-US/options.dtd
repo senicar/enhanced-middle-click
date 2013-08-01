@@ -1,16 +1,16 @@
-<!ENTITY title-mainMenu "Primary menu">
-<!ENTITY desc-mainMenu "Select a primary action for middle mouse button">
+<!ENTITY title-primaryAction "Primary action">
+<!ENTITY desc-primaryAction "Select a primary action for middle mouse button">
 
-<!ENTITY title-secondaryMenu "Secondary menu">
-<!ENTITY desc-secondaryMenu "Select a secondary action (shift + middle mouse button)">
+<!ENTITY title-secondaryAction "Secondary action">
+<!ENTITY desc-secondaryAction "Select a secondary action (shift + middle mouse button)">
 
 <!ENTITY label-disable "[ Disabled ]">
-<!ENTITY label-history "Display History">
-<!ENTITY label-tabs "Display visible tabs (current tab group)">
-<!ENTITY label-tabsGroups "Display all tabs (all tab groups)">
-<!ENTITY label-toggleBookmarksSidebar "Toggle Bookmarks sidebar">
-<!ENTITY label-toggleHistorySidebar "Toggle History sidebar">
-<!ENTITY label-toggleDownloadsSidebar "Toggle Downloads sidebar">
+<!ENTITY label-historyMenu "Display history menu">
+<!ENTITY label-tabsMenu "Display visible tabs (only current tab group)">
+<!ENTITY label-tabsGroupsMenu "Display all tabs (all tab groups)">
+<!ENTITY label-toggleBookmarksSidebar "Toggle bookmarks sidebar">
+<!ENTITY label-toggleHistorySidebar "Toggle history sidebar">
+<!ENTITY label-toggleDownloadsSidebar "Toggle downloads sidebar">
 
 <!ENTITY title-refreshOnTabClose "Refresh menu on tab close">
 <!ENTITY desc-refreshOnTabClose "Don't close the menu when closing a tab with middle click">

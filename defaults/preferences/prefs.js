@@ -1,8 +1,4 @@
-// pref("extensions.enhancedmiddleclick.refreshOnTabClose", false);
-// pref("extensions.enhancedmiddleclick.autoscrolling", false);
-// pref("extensions.enhancedmiddleclick.mainMenu", "history");
-// pref("extensions.enhancedmiddleclick.secondaryMenu", "disable");
-// pref("extensions.enhancedmiddleclick.displayGroupName", false);
-
+// default preferences in bootstrap.js
+//
 // https://developer.mozilla.org/en/Localizing_extension_descriptions
 pref("extensions.enhancedmiddleclick@senicar.net.description", "chrome://enhancedmiddleclick/locale/ff-overlay.properties")

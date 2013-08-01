@@ -3,12 +3,12 @@
 <!DOCTYPE prefwindow SYSTEM "chrome://enhancedmiddleclick/locale/options.dtd">
 
 <vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-	<setting pref="extensions.enhancedmiddleclick.mainMenu" type="menulist" title="&title-mainMenu;" desc="&desc-mainMenu;">
+	<setting pref="extensions.enhancedmiddleclick.primaryAction" type="menulist" title="&title-primaryAction;" desc="&desc-primaryAction;">
 		<menulist>
 			<menupopup>
-				<menuitem label="&label-history;" value="history" />
-				<menuitem label="&label-tabs;" value="tabs" />
-				<menuitem label="&label-tabsGroups;" value="tabsGroupsMenu" />
+				<menuitem label="&label-historyMenu;" value="historyMenu" />
+				<menuitem label="&label-tabsMenu;" value="tabsMenu" />
+				<menuitem label="&label-tabsGroupsMenu;" value="tabsGroupsMenu" />
 				<menuitem label="&label-toggleBookmarksSidebar;" value="toggleBookmarksSidebar" />
 				<menuitem label="&label-toggleHistorySidebar;" value="toggleHistorySidebar" />
 				<menuitem label="&label-toggleDownloadsSidebar;" value="toggleDownloadsSidebar" />
@@ -16,13 +16,13 @@
 		</menulist>
 	</setting>
 
-	<setting pref="extensions.enhancedmiddleclick.secondaryMenu" type="menulist" title="&title-secondaryMenu;" desc="&desc-secondaryMenu;">
+	<setting pref="extensions.enhancedmiddleclick.secondaryAction" type="menulist" title="&title-secondaryAction;" desc="&desc-secondaryAction;">
 		<menulist>
 			<menupopup>
 				<menuitem label="&label-disable;" value="disable" />
-				<menuitem label="&label-history;" value="history" />
-				<menuitem label="&label-tabs;" value="tabs" />
-				<menuitem label="&label-tabsGroups;" value="tabsGroupsMenu" />
+				<menuitem label="&label-historyMenu;" value="historyMenu" />
+				<menuitem label="&label-tabsMenu;" value="tabsMenu" />
+				<menuitem label="&label-tabsGroupsMenu;" value="tabsGroupsMenu" />
 				<menuitem label="&label-toggleBookmarksSidebar;" value="toggleBookmarksSidebar" />
 				<menuitem label="&label-toggleHistorySidebar;" value="toggleHistorySidebar" />
 				<menuitem label="&label-toggleDownloadsSidebar;" value="toggleDownloadsSidebar" />
