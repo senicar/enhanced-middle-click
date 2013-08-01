@@ -31,8 +31,12 @@ Cu.import("resource://gre/modules/Services.jsm");
 const DBG_EMC = true;
 const BRANCH = Services.prefs.getBranch("extensions.enhancedmiddleclick.");
 const DEFAULT_PREFS = {
-	mainMenu: "history",
-	secondaryMenu: "history",
+	// available actions:
+	// historyMenu, tabsMenu, tabsGroupsMenu,
+	// toggleBookmarksSidebar, toggleHistorySidebar, toggleDownloadSidebar
+	// disable
+	primaryAction: "historyMenu",
+	secondaryAction: "disable",
 	refreshOnTabClose: true,
 	displayGroupName: true,
 	autoscrolling: false
@@ -93,9 +97,14 @@ var clicker = function(e) {
 	if( areaValidator(e, window) ) {
 		// e.cancelBubble = true;
 		e.stopPropagation();
-		emclogger("click passed");
-		//display();
-	}
+		emclogger("area clickable");
+
+		// accept only middle click thus the enhanced-middle-click
+		if(e.button == 1)
+			runAction(e, window);
+		else return false;
+
+	} else return false;
 };
 
 
@@ -164,6 +173,56 @@ var areaValidator = function(e, window)
 };
 
 
+var runAction = function(e, window) {
+
+	emclogger("getting action");
+	let action = null;
+
+	if(!e.ctrlKey && !e.shiftKey) {
+		emclogger("primaryAction"); 
+		action = BRANCH.getCharPref("primaryAction");
+
+	} else if(!e.ctrlKey && e.shiftKey && BRANCH.getCharPref("secondaryAction") !== "disable") {
+		emclogger("secondaryAction"); 
+		action = BRANCH.getCharPref("secondaryAction");
+
+	} else {
+		emclogger("no action"); 
+		return false;
+
+	}
+
+	emclogger("action -> " + action);
+
+	//updateAndReset();
+
+	// TODO: clean up the action names, update all old settings
+	if( action == 'tabs' || action == 'tabsMenu' || action == 'visibleTabsMenu' )
+		//visibleTabsMenu();
+
+	if( action  == 'tabsGroupsMenu')
+		emclogger("tabsGroupsMenu");
+		//tabsGroupsMenu();
+
+	if( action == 'history' || action == 'historyMenu' )
+		emclogger("historyMenu");
+		//historyMenu();
+
+	if( action == 'toggleBookmarksSidebar' || action == 'bookmarksSidebarToggle' )
+		emclogger("toggleBookmarksSidebar");
+		//bookmarksSidebarToggle();
+
+	if( action == 'toggleDownloadsSidebar' || action == 'downloadSidebarToggle' )
+		emclogger("toggleDownloadSidebar");
+		//downloadSidebarToggle();
+
+	if( action == 'toggleHistorySidebar' || action == 'historySidebarToggle' )
+		emclogger("toggleHistorySidebar");
+		//historySidebarToggle();
+
+};
+
+
 var loadIntoWindow = function(window) {
 	if (!window)
 		return;
@@ -218,6 +277,14 @@ var windowListener = {
 function install(data, reason) {
 	emclogger("install");
 	setDefaultPrefs();
+
+	// TODO: 
+	// mainMenu -> primaryAction
+	// secondaryMenu -> secondaryAction
+	// history -> historyMenu
+	// tabs -> tabsMenu
+	//
+	// make it update on upgrade
 }
 
 
