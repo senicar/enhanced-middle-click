@@ -197,28 +197,32 @@ var runAction = function(e, window) {
 	//updateAndReset();
 
 	// TODO: clean up the action names, update all old settings
-	if( action == 'tabs' || action == 'tabsMenu' || action == 'visibleTabsMenu' )
+	if( action == 'tabs' || action == 'tabsMenu' || action == 'visibleTabsMenu' ) {
+		emclogger("tabsMenu");
 		//visibleTabsMenu();
+	}
 
-	if( action  == 'tabsGroupsMenu')
+	if( action  == 'tabsGroupsMenu') {
 		emclogger("tabsGroupsMenu");
 		//tabsGroupsMenu();
+	}
 
-	if( action == 'history' || action == 'historyMenu' )
+	if( action == 'history' || action == 'historyMenu' ) {
 		emclogger("historyMenu");
-		//historyMenu();
+		//historyMenu(e, window);
+	}
 
-	if( action == 'toggleBookmarksSidebar' || action == 'bookmarksSidebarToggle' )
-		emclogger("toggleBookmarksSidebar");
-		//bookmarksSidebarToggle();
+	if( action == 'toggleBookmarksSidebar' || action == 'bookmarksSidebarToggle' ) {
+		toggleBookmarksSidebar(window);
+	}
 
-	if( action == 'toggleDownloadsSidebar' || action == 'downloadSidebarToggle' )
-		emclogger("toggleDownloadSidebar");
-		//downloadSidebarToggle();
+	if( action == 'toggleDownloadsSidebar' || action == 'downloadSidebarToggle' ) {
+		toggleDownloadsSidebar(window);
+	}
 
-	if( action == 'toggleHistorySidebar' || action == 'historySidebarToggle' )
-		emclogger("toggleHistorySidebar");
-		//historySidebarToggle();
+	if( action == 'toggleHistorySidebar' || action == 'historySidebarToggle' ) {
+		toggleHistorySidebar(window);
+	}
 
 };
 
@@ -267,15 +271,37 @@ var windowListener = {
 // Actions
 
 
+var toggleDownloadsSidebar = function (window) {
+	window.toggleSidebar("viewDownloadsSidebar");
+	emclogger("toggleDownloadsSidebar");
+}
+
+
+var toggleHistorySidebar = function (window) {
+	window.toggleSidebar("viewHistorySidebar");
+	emclogger("toggleHistorySidebar");
+}
+
+
+var toggleBookmarsSidebar = function (window) {
+	window.toggleSidebar("viewBookmarksSidebar");
+	emclogger("toggleBookmarksSidebar");
+}
+
+
 
 
 
 // ************************************************************************** //
 // Firefox Bootstrap API
+//
+// reasons and stuff
+// https://developer.mozilla.org/en-US/docs/Extensions/Bootstrapped_extensions
 
 
 function install(data, reason) {
-	emclogger("install");
+	emclogger("install reason: " + reason);
+	// FIXME: setDefaultPrefs on first install, not upgrade/update
 	setDefaultPrefs();
 
 	// TODO: 
@@ -289,14 +315,15 @@ function install(data, reason) {
 
 
 function uninstall(data, reason) {
-	emclogger("uninstall");
+	emclogger("uninstall reason: " + reason);
 	// delete all preferences on this branch
+	// FIXME: delete branch only on uninstall, not upgrade/update
 	BRANCH.deleteBranch("");
 }
 
 
 function startup(data, reason) {
-	emclogger("startup");
+	emclogger("startup reason: " + reason);
 	let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
 
 	// Load into any existing windows
@@ -312,7 +339,7 @@ function startup(data, reason) {
 
 
 function shutdown(data, reason) {
-	emclogger("shutdown");
+	emclogger("shutdown reason: " + reason);
 	// When the application is shutting down we normally don't have to clean
 	// up any UI changes made
 	if (reason == APP_SHUTDOWN)
