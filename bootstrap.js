@@ -204,7 +204,7 @@ var runAction = function(e, window) {
 
 	if( action  == 'tabsGroupsMenu') {
 		emclogger("tabsGroupsMenu");
-		//tabsGroupsMenu();
+		tabsGroupsMenu(e, window);
 	}
 
 	if( action == 'history' || action == 'historyMenu' ) {
@@ -318,7 +318,15 @@ var loadIntoWindow = function(window) {
 	// Perform any other initialization
 	emclogger("add click listener");
 
-	// create menus
+	// Create menus
+	let tabsGroupsMenu  = window.document.createElement("menupopup");
+	tabsGroupsMenu.setAttribute("id", "emc.tabsGroupsMenu");
+	tabsGroupsMenu.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
+	// TODO: add closeTab
+	//tabsGroupsMenu.setAttribute("onclick", "closeTab(this, event);");
+	window.tabsGroupsMenu = tabsGroupsMenu;
+	window.document.getElementById("mainPopupSet").appendChild(tabsGroupsMenu);
+
 	let history_popup = window.document.createElement("menupopup");
 	history_popup.setAttribute("id", "emc.historyMenu");
 	history_popup.setAttribute("oncommand", "gotoHistoryIndex(event); event.stopPropagation();");
@@ -393,6 +401,58 @@ var historyMenu = function (e, window)
 	
 	history_popup.openPopupAtScreen(e.screenX, e.screenY, true);
 }
+
+
+var tabsGroupsMenu = function (e, window, refresh)
+{
+	if( typeof refresh == 'undefined' ) refresh = false;
+	let num = window.gBrowser.browsers.length;
+	let tab;
+	let tab_group;
+	let parent_id;
+	let groups = [];
+	let tabs = [];
+
+	for( let x = 0; x< num; x++)
+	{
+		tab = window.gBrowser.tabContainer.getItemAtIndex(x);
+
+		tab_group = getTabGroup(e, window, tab);
+		emclogger(tab_group);
+
+		// make unique array of groups
+		if(groups.indexOf(tab_group.id) == -1)
+			groups.push(tab_group.id);
+	}
+
+	for( let x = 0; x < groups.length; x++ )
+	{
+		parent_id = groups[x];
+
+		if(x != 0)
+			tabs.push('separator');
+
+		let first_group_item = true;
+		for ( let y = 0; y < num; y++) 
+		{
+			tab = window.gBrowser.tabContainer.getItemAtIndex(y);
+			tab_group = getTabGroup(e, window, tab);
+
+			if(typeof tab_group.title == 'string' && tab_group.id == parent_id && first_group_item)
+			{
+				tabs.push(tab_group.title);
+				first_group_item = false;
+			}
+
+			if(tab_group.id >= 0 && tab_group.id == parent_id)
+				tabs.push(tab);
+
+		}
+	}
+
+	makePopupMenu(e, window, "tabsGroupsMenu", tabs, refresh);
+}
+
 
 var toggleDownloadsSidebar = function (window) {
 	window.toggleSidebar("viewDownloadsSidebar");
