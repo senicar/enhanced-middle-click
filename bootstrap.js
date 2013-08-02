@@ -198,12 +198,10 @@ var runAction = function(e, window) {
 
 	// TODO: clean up the action names, update all old settings
 	if( action == 'tabs' || action == 'tabsMenu' || action == 'visibleTabsMenu' ) {
-		emclogger("tabsMenu");
-		//visibleTabsMenu();
+		tabsMenu(e, window);
 	}
 
 	if( action  == 'tabsGroupsMenu') {
-		emclogger("tabsGroupsMenu");
 		tabsGroupsMenu(e, window);
 	}
 
@@ -347,6 +345,13 @@ var loadIntoWindow = function(window) {
 	window.emcCloseTab = emcCloseTab;
 
 	// Create menus
+	var tabsMenu = window.document.createElement("menupopup");
+	tabsMenu.setAttribute("id", "emc.tabsMenu");
+	tabsMenu.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
+	tabsMenu.setAttribute("onclick", "emcCloseTab(this, event, window);");
+	window.tabsMenu = tabsMenu;
+	window.document.getElementById("mainPopupSet").appendChild(tabsMenu);
+
 	let tabsGroupsMenu  = window.document.createElement("menupopup");
 	tabsGroupsMenu.setAttribute("id", "emc.tabsGroupsMenu");
 	tabsGroupsMenu.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
@@ -430,8 +435,30 @@ var historyMenu = function (e, window)
 }
 
 
+var tabsMenu = function (e, window, refresh)
+{
+	emclogger("tabsMenu");
+	var group;
+	var tabs = [];
+
+	// if tabs=gBrowser.visibleTabs there is another title added each time you open popup
+	tabs.push.apply(tabs, window.gBrowser.visibleTabs);
+
+	if( typeof refresh == 'undefined' ) refresh = false;
+
+	// pick last tab, less possible to be pinned
+	// and prepend title if exists
+	group = getTabGroup(e, window, tabs[tabs.length-1]);
+	if(typeof group.title == 'string')
+		tabs.unshift(group.title);
+
+	makePopupMenu(e, window, "tabsMenu", tabs, refresh);
+}
+
+
 var tabsGroupsMenu = function (e, window, refresh)
 {
+	emclogger("tabsGroupsMenu");
 	if( typeof refresh == 'undefined' ) refresh = false;
 	let num = window.gBrowser.browsers.length;
 	let tab;
