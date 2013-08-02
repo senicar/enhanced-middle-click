@@ -97,7 +97,7 @@ var clicker = function(e) {
 	if( areaValidator(e, window) ) {
 		// e.cancelBubble = true;
 		e.stopPropagation();
-		emclogger("area clickable");
+		emclogger("area accepted");
 
 		// accept only middle click thus the enhanced-middle-click
 		if(e.button == 1)
@@ -311,6 +311,31 @@ var getTabGroup = function(e, window, tab)
 }
 
 
+var emcCloseTab = function(menu, item, window)
+{
+	emclogger("closetab");
+	var action = menu.id.replace(/emc./g,'');
+	var tab = window.gBrowser.tabContainer.getItemAtIndex(item.target.getAttribute('index'));
+	var refresh = BRANCH.getBoolPref("refreshOnTabClose"); 
+
+	if(item.button == 1)
+	{
+		window.gBrowser.removeTab(tab);
+
+		if(refresh)
+		{
+			if( action == 'tabs' || action == 'tabsMenu' || action == 'visibleTabsMenu' )
+				tabsMenu(menu, window, refresh);
+
+			if( action  == 'tabsGroupsMenu')
+				tabsGroupsMenu(menu, window, refresh);
+		}
+		else
+			menu.hidePopup();
+	}
+}
+
+
 var loadIntoWindow = function(window) {
 	if (!window)
 		return;
@@ -318,12 +343,14 @@ var loadIntoWindow = function(window) {
 	// Perform any other initialization
 	emclogger("add click listener");
 
+	// FIXME: make and emc class so everything will be in one place !
+	window.emcCloseTab = emcCloseTab;
+
 	// Create menus
 	let tabsGroupsMenu  = window.document.createElement("menupopup");
 	tabsGroupsMenu.setAttribute("id", "emc.tabsGroupsMenu");
 	tabsGroupsMenu.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
-	// TODO: add closeTab
-	//tabsGroupsMenu.setAttribute("onclick", "closeTab(this, event);");
+	tabsGroupsMenu.setAttribute("onclick", "emcCloseTab(this, event, window);");
 	window.tabsGroupsMenu = tabsGroupsMenu;
 	window.document.getElementById("mainPopupSet").appendChild(tabsGroupsMenu);
 
