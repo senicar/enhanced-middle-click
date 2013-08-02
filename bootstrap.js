@@ -94,16 +94,13 @@ var clicker = function(e) {
 	emclogger("clicker");
 	let window = this.window;
 
-	if( areaValidator(e, window) ) {
+	// accept only middle click on a valid area thus the enhanced-middle-click
+	if( areaValidator(e, window) && e.button === 1 ) {
 		// e.cancelBubble = true;
 		e.stopPropagation();
 		emclogger("area accepted");
 
-		// accept only middle click thus the enhanced-middle-click
-		if(e.button == 1)
-			runAction(e, window);
-		else return false;
-
+		runAction(e, window);
 	} else return false;
 };
 
