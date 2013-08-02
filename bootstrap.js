@@ -226,6 +226,91 @@ var runAction = function(e, window) {
 };
 
 
+var makePopupMenu = function(e, window, action, items, refresh)
+{
+	emclogger("makePopupMenu");
+
+	items = ( typeof items == 'undefined' ) ? false : items;
+
+	let popupMenu = window.document.getElementById("emc." + action);
+
+	while(popupMenu.hasChildNodes())
+		popupMenu.removeChild(popupMenu.firstChild);
+
+	for ( let i = 0; i< items.length; i++)
+	{
+		let item = items[i];
+
+		if(item == 'separator')
+		{
+			let menuseparator = popupMenu.appendChild(window.document.createElement("menuseparator"));
+		}
+		else if (typeof item == 'string' && item && BRANCH.getBoolPref("displayGroupName"))
+		{
+			// if item is string it's most probably a group name
+			let menuItem = popupMenu.appendChild(window.document.createElement("caption"));
+			menuItem.setAttribute("label", item);
+			menuItem.setAttribute("disabled", true);
+			menuItem.classList.add("emc-grouptitle");
+		}
+		else if (typeof item == 'object')
+		{
+			let menuItem= popupMenu.appendChild(window.document.createElement("menuitem"));
+
+			menuItem.setAttribute("index", item._tPos);
+			menuItem.setAttribute("label", item.label);
+			
+			// if page has no favicon show default
+			if(!item.getAttribute("image"))
+				menuItem.setAttribute("image", 'chrome://mozapps/skin/places/defaultFavicon.png');
+			else
+				menuItem.setAttribute("image", item.getAttribute("image"));
+
+			menuItem.classList.add("menuitem-iconic");
+
+			if (item.selected)
+				menuItem.classList.add("unified-nav-current");
+		}
+	}
+
+	if(!refresh)
+	{
+		popupMenu.openPopupAtScreen(e.screenX, e.screenY, true);
+	}
+}
+
+
+var getTabGroup = function(e, window, tab)
+{
+	emclogger("getTabGroup");
+	var group = {};
+	var tabviewtab;
+
+	if(typeof tab != 'undefined')
+	{
+		// use _tabViewTabItem if available its more predictable
+		if(typeof tab._tabViewTabItem != 'undefined' && !tab.pinned)
+		{
+			group.id = tab._tabViewTabItem.parent.id
+			group.title = tab._tabViewTabItem.parent.getTitle();
+			emclogger(group.title);
+
+			return group;
+		}
+		else if (tab.pinned) 
+		{
+			group.id = 0;
+			group.title = null;
+			emclogger("tab pinned");
+
+			return group;
+		}
+		else { return false; }
+	}
+	else { return false; }
+}
+
+
 var loadIntoWindow = function(window) {
 	if (!window)
 		return;
