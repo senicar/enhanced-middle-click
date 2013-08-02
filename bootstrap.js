@@ -336,6 +336,29 @@ var emcCloseTab = function(menu, item, window)
 }
 
 
+var emcInit = function(window) {
+	emclogger("init");
+	// init tabview in the background so _tabViewTabItem gets added to tabs
+	window.TabView._initFrame();
+}
+
+
+// https://developer.mozilla.org/en/docs/Observer_Notifications
+emcObserverDelayedStartup = {
+	observe: function(subject, topic, data) {
+			switch (topic) {
+				case 'browser-delayed-startup-finished':
+					emclogger("observe browser-delayed-startup-finish");
+
+					emcInit(subject);
+
+					Services.obs.removeObserver(emcObserverDelayedStartup, "browser-delayed-startup-finished");
+					break;
+			}
+		},
+}
+
+
 var loadIntoWindow = function(window) {
 	if (!window)
 		return;
@@ -367,11 +390,6 @@ var loadIntoWindow = function(window) {
 	history_popup.setAttribute("onclick", "checkForMiddleClick(this, event);");
 	window.history_popup = history_popup;
 	window.document.getElementById("mainPopupSet").appendChild(history_popup);
-
-
-	// TODO: check if this acts properly in different scenarios, update, restart...
-	// init tabview in the background so _tabViewTabItem gets added to tabs
-	window.TabView._initFrame();
 
 	// true, to execute before selection buffer on linux
 	window.addEventListener("click", clicker, true);
@@ -581,7 +599,22 @@ function startup(data, reason) {
 	while (windows.hasMoreElements()) {
 		let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
 		loadIntoWindow(domWindow);
+
+		// restartless addon can also be installed/enabled after browser-delayed-startup-finished
+		if( reason == ADDON_DOWNGRADE || reason == ADDON_INSTALL || reason == ADDON_UPGRADE || reason == ADDON_ENABLE )
+			emcInit(domWindow);
 	}
+
+	// if loaded to soon panorama won't work due to "redeclared const Cu" bug
+	// it has to load after the page is done to work in firefox
+	//
+	// needs eventListener on "load" so it runs on every new window
+	// needs observer to listen for browser-delayed-startup-finished, SSWindowStateReady doesn't fire in new windows
+	// 
+	// https://developer.mozilla.org/en-US/docs/DOM/Mozilla_event_reference 
+
+	Services.obs.addObserver(emcObserverDelayedStartup, "browser-delayed-startup-finished", false);
+
 	// Load into any new windows
 	wm.addListener(windowListener);
 }
