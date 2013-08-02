@@ -327,6 +327,10 @@ var loadIntoWindow = function(window) {
 	window.document.getElementById("mainPopupSet").appendChild(history_popup);
 
 
+	// TODO: check if this acts properly in different scenarios, update, restart...
+	// init tabview in the background so _tabViewTabItem gets added to tabs
+	window.TabView._initFrame();
+
 	// true, to execute before selection buffer on linux
 	window.addEventListener("click", clicker, true);
 }
