@@ -208,8 +208,7 @@ var runAction = function(e, window) {
 	}
 
 	if( action == 'history' || action == 'historyMenu' ) {
-		emclogger("historyMenu");
-		//historyMenu(e, window);
+		historyMenu(e, window);
 	}
 
 	if( action == 'toggleBookmarksSidebar' || action == 'bookmarksSidebarToggle' ) {
@@ -233,6 +232,15 @@ var loadIntoWindow = function(window) {
 	// Add any persistent UI elements
 	// Perform any other initialization
 	emclogger("add click listener");
+
+	// create menus
+	let history_popup = window.document.createElement("menupopup");
+	history_popup.setAttribute("id", "emc.historyMenu");
+	history_popup.setAttribute("oncommand", "gotoHistoryIndex(event); event.stopPropagation();");
+	history_popup.setAttribute("onclick", "checkForMiddleClick(this, event);");
+	window.history_popup = history_popup;
+	window.document.getElementById("mainPopupSet").appendChild(history_popup);
+
 
 	// true, to execute before selection buffer on linux
 	window.addEventListener("click", clicker, true);
@@ -270,6 +278,31 @@ var windowListener = {
 // ************************************************************************** //
 // Actions
 
+var historyMenu = function (e, window)
+{
+	emclogger("historyMenu");
+	let history_popup = window.history_popup;
+
+	while(history_popup.hasChildNodes())
+		history_popup.removeChild(history_popup.firstChild);
+
+	let hasHistory = window.FillHistoryMenu(history_popup);
+	let selectedTab = window.gBrowser.tabContainer.selectedItem;
+	
+	if(!hasHistory)
+	{
+		let menuitem = history_popup.appendChild(document.createElement("menuitem"));
+		menuitem.setAttribute("index", "0");
+		menuitem.setAttribute("label", selectedTab.label);
+		menuitem.className = "unified-nav-current";
+		let bundle_browser = window.document.getElementById("bundle_browser");
+		let tooltipCurrent = bundle_browser.getString("tabHistory.current");
+		menuitem.setAttribute("tooltiptext", tooltipCurrent);
+
+	}
+	
+	history_popup.openPopupAtScreen(e.screenX, e.screenY, true);
+}
 
 var toggleDownloadsSidebar = function (window) {
 	window.toggleSidebar("viewDownloadsSidebar");
