@@ -367,6 +367,7 @@ var windowListener = {
 // ************************************************************************** //
 // Actions
 
+
 var historyMenu = function (e, window)
 {
 	emclogger("historyMenu");
@@ -380,7 +381,7 @@ var historyMenu = function (e, window)
 	
 	if(!hasHistory)
 	{
-		let menuitem = history_popup.appendChild(document.createElement("menuitem"));
+		let menuitem = history_popup.appendChild(window.document.createElement("menuitem"));
 		menuitem.setAttribute("index", "0");
 		menuitem.setAttribute("label", selectedTab.label);
 		menuitem.className = "unified-nav-current";
@@ -472,6 +473,9 @@ function startup(data, reason) {
 
 function shutdown(data, reason) {
 	emclogger("shutdown reason: " + reason);
+
+	// TODO: Make a proper cleanup, all actions, menus, popups ...
+
 	// When the application is shutting down we normally don't have to clean
 	// up any UI changes made
 	if( reason == APP_SHUTDOWN )
