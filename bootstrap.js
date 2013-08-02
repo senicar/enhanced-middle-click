@@ -297,6 +297,14 @@ var toggleBookmarsSidebar = function (window) {
 //
 // reasons and stuff
 // https://developer.mozilla.org/en-US/docs/Extensions/Bootstrapped_extensions
+// APP_STARTUP 		1 	The application is starting up.
+// APP_SHUTDOWN 	2 	The application is shutting down.
+// ADDON_ENABLE 	3 	The add-on is being enabled.
+// ADDON_DISABLE 	4 	The add-on is being disabled. (Also sent during uninstallation)
+// ADDON_INSTALL 	5 	The add-on is being installed.
+// ADDON_UNINSTALL 	6 	The add-on is being uninstalled.
+// ADDON_UPGRADE 	7 	The add-on is being upgraded.
+// ADDON_DOWNGRADE 	8 	The add-on is being downgraded.
 
 
 function install(data, reason) {
@@ -344,7 +352,7 @@ function shutdown(data, reason) {
 	emclogger("shutdown reason: " + reason);
 	// When the application is shutting down we normally don't have to clean
 	// up any UI changes made
-	if (reason == APP_SHUTDOWN)
+	if( reason == APP_SHUTDOWN )
 		return;
 
 	let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
