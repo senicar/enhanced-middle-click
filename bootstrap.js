@@ -301,8 +301,9 @@ var toggleBookmarsSidebar = function (window) {
 
 function install(data, reason) {
 	emclogger("install reason: " + reason);
-	// FIXME: setDefaultPrefs on first install, not upgrade/update
-	setDefaultPrefs();
+
+	if( reason == ADDON_INSTALL )
+		setDefaultPrefs();
 
 	// TODO: 
 	// mainMenu -> primaryAction
@@ -316,9 +317,10 @@ function install(data, reason) {
 
 function uninstall(data, reason) {
 	emclogger("uninstall reason: " + reason);
+	//
 	// delete all preferences on this branch
-	// FIXME: delete branch only on uninstall, not upgrade/update
-	BRANCH.deleteBranch("");
+	if( reason == ADDON_UNINSTALL )
+		BRANCH.deleteBranch("");
 }
 
 
