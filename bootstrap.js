@@ -246,6 +246,11 @@ var makePopupMenu = function(e, window, action, items, refresh)
 			let menuItem = popupMenu.appendChild(window.document.createElement("caption"));
 			menuItem.setAttribute("label", item);
 			menuItem.setAttribute("disabled", true);
+			// TODO: style in a separate css file
+			menuItem.style.setProperty("font-weight:", "normal");
+			menuItem.style.setProperty("text-align", "center");
+			menuItem.style.setProperty("opacity", "0.3");
+			menuItem.style.setProperty("margin", "3px");
 			menuItem.classList.add("emc-grouptitle");
 		}
 		else if (typeof item == 'object')
