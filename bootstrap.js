@@ -592,96 +592,104 @@ function install(data, reason) {
 	emclogger("install reason: " + reason);
 
 	// upgrade or install gracefully
-	
+	// 0.3.3 -> 0.4.0
+	// mainMenu -> primaryAction
+	// secondaryMenu -> secondaryAction
+	// history -> historyMenu
+	// tabs -> tabsMenu
+	//
+	// this work only the first install because of the pref reset
+
+	if( BRANCH.prefHasUserValue("mainMenu") ) {
+		let oldMain = BRANCH.getCharPref("mainMenu");
+		BRANCH.setCharPref("mainMenu", '');
+
+		if( oldMain == 'history' )
+			BRANCH.setCharPref('primaryAction', 'historyMenu');
+
+		if( oldMain == 'tabs' )
+			BRANCH.setCharPref('primaryAction', 'tabsMenu');
+	}
+
+	if( BRANCH.prefHasUserValue("secondaryMenu") ) {
+		let oldSecondary = BRANCH.getCharPref("secondaryMenu");
+		BRANCH.setCharPref("secondaryMenu", '');
+
+		if( oldSecondary == 'history' )
+			BRANCH.setCharPref('secondaryAction', 'historyMenu');
+
+		if( oldSecondary == 'tabs' )
+			BRANCH.setCharPref('secondaryAction', 'tabsMenu');
+	}
+
 	// AddonManager callback somehow runs after extenstion startup ?
 	// that is why everythin is inside that callback
 	Cu.import("resource://gre/modules/AddonManager.jsm");
-	AddonManager.getAddonByID("enhancedmiddleclick@senicar.net", function(addon) {
 
-		if( reason == ADDON_INSTALL ) {
+	// this is an old preferences so set it only if fresh install
+	if( reason == ADDON_INSTALL ) {
+		/* Code related to firstrun */
+		emclogger("upgradeGrace -> firstrun");
+
+		// set autoScroll to false, only on fresh install
+		Services.prefs.setBoolPref("general.autoScroll", false);
+	}
+
+	// new preferences, set them all
+	if( reason == ADDON_INSTALL || reason == ADDON_UPGRADE || reason == ADDON_DOWNGRADE ) {
+		AddonManager.getAddonByID("enhancedmiddleclick@senicar.net", function(addon) {
 			/* Code related to firstrun */
-			emclogger("upgradeGrace -> firstrun");
+			emclogger("upgradeGrace -> upgrade");
 
 			// if there are no preferences to be updated/upgraded just make defaults
 			setDefaultPrefs();
-			BRANCH.setCharPref('version', addon.version);
 
-			// set autoScroll to false, only on fresh install
-			Services.prefs.setBoolPref("general.autoScroll", false);
+			BRANCH.setCharPref('version', addon.version);
 
 			// really disable loading URL on middle click
 			Services.prefs.setBoolPref("middlemouse.contentLoadURL", false);
+		});
+	}
 
-			// 0.3.3 -> 0.4.0
-			// mainMenu -> primaryAction
-			// secondaryMenu -> secondaryAction
-			// history -> historyMenu
-			// tabs -> tabsMenu
-			//
-			// classic addon is unistalled before restartless is installed, therefore
-			// it is detected as new install
-			let oldMain = null;
-			let oldSecondary = null;
+	/* No need to upgrade at the moment
+	if( reason == ADDON_UPGRADE || reason == ADDON_DOWNGRADE ) {
+		emclogger("upgradeGrace -> upgrade/downgrade");
 
-			if( BRANCH.prefHasUserValue("mainMenu") )
-				oldMain = BRANCH.getCharPref("mainMenu");
+		let oldVersion = null;
 
-			if( BRANCH.prefHasUserValue("secondaryMenu") )
-				oldSecondary = BRANCH.getCharPref("secondaryMenu");
+		if( BRANCH.prefHasUserValue("version") )
+			oldVersion = BRANCH.getCharPref("version");
 
-			if( oldMain == 'history' )
-				BRANCH.setCharPref('primaryAction', 'historyMenu');
+		BRANCH.setCharPref('version', addon.version);
 
-			if( oldMain == 'tabs' )
-				BRANCH.setCharPref('primaryAction', 'tabsMenu');
+		// SAMPLE CODE FOR NOTIFICATIONS
+		// Not very easy to update settings from classic addon that
+		// deletes preference on uninstall :(
+		if( oldVersion < "0.4.0" ) {
+			emclogger("restartless notification");
 
-			if( oldSecondary == 'history' )
-				BRANCH.setCharPref('secondaryAction', 'historyMenu');
+			let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
+			// https://developer.mozilla.org/en-US/docs/XUL/notificationbox
+			let nb = browserWindow.gBrowser.getNotificationBox();
+			let acceptButton = new Object();
+			let message = "Enhanced Middle Click 0.x.x installed: Check out new preferences!";
 
-			if( oldSecondary == 'tabs' )
-				BRANCH.setCharPref('secondaryAction', 'tabsMenu');
+			acceptButton.label = "Check preferences";
+			acceptButton.accessKey = ""
+			acceptButton.popup = null;
+			acceptButton.callback = function() { 
+				// https://developer.mozilla.org/en-US/docs/Working_with_windows_in_chrome_code#Example_3:_Using_nsIWindowMediator_when_opener_is_not_enough
+
+				// http://mxr.mozilla.org/mozilla-central/source/browser/base/content/browser.js#6120
+				browserWindow.BrowserOpenAddonsMgr("addons://detail/enhancedmiddleclick@senicar.net");
+			};
+			nb.appendNotification(
+				message, "enhancedmiddleclick-upgrade-to-restartless-notification",
+				"",
+				nb.PRIORITY_INFO_HIGH, [ acceptButton ]);
 		}
-
-		/* No need to upgrade at the moment
-		if( reason == ADDON_UPGRADE || reason == ADDON_DOWNGRADE ) {
-			emclogger("upgradeGrace -> upgrade/downgrade");
-
-			let oldVersion = null;
-
-			if( BRANCH.prefHasUserValue("version") )
-				oldVersion = BRANCH.getCharPref("version");
-
-			BRANCH.setCharPref('version', addon.version);
-
-			// SAMPLE CODE FOR NOTIFICATIONS
-			// Not very easy to update settings from classic addon that
-			// deletes preference on uninstall :(
-			if( oldVersion < "0.4.0" ) {
-				emclogger("restartless notification");
-
-				let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
-				// https://developer.mozilla.org/en-US/docs/XUL/notificationbox
-				let nb = browserWindow.gBrowser.getNotificationBox();
-				let acceptButton = new Object();
-				let message = "Enhanced Middle Click 0.x.x installed: Check out new preferences!";
-
-				acceptButton.label = "Check preferences";
-				acceptButton.accessKey = ""
-				acceptButton.popup = null;
-				acceptButton.callback = function() { 
-					// https://developer.mozilla.org/en-US/docs/Working_with_windows_in_chrome_code#Example_3:_Using_nsIWindowMediator_when_opener_is_not_enough
-
-					// http://mxr.mozilla.org/mozilla-central/source/browser/base/content/browser.js#6120
-					browserWindow.BrowserOpenAddonsMgr("addons://detail/enhancedmiddleclick@senicar.net");
-				};
-				nb.appendNotification(
-					message, "enhancedmiddleclick-upgrade-to-restartless-notification",
-					"",
-					nb.PRIORITY_INFO_HIGH, [ acceptButton ]);
-			}
-		}
-		*/
-	});
+	}
+	*/
 }
 
 
