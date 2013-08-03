@@ -406,8 +406,27 @@ var unloadFromWindow = function(window) {
 		return;
 	// Remove any persistent UI elements
 	// Perform any other cleanup
-	emclogger("remove click listener");
+	emclogger("cleaning up and saying bye");
 	window.removeEventListener("click", clicker, true);
+	Services.obs.removeObserver(emcObserverDelayedStartup, "browser-delayed-startup-finished");
+
+	var node = window.document.getElementById("emc.tabsMenu");
+	if (node.parentNode) {
+		emclogger("remove tabsMenu");
+		node.parentNode.removeChild(node);
+	}
+
+	var node = window.document.getElementById("emc.tabsGroupsMenu");
+	if (node.parentNode) {
+		emclogger("remove tabsGroupsMenu");
+		node.parentNode.removeChild(node);
+	}
+
+	var node = window.document.getElementById("emc.historyMenu");
+	if (node.parentNode) {
+		emclogger("remove historyMenu");
+		node.parentNode.removeChild(node);
+	}
 }
 
 
@@ -719,10 +738,10 @@ function shutdown(data, reason) {
 	// let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
 
 	// Stop listening for new windows
-	Service.wm.removeListener(windowListener);
+	Services.wm.removeListener(windowListener);
 
 	// Unload from any existing windows
-	let windows = Service.wm.getEnumerator("navigator:browser");
+	let windows = Services.wm.getEnumerator("navigator:browser");
 	while (windows.hasMoreElements()) {
 		let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
 		unloadFromWindow(domWindow);
