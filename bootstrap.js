@@ -316,14 +316,17 @@ var getTabGroup = function(e, window, tab)
 }
 
 
-var emcCloseTab = function(menu, item, window)
+var emcCloseTab = function(e)
 {
 	emclogger("closetab");
+	let menu = this;
 	var action = menu.id.replace(/emc./g,'');
-	var tab = window.gBrowser.tabContainer.getItemAtIndex(item.target.getAttribute('index'));
+
+	let window = Services.wm.getMostRecentWindow("navigator:browser");
+	var tab = window.gBrowser.tabContainer.getItemAtIndex(e.target.getAttribute('index'));
 	var refresh = BRANCH.getBoolPref("refreshOnTabClose"); 
 
-	if(item.button == 1)
+	if(e.button == 1)
 	{
 		window.gBrowser.removeTab(tab);
 
@@ -378,14 +381,14 @@ var loadIntoWindow = function(window) {
 	var tabsMenu = window.document.createElement("menupopup");
 	tabsMenu.setAttribute("id", "emc.tabsMenu");
 	tabsMenu.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
-	tabsMenu.setAttribute("onclick", "emcCloseTab(this, event, window);");
+	tabsMenu.addEventListener('click', emcCloseTab, true);
 	window.tabsMenu = tabsMenu;
 	window.document.getElementById("mainPopupSet").appendChild(tabsMenu);
 
 	let tabsGroupsMenu  = window.document.createElement("menupopup");
 	tabsGroupsMenu.setAttribute("id", "emc.tabsGroupsMenu");
 	tabsGroupsMenu.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
-	tabsGroupsMenu.setAttribute("onclick", "emcCloseTab(this, event, window);");
+	tabsGroupsMenu.addEventListener('click', emcCloseTab, true);
 	window.tabsGroupsMenu = tabsGroupsMenu;
 	window.document.getElementById("mainPopupSet").appendChild(tabsGroupsMenu);
 
@@ -433,7 +436,7 @@ var unloadFromWindow = function(window) {
 var windowListener = {
 	onOpenWindow: function(aWindow) {
 		// Wait for the window to finish loading
-		let domWindow = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
+		let domWindow = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindow);
 		domWindow.addEventListener("load", function() {
 			domWindow.removeEventListener("load", arguments.callee, false);
 			loadIntoWindow(domWindow);
