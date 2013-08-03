@@ -383,21 +383,21 @@ var loadIntoWindow = function(window) {
 	tabsMenu.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
 	tabsMenu.addEventListener('click', emcCloseTab, true);
 	window.tabsMenu = tabsMenu;
-	window.document.getElementById("mainPopupSet").appendChild(tabsMenu);
+	window.document.getElementById("main-window").appendChild(tabsMenu);
 
 	let tabsGroupsMenu  = window.document.createElement("menupopup");
 	tabsGroupsMenu.setAttribute("id", "emc.tabsGroupsMenu");
 	tabsGroupsMenu.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
 	tabsGroupsMenu.addEventListener('click', emcCloseTab, true);
 	window.tabsGroupsMenu = tabsGroupsMenu;
-	window.document.getElementById("mainPopupSet").appendChild(tabsGroupsMenu);
+	window.document.getElementById("main-window").appendChild(tabsGroupsMenu);
 
 	let history_popup = window.document.createElement("menupopup");
 	history_popup.setAttribute("id", "emc.historyMenu");
 	history_popup.setAttribute("oncommand", "gotoHistoryIndex(event); event.stopPropagation();");
 	history_popup.setAttribute("onclick", "checkForMiddleClick(this, event);");
 	window.history_popup = history_popup;
-	window.document.getElementById("mainPopupSet").appendChild(history_popup);
+	window.document.getElementById("main-window").appendChild(history_popup);
 
 	// true, to execute before selection buffer on linux
 	window.addEventListener("click", clicker, true);
@@ -609,9 +609,10 @@ function install(data, reason) {
 
 		if( oldMain == 'history' )
 			BRANCH.setCharPref('primaryAction', 'historyMenu');
-
-		if( oldMain == 'tabs' )
+		else if( oldMain == 'tabs' )
 			BRANCH.setCharPref('primaryAction', 'tabsMenu');
+		else if( oldMain != '' )
+			BRANCH.setCharPref('primaryAction', oldMain);
 	}
 
 	if( BRANCH.prefHasUserValue("secondaryMenu") ) {
@@ -620,9 +621,10 @@ function install(data, reason) {
 
 		if( oldSecondary == 'history' )
 			BRANCH.setCharPref('secondaryAction', 'historyMenu');
-
-		if( oldSecondary == 'tabs' )
+		else if( oldSecondary == 'tabs' )
 			BRANCH.setCharPref('secondaryAction', 'tabsMenu');
+		else if( oldSecondary != '' )
+			BRANCH.setCharPref('secondaryAction', oldSecondary);
 	}
 
 	// AddonManager callback somehow runs after extenstion startup ?
