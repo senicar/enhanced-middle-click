@@ -590,6 +590,9 @@ function install(data, reason) {
 			// set autoScroll to false, only on fresh install
 			Services.prefs.setBoolPref("general.autoScroll", false);
 
+			// really disable loading URL on middle click
+			Services.prefs.setBoolPref("middlemouse.contentLoadURL", false);
+
 			// 0.3.3 -> 0.4.0
 			// mainMenu -> primaryAction
 			// secondaryMenu -> secondaryAction
