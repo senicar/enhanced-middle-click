@@ -141,6 +141,7 @@ var areaValidator = function(e, window)
 		t instanceof window.HTMLAppletElement ||
 		t instanceof window.HTMLSelectElement ||
 		t instanceof window.HTMLOptionElement ||
+		t instanceof window.HTMLAreaElement ||
 		t.attributes["g_editable"]
 	) { disallow.html = true; }
 
@@ -167,6 +168,9 @@ var areaValidator = function(e, window)
 		if(t instanceof window.HTMLAnchorElement)
 			disallow.html = true;
 	}
+
+	emclogger("disHTML: " + disallow.html + ", allHTML: " + allow.html);
+	emclogger("disXUL: " + disallow.xul+ ", allXUL: " + allow.xul);
 
 	if( (allow.html || allow.xul) && !(disallow.html || disallow.xul) )
 		return true;
