@@ -28,12 +28,12 @@ Cu.import("resource://gre/modules/Services.jsm");
 // Constants
 
 
-const DBG_EMC = true;
+const DBG_EMC = false;
 const BRANCH = Services.prefs.getBranch("extensions.enhancedmiddleclick.");
 const DEFAULT_PREFS = {
 	// available actions:
 	// historyMenu, tabsMenu, tabsGroupsMenu,
-	// toggleBookmarksSidebar, toggleHistorySidebar, toggleDownloadSidebar
+	// toggleBookmarksSidebar, toggleHistorySidebar, toggleDownloadSidebar, toggleTabView
 	// disable
 	primaryAction: "historyMenu",
 	secondaryAction: "disable",
@@ -48,7 +48,7 @@ const DEFAULT_PREFS = {
 function setDefaultPrefs(reset) {
 	// http://starkravingfinkle.org/blog/2011/01/restartless-add-ons-%E2%80%93-default-preferences/
 
-	emclogger("setting defaults");
+	//emclogger("setting defaults");
 
 	for(let [key, val] in Iterator(DEFAULT_PREFS)) {
 		switch (typeof val) {
@@ -81,12 +81,7 @@ function setDefaultPrefs(reset) {
  */
 var emclogger = function(msg)
 {
-	// check if firebug even available, if you try to "report" and firebug
-	// is not opened it will break addon
 	if(DBG_EMC) {
-		//if(typeof Firebug == 'object')
-		//	Firebug.Console.log(msg);
-
 		Services.console.logStringMessage("enhancedmiddleclick: " + msg);
 	}
 }
@@ -96,14 +91,14 @@ var emclogger = function(msg)
  * It is called by addEventListener when click event is triggered
  */
 var clicker = function(e) {
-	emclogger("clicker");
+	//emclogger("clicker");
 	let window = this.window;
 
 	// accept only middle click on a valid area thus the enhanced-middle-click
 	if( areaValidator(e, window) && e.button === 1 ) {
 		// e.cancelBubble = true;
 		e.stopPropagation();
-		emclogger("area accepted");
+		//emclogger("area accepted");
 
 		runAction(e, window);
 	} else return false;
@@ -117,7 +112,7 @@ var clicker = function(e) {
 var areaValidator = function(e, window)
 {
 	let t = e.target;
-	emclogger(t);
+	//emclogger(t);
 
 	// by default disable all target areas
 	let disallow = {};
@@ -169,8 +164,8 @@ var areaValidator = function(e, window)
 			disallow.html = true;
 	}
 
-	emclogger("disHTML: " + disallow.html + ", allHTML: " + allow.html);
-	emclogger("disXUL: " + disallow.xul+ ", allXUL: " + allow.xul);
+	//emclogger("disHTML: " + disallow.html + ", allHTML: " + allow.html);
+	//emclogger("disXUL: " + disallow.xul+ ", allXUL: " + allow.xul);
 
 	if( (allow.html || allow.xul) && !(disallow.html || disallow.xul) )
 		return true;
@@ -181,24 +176,24 @@ var areaValidator = function(e, window)
 
 var runAction = function(e, window) {
 
-	emclogger("getting action");
+	//emclogger("getting action");
 	let action = null;
 
 	if(!e.ctrlKey && !e.shiftKey) {
-		emclogger("primaryAction"); 
+		//emclogger("primaryAction"); 
 		action = BRANCH.getCharPref("primaryAction");
 
 	} else if(!e.ctrlKey && e.shiftKey && BRANCH.getCharPref("secondaryAction") !== "disable") {
-		emclogger("secondaryAction"); 
+		//emclogger("secondaryAction"); 
 		action = BRANCH.getCharPref("secondaryAction");
 
 	} else {
-		emclogger("no action"); 
+		//emclogger("no action"); 
 		return false;
 
 	}
 
-	emclogger("action -> " + action);
+	//emclogger("action -> " + action);
 
 	//updateAndReset();
 
@@ -236,7 +231,7 @@ var runAction = function(e, window) {
 
 var makePopupMenu = function(e, window, action, items, refresh)
 {
-	emclogger("makePopupMenu");
+	//emclogger("makePopupMenu");
 
 	items = ( typeof items == 'undefined' ) ? false : items;
 
@@ -295,7 +290,7 @@ var makePopupMenu = function(e, window, action, items, refresh)
 
 var getTabGroup = function(e, window, tab)
 {
-	emclogger("getTabGroup");
+	//emclogger("getTabGroup");
 	var group = {};
 	var tabviewtab;
 
@@ -306,7 +301,7 @@ var getTabGroup = function(e, window, tab)
 		{
 			group.id = tab._tabViewTabItem.parent.id
 			group.title = tab._tabViewTabItem.parent.getTitle();
-			emclogger(group.title);
+			//emclogger(group.title);
 
 			return group;
 		}
@@ -314,7 +309,7 @@ var getTabGroup = function(e, window, tab)
 		{
 			group.id = 0;
 			group.title = null;
-			emclogger("tab pinned");
+			//emclogger("tab pinned");
 
 			return group;
 		}
@@ -326,7 +321,7 @@ var getTabGroup = function(e, window, tab)
 
 var emcCloseTab = function(e)
 {
-	emclogger("closetab");
+	//emclogger("closetab");
 	let menu = this;
 	var action = menu.id.replace(/emc./g,'');
 
@@ -353,7 +348,7 @@ var emcCloseTab = function(e)
 
 
 var emcInit = function(window) {
-	emclogger("init");
+	//emclogger("init");
 	// init tabview in the background so _tabViewTabItem gets added to tabs
 	window.TabView._initFrame();
 }
@@ -364,7 +359,7 @@ emcObserverDelayedStartup = {
 	observe: function(subject, topic, data) {
 			switch (topic) {
 				case 'browser-delayed-startup-finished':
-					emclogger("observe browser-delayed-startup-finish");
+					//emclogger("observe browser-delayed-startup-finish");
 
 					emcInit(subject);
 
@@ -380,7 +375,7 @@ var loadIntoWindow = function(window) {
 		return;
 	// Add any persistent UI elements
 	// Perform any other initialization
-	emclogger("add click listener");
+	//emclogger("add click listener");
 
 	// FIXME: make and emc class so everything will be in one place !
 	window.emcCloseTab = emcCloseTab;
@@ -417,25 +412,25 @@ var unloadFromWindow = function(window) {
 		return;
 	// Remove any persistent UI elements
 	// Perform any other cleanup
-	emclogger("cleaning up and saying bye");
+	//emclogger("cleaning up and saying bye");
 	window.removeEventListener("click", clicker, true);
 	Services.obs.removeObserver(emcObserverDelayedStartup, "browser-delayed-startup-finished");
 
 	var node = window.document.getElementById("emc.tabsMenu");
 	if (node.parentNode) {
-		emclogger("remove tabsMenu");
+		//emclogger("remove tabsMenu");
 		node.parentNode.removeChild(node);
 	}
 
 	var node = window.document.getElementById("emc.tabsGroupsMenu");
 	if (node.parentNode) {
-		emclogger("remove tabsGroupsMenu");
+		//emclogger("remove tabsGroupsMenu");
 		node.parentNode.removeChild(node);
 	}
 
 	var node = window.document.getElementById("emc.historyMenu");
 	if (node.parentNode) {
-		emclogger("remove historyMenu");
+		//emclogger("remove historyMenu");
 		node.parentNode.removeChild(node);
 	}
 }
@@ -465,7 +460,7 @@ var windowListener = {
 
 var historyMenu = function (e, window)
 {
-	emclogger("historyMenu");
+	//emclogger("historyMenu");
 	let history_popup = window.history_popup;
 
 	while(history_popup.hasChildNodes())
@@ -492,7 +487,7 @@ var historyMenu = function (e, window)
 
 var tabsMenu = function (e, window, refresh)
 {
-	emclogger("tabsMenu");
+	//emclogger("tabsMenu");
 	var group;
 	var tabs = [];
 
@@ -513,7 +508,7 @@ var tabsMenu = function (e, window, refresh)
 
 var tabsGroupsMenu = function (e, window, refresh)
 {
-	emclogger("tabsGroupsMenu");
+	//emclogger("tabsGroupsMenu");
 	if( typeof refresh == 'undefined' ) refresh = false;
 	let num = window.gBrowser.browsers.length;
 	let tab;
@@ -527,7 +522,7 @@ var tabsGroupsMenu = function (e, window, refresh)
 		tab = window.gBrowser.tabContainer.getItemAtIndex(x);
 
 		tab_group = getTabGroup(e, window, tab);
-		emclogger(tab_group);
+		//emclogger(tab_group);
 
 		// make unique array of groups
 		if(groups.indexOf(tab_group.id) == -1)
@@ -565,25 +560,25 @@ var tabsGroupsMenu = function (e, window, refresh)
 
 var toggleDownloadsSidebar = function (window) {
 	window.toggleSidebar("viewDownloadsSidebar");
-	emclogger("toggleDownloadsSidebar");
+	//emclogger("toggleDownloadsSidebar");
 }
 
 
 var toggleHistorySidebar = function (window) {
 	window.toggleSidebar("viewHistorySidebar");
-	emclogger("toggleHistorySidebar");
+	//emclogger("toggleHistorySidebar");
 }
 
 
 var toggleBookmarsSidebar = function (window) {
 	window.toggleSidebar("viewBookmarksSidebar");
-	emclogger("toggleBookmarksSidebar");
+	//emclogger("toggleBookmarksSidebar");
 }
 
 
 var toggleTabView = function (window) {
 	window.TabView.toggle();
-	emclogger("toggleTabView");
+	//emclogger("toggleTabView");
 }
 
 
@@ -606,7 +601,7 @@ var toggleTabView = function (window) {
 
 
 function install(data, reason) {
-	emclogger("install reason: " + reason);
+	//emclogger("install reason: " + reason);
 
 	// upgrade or install gracefully
 	// 0.3.3 -> 0.4.0
@@ -616,6 +611,10 @@ function install(data, reason) {
 	// tabs -> tabsMenu
 	//
 	// this work only the first install because of the pref reset
+	
+	let oldVersion = '0';
+	if( BRANCH.prefHasUserValue("version") )
+		oldVersion = BRANCH.getCharPref('version');
 
 	if( BRANCH.prefHasUserValue("mainMenu") ) {
 		let oldMain = BRANCH.getCharPref("mainMenu");
@@ -648,7 +647,7 @@ function install(data, reason) {
 	// this is an old preferences so set it only if fresh install
 	if( reason == ADDON_INSTALL ) {
 		/* Code related to firstrun */
-		emclogger("upgradeGrace -> firstrun");
+		//emclogger("upgradeGrace -> firstrun");
 
 		// set autoScroll to false, only on fresh install
 		Services.prefs.setBoolPref("general.autoScroll", false);
@@ -658,7 +657,7 @@ function install(data, reason) {
 	if( reason == ADDON_INSTALL || reason == ADDON_UPGRADE || reason == ADDON_DOWNGRADE ) {
 		AddonManager.getAddonByID("enhancedmiddleclick@senicar.net", function(addon) {
 			/* Code related to firstrun */
-			emclogger("upgradeGrace -> upgrade");
+			//emclogger("upgradeGrace -> upgrade");
 
 			// if there are no preferences to be updated/upgraded just make defaults
 			setDefaultPrefs();
@@ -667,31 +666,16 @@ function install(data, reason) {
 
 			// really disable loading URL on middle click
 			Services.prefs.setBoolPref("middlemouse.contentLoadURL", false);
-		});
-	}
 
-	/* No need to upgrade at the moment
-	if( reason == ADDON_UPGRADE || reason == ADDON_DOWNGRADE ) {
-		emclogger("upgradeGrace -> upgrade/downgrade");
-
-		let oldVersion = null;
-
-		if( BRANCH.prefHasUserValue("version") )
-			oldVersion = BRANCH.getCharPref("version");
-
-		BRANCH.setCharPref('version', addon.version);
-
-		// SAMPLE CODE FOR NOTIFICATIONS
-		// Not very easy to update settings from classic addon that
-		// deletes preference on uninstall :(
-		if( oldVersion < "0.4.0" ) {
-			emclogger("restartless notification");
+			/*
+			// SAMPLE CODE FOR NOTIFICATIONS
+			//emclogger("restartless notification");
 
 			let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
 			// https://developer.mozilla.org/en-US/docs/XUL/notificationbox
 			let nb = browserWindow.gBrowser.getNotificationBox();
 			let acceptButton = new Object();
-			let message = "Enhanced Middle Click 0.x.x installed: Check out new preferences!";
+			let message = "Enhanced Middle Click "+ addon.version +" installed - Check out new preference \"Toggle tab groups\"";
 
 			acceptButton.label = "Check preferences";
 			acceptButton.accessKey = ""
@@ -706,14 +690,14 @@ function install(data, reason) {
 				message, "enhancedmiddleclick-upgrade-to-restartless-notification",
 				"",
 				nb.PRIORITY_INFO_HIGH, [ acceptButton ]);
-		}
+			*/
+		});
 	}
-	*/
 }
 
 
 function uninstall(data, reason) {
-	emclogger("uninstall reason: " + reason);
+	//emclogger("uninstall reason: " + reason);
 
 	// delete all preferences on this branch
 	if( reason == ADDON_UNINSTALL )
@@ -722,7 +706,7 @@ function uninstall(data, reason) {
 
 
 function startup(data, reason) {
-	emclogger("startup reason: " + reason);
+	//emclogger("startup reason: " + reason);
 	
 	// Load into any existing windows
 	// bootstrap.js is not loaded into a window so we have to do it manually
@@ -753,7 +737,7 @@ function startup(data, reason) {
 
 
 function shutdown(data, reason) {
-	emclogger("shutdown reason: " + reason);
+	//emclogger("shutdown reason: " + reason);
 
 	// TODO: Make a proper cleanup, all actions, menus, popups ...
 

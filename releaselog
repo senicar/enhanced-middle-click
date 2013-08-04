@@ -1,5 +1,6 @@
 Vearsion 0.4.0
 + restartless
++ toggle tab groups (Panorama)
 + disable middlemouse.contentLoadURL
 - dropping support below firefox 16
 
