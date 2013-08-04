@@ -11,6 +11,7 @@
 <!ENTITY label-toggleBookmarksSidebar "Toggle bookmarks sidebar">
 <!ENTITY label-toggleHistorySidebar "Toggle history sidebar">
 <!ENTITY label-toggleDownloadsSidebar "Toggle downloads sidebar">
+<!ENTITY label-toggleTabView "Toggle tab groups (Panorama)">
 
 <!ENTITY title-refreshOnTabClose "Refresh menu on tab close">
 <!ENTITY desc-refreshOnTabClose "Don't close the menu when closing a tab with middle click">

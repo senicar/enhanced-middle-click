@@ -12,6 +12,7 @@
 				<menuitem label="&label-toggleBookmarksSidebar;" value="toggleBookmarksSidebar" />
 				<menuitem label="&label-toggleHistorySidebar;" value="toggleHistorySidebar" />
 				<menuitem label="&label-toggleDownloadsSidebar;" value="toggleDownloadsSidebar" />
+				<menuitem label="&label-toggleTabView;" value="toggleTabView" />
 			</menupopup>
 		</menulist>
 	</setting>
@@ -26,6 +27,7 @@
 				<menuitem label="&label-toggleBookmarksSidebar;" value="toggleBookmarksSidebar" />
 				<menuitem label="&label-toggleHistorySidebar;" value="toggleHistorySidebar" />
 				<menuitem label="&label-toggleDownloadsSidebar;" value="toggleDownloadsSidebar" />
+				<menuitem label="&label-toggleTabView;" value="toggleTabView" />
 			</menupopup>
 		</menulist>
 	</setting>

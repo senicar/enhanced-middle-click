@@ -227,6 +227,10 @@ var runAction = function(e, window) {
 		toggleHistorySidebar(window);
 	}
 
+	if( action == 'toggleTabView' ) {
+		toggleTabView(window);
+	}
+
 };
 
 
@@ -574,6 +578,12 @@ var toggleHistorySidebar = function (window) {
 var toggleBookmarsSidebar = function (window) {
 	window.toggleSidebar("viewBookmarksSidebar");
 	emclogger("toggleBookmarksSidebar");
+}
+
+
+var toggleTabView = function (window) {
+	window.TabView.toggle();
+	emclogger("toggleTabView");
 }
 
 
