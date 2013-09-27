@@ -28,7 +28,10 @@ Cu.import("resource://gre/modules/Services.jsm");
 // Constants
 
 
-const DBG_EMC = false;
+// vim search and replace for more speed
+// %s/\(.\)\/\/emclogger/\emclogger/gc
+// %s/\temclogger/\\t/\/emclogger/gc
+const DBG_EMC = true;
 const BRANCH = Services.prefs.getBranch("extensions.enhancedmiddleclick.");
 const DEFAULT_PREFS = {
 	// available actions:
@@ -41,6 +44,8 @@ const DEFAULT_PREFS = {
 	displayGroupName: false,
 	autoscrolling: false
 };
+
+var emc_browser_delayed = false;
 
 
 // Default preferences for bootstrap extensions are registered dynamically.
@@ -92,15 +97,15 @@ var emclogger = function(msg)
  */
 var clicker = function(e) {
 	//emclogger("clicker");
-	let window = this.window;
+	let aWindow = this.window;
 
 	// accept only middle click on a valid area thus the enhanced-middle-click
-	if( areaValidator(e, window) && e.button === 1 ) {
+	if( areaValidator(e, aWindow) && e.button === 1 ) {
 		// e.cancelBubble = true;
 		e.stopPropagation();
 		//emclogger("area accepted");
 
-		runAction(e, window);
+		runAction(e, aWindow);
 	} else return false;
 };
 
@@ -109,10 +114,11 @@ var clicker = function(e) {
  * Validates clicked areas if they are valid, have no interaction.
  * It validates only on empty page areas, at least it tries
  */
-var areaValidator = function(e, window)
+var areaValidator = function(e, aWindow)
 {
 	let t = e.target;
 	//emclogger(t);
+	//emclogger(aWindow.HTMLElement);
 
 	// by default disable all target areas
 	let disallow = {};
@@ -126,22 +132,22 @@ var areaValidator = function(e, window)
 	// bootstrap is not loaded into a window thats why HTMLElements
 	// cannot be directly accessed, again we have to use window
 	// https://developer.mozilla.org/en-US/docs/Gecko_DOM_Reference
-	if( t instanceof window.HTMLInputElement ||
-		t instanceof window.HTMLAnchorElement ||
-		t instanceof window.HTMLButtonElement ||
-		t instanceof window.HTMLVideoElement ||
-		t instanceof window.HTMLAudioElement ||
-		t instanceof window.HTMLTextAreaElement ||
-		t instanceof window.HTMLCanvasElement ||
-		t instanceof window.HTMLAppletElement ||
-		t instanceof window.HTMLSelectElement ||
-		t instanceof window.HTMLOptionElement ||
-		t instanceof window.HTMLAreaElement ||
+	if( t instanceof aWindow.HTMLInputElement ||
+		t instanceof aWindow.HTMLAnchorElement ||
+		t instanceof aWindow.HTMLButtonElement ||
+		t instanceof aWindow.HTMLVideoElement ||
+		t instanceof aWindow.HTMLAudioElement ||
+		t instanceof aWindow.HTMLTextAreaElement ||
+		t instanceof aWindow.HTMLCanvasElement ||
+		t instanceof aWindow.HTMLAppletElement ||
+		t instanceof aWindow.HTMLSelectElement ||
+		t instanceof aWindow.HTMLOptionElement ||
+		t instanceof aWindow.HTMLAreaElement ||
 		t.attributes["g_editable"]
 	) { disallow.html = true; }
 
 	// best way to disable all xul elements is by instanceof XULElement
-	if( t instanceof window.XULControllers ||
+	if( t instanceof aWindow.XULControllers ||
 		t.nodeName == 'textbox' ||
 		t.nodeName == 'toolbarbutton' ||
 		t.nodeName == 'richlistitem' ||
@@ -152,15 +158,15 @@ var areaValidator = function(e, window)
 		t.localName == 'tabbrowser'
 	) { allow.xul = true ; }
 
-	if( t instanceof window.HTMLElement ||
-		t instanceof window.SVGElement
+	if( t instanceof aWindow.HTMLElement ||
+		t instanceof aWindow.SVGElement
 	) { allow.html = true; }
 
 	// check if element is child of anchor
 	// we realy dont want to break links
-	while(t && !(t instanceof window.HTMLAnchorElement)) {
+	while(t && !(t instanceof aWindow.HTMLAnchorElement)) {
 		t = t.parentNode;
-		if(t instanceof window.HTMLAnchorElement)
+		if(t instanceof aWindow.HTMLAnchorElement)
 			disallow.html = true;
 	}
 
@@ -174,7 +180,7 @@ var areaValidator = function(e, window)
 };
 
 
-var runAction = function(e, window) {
+var runAction = function(e, aWindow) {
 
 	//emclogger("getting action");
 	let action = null;
@@ -199,43 +205,43 @@ var runAction = function(e, window) {
 
 	// TODO: clean up the action names, update all old settings
 	if( action == 'tabs' || action == 'tabsMenu' || action == 'visibleTabsMenu' ) {
-		tabsMenu(e, window);
+		tabsMenu(e, aWindow);
 	}
 
 	if( action  == 'tabsGroupsMenu') {
-		tabsGroupsMenu(e, window);
+		tabsGroupsMenu(e, aWindow);
 	}
 
 	if( action == 'history' || action == 'historyMenu' ) {
-		historyMenu(e, window);
+		historyMenu(e, aWindow);
 	}
 
 	if( action == 'toggleBookmarksSidebar' || action == 'bookmarksSidebarToggle' ) {
-		toggleBookmarksSidebar(window);
+		toggleBookmarksSidebar(aWindow);
 	}
 
 	if( action == 'toggleDownloadsSidebar' || action == 'downloadSidebarToggle' ) {
-		toggleDownloadsSidebar(window);
+		toggleDownloadsSidebar(aWindow);
 	}
 
 	if( action == 'toggleHistorySidebar' || action == 'historySidebarToggle' ) {
-		toggleHistorySidebar(window);
+		toggleHistorySidebar(aWindow);
 	}
 
 	if( action == 'toggleTabView' ) {
-		toggleTabView(window);
+		toggleTabView(aWindow);
 	}
 
 };
 
 
-var makePopupMenu = function(e, window, action, items, refresh)
+var makePopupMenu = function(e, aWindow, action, items, refresh)
 {
 	//emclogger("makePopupMenu");
 
 	items = ( typeof items == 'undefined' ) ? false : items;
 
-	let popupMenu = window.document.getElementById("emc." + action);
+	let popupMenu = aWindow.document.getElementById("emc." + action);
 
 	while(popupMenu.hasChildNodes())
 		popupMenu.removeChild(popupMenu.firstChild);
@@ -246,12 +252,12 @@ var makePopupMenu = function(e, window, action, items, refresh)
 
 		if(item == 'separator')
 		{
-			let menuseparator = popupMenu.appendChild(window.document.createElement("menuseparator"));
+			let menuseparator = popupMenu.appendChild(aWindow.document.createElement("menuseparator"));
 		}
 		else if (typeof item == 'string' && item && BRANCH.getBoolPref("displayGroupName"))
 		{
 			// if item is string it's most probably a group name
-			let menuItem = popupMenu.appendChild(window.document.createElement("caption"));
+			let menuItem = popupMenu.appendChild(aWindow.document.createElement("caption"));
 			menuItem.setAttribute("label", item);
 			menuItem.setAttribute("disabled", true);
 			// TODO: style in a separate css file
@@ -263,10 +269,13 @@ var makePopupMenu = function(e, window, action, items, refresh)
 		}
 		else if (typeof item == 'object')
 		{
-			let menuItem= popupMenu.appendChild(window.document.createElement("menuitem"));
+			let menuItem= popupMenu.appendChild(aWindow.document.createElement("menuitem"));
+
+			menuItem.addEventListener('click', emcCloseTab, true);
 
 			menuItem.setAttribute("index", item._tPos);
 			menuItem.setAttribute("label", item.label);
+			menuItem.setAttribute("data-action", action);
 			
 			// if page has no favicon show default
 			if(!item.getAttribute("image"))
@@ -288,7 +297,7 @@ var makePopupMenu = function(e, window, action, items, refresh)
 }
 
 
-var getTabGroup = function(e, window, tab)
+var getTabGroup = function(e, aWindow, tab)
 {
 	//emclogger("getTabGroup");
 	var group = {};
@@ -322,133 +331,33 @@ var getTabGroup = function(e, window, tab)
 var emcCloseTab = function(e)
 {
 	//emclogger("closetab");
-	let menu = this;
-	var action = menu.id.replace(/emc./g,'');
+	let aWindow = Services.wm.getMostRecentWindow("navigator:browser");
+	var tab = aWindow.gBrowser.tabContainer.getItemAtIndex(e.target.getAttribute('index'));
+	var refresh = BRANCH.getBoolPref("refreshOnTabClose");
 
-	let window = Services.wm.getMostRecentWindow("navigator:browser");
-	var tab = window.gBrowser.tabContainer.getItemAtIndex(e.target.getAttribute('index'));
-	var refresh = BRANCH.getBoolPref("refreshOnTabClose"); 
+	let item = this;
+	var action = item.getAttribute('data-action');
+	let menu = aWindow.document.getElementById('emc.' + action);
+
+	// if we'll ever need an item index here it is
+	// let itemIndex = Array.prototype.indexOf.call(menu.childNodes, item);
 
 	if(e.button == 1)
 	{
-		window.gBrowser.removeTab(tab);
+		aWindow.gBrowser.removeTab(tab);
 
 		if(refresh)
 		{
 			if( action == 'tabs' || action == 'tabsMenu' || action == 'visibleTabsMenu' )
-				tabsMenu(menu, window, refresh);
+				tabsMenu(menu, aWindow, refresh);
 
 			if( action  == 'tabsGroupsMenu')
-				tabsGroupsMenu(menu, window, refresh);
+				tabsGroupsMenu(menu, aWindow, refresh);
 		}
 		else
 			menu.hidePopup();
 	}
 }
-
-
-var emcInit = function(window) {
-	//emclogger("init");
-	// init tabview in the background so _tabViewTabItem gets added to tabs
-	window.TabView._initFrame();
-}
-
-
-// https://developer.mozilla.org/en/docs/Observer_Notifications
-emcObserverDelayedStartup = {
-	observe: function(subject, topic, data) {
-			switch (topic) {
-				case 'browser-delayed-startup-finished':
-					//emclogger("observe browser-delayed-startup-finish");
-
-					emcInit(subject);
-
-					Services.obs.removeObserver(emcObserverDelayedStartup, "browser-delayed-startup-finished");
-					break;
-			}
-		},
-}
-
-
-var loadIntoWindow = function(window) {
-	if (!window)
-		return;
-	// Add any persistent UI elements
-	// Perform any other initialization
-	//emclogger("add click listener");
-
-	// FIXME: make and emc class so everything will be in one place !
-	window.emcCloseTab = emcCloseTab;
-
-	// Create menus
-	var tabsMenu = window.document.createElement("menupopup");
-	tabsMenu.setAttribute("id", "emc.tabsMenu");
-	tabsMenu.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
-	tabsMenu.addEventListener('click', emcCloseTab, true);
-	window.tabsMenu = tabsMenu;
-	window.document.getElementById("main-window").appendChild(tabsMenu);
-
-	let tabsGroupsMenu  = window.document.createElement("menupopup");
-	tabsGroupsMenu.setAttribute("id", "emc.tabsGroupsMenu");
-	tabsGroupsMenu.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
-	tabsGroupsMenu.addEventListener('click', emcCloseTab, true);
-	window.tabsGroupsMenu = tabsGroupsMenu;
-	window.document.getElementById("main-window").appendChild(tabsGroupsMenu);
-
-	let history_popup = window.document.createElement("menupopup");
-	history_popup.setAttribute("id", "emc.historyMenu");
-	history_popup.setAttribute("oncommand", "gotoHistoryIndex(event); event.stopPropagation();");
-	history_popup.setAttribute("onclick", "checkForMiddleClick(this, event);");
-	window.history_popup = history_popup;
-	window.document.getElementById("main-window").appendChild(history_popup);
-
-	// true, to execute before selection buffer on linux
-	window.addEventListener("click", clicker, true);
-}
-
-
-var unloadFromWindow = function(window) {
-	if (!window)
-		return;
-	// Remove any persistent UI elements
-	// Perform any other cleanup
-	//emclogger("cleaning up and saying bye");
-	window.removeEventListener("click", clicker, true);
-	Services.obs.removeObserver(emcObserverDelayedStartup, "browser-delayed-startup-finished");
-
-	var node = window.document.getElementById("emc.tabsMenu");
-	if (node.parentNode) {
-		//emclogger("remove tabsMenu");
-		node.parentNode.removeChild(node);
-	}
-
-	var node = window.document.getElementById("emc.tabsGroupsMenu");
-	if (node.parentNode) {
-		//emclogger("remove tabsGroupsMenu");
-		node.parentNode.removeChild(node);
-	}
-
-	var node = window.document.getElementById("emc.historyMenu");
-	if (node.parentNode) {
-		//emclogger("remove historyMenu");
-		node.parentNode.removeChild(node);
-	}
-}
-
-
-var windowListener = {
-	onOpenWindow: function(aWindow) {
-		// Wait for the window to finish loading
-		let domWindow = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindow);
-		domWindow.addEventListener("load", function() {
-			domWindow.removeEventListener("load", arguments.callee, false);
-			loadIntoWindow(domWindow);
-		}, false);
-	},
-
-	onCloseWindow: function(aWindow) {},
-	onWindowTitleChange: function(aWindow, aTitle) {}
-};
 
 
 
@@ -458,24 +367,24 @@ var windowListener = {
 // Actions
 
 
-var historyMenu = function (e, window)
+var historyMenu = function (e, aWindow)
 {
 	//emclogger("historyMenu");
-	let history_popup = window.history_popup;
+	let history_popup = aWindow.history_popup;
 
 	while(history_popup.hasChildNodes())
 		history_popup.removeChild(history_popup.firstChild);
 
-	let hasHistory = window.FillHistoryMenu(history_popup);
-	let selectedTab = window.gBrowser.tabContainer.selectedItem;
+	let hasHistory = aWindow.FillHistoryMenu(history_popup);
+	let selectedTab = aWindow.gBrowser.tabContainer.selectedItem;
 	
 	if(!hasHistory)
 	{
-		let menuitem = history_popup.appendChild(window.document.createElement("menuitem"));
+		let menuitem = history_popup.appendChild(aWindow.document.createElement("menuitem"));
 		menuitem.setAttribute("index", "0");
 		menuitem.setAttribute("label", selectedTab.label);
 		menuitem.className = "unified-nav-current";
-		let bundle_browser = window.document.getElementById("bundle_browser");
+		let bundle_browser = aWindow.document.getElementById("bundle_browser");
 		let tooltipCurrent = bundle_browser.getString("tabHistory.current");
 		menuitem.setAttribute("tooltiptext", tooltipCurrent);
 
@@ -485,32 +394,32 @@ var historyMenu = function (e, window)
 }
 
 
-var tabsMenu = function (e, window, refresh)
+var tabsMenu = function (e, aWindow, refresh)
 {
 	//emclogger("tabsMenu");
 	var group;
 	var tabs = [];
 
 	// if tabs=gBrowser.visibleTabs there is another title added each time you open popup
-	tabs.push.apply(tabs, window.gBrowser.visibleTabs);
+	tabs.push.apply(tabs, aWindow.gBrowser.visibleTabs);
 
 	if( typeof refresh == 'undefined' ) refresh = false;
 
 	// pick last tab, less possible to be pinned
 	// and prepend title if exists
-	group = getTabGroup(e, window, tabs[tabs.length-1]);
+	group = getTabGroup(e, aWindow, tabs[tabs.length-1]);
 	if(typeof group.title == 'string')
 		tabs.unshift(group.title);
 
-	makePopupMenu(e, window, "tabsMenu", tabs, refresh);
+	makePopupMenu(e, aWindow, "tabsMenu", tabs, refresh);
 }
 
 
-var tabsGroupsMenu = function (e, window, refresh)
+var tabsGroupsMenu = function (e, aWindow, refresh)
 {
 	//emclogger("tabsGroupsMenu");
 	if( typeof refresh == 'undefined' ) refresh = false;
-	let num = window.gBrowser.browsers.length;
+	let num = aWindow.gBrowser.browsers.length;
 	let tab;
 	let tab_group;
 	let parent_id;
@@ -519,9 +428,9 @@ var tabsGroupsMenu = function (e, window, refresh)
 
 	for( let x = 0; x< num; x++)
 	{
-		tab = window.gBrowser.tabContainer.getItemAtIndex(x);
+		tab = aWindow.gBrowser.tabContainer.getItemAtIndex(x);
 
-		tab_group = getTabGroup(e, window, tab);
+		tab_group = getTabGroup(e, aWindow, tab);
 		//emclogger(tab_group);
 
 		// make unique array of groups
@@ -539,8 +448,8 @@ var tabsGroupsMenu = function (e, window, refresh)
 		let first_group_item = true;
 		for ( let y = 0; y < num; y++) 
 		{
-			tab = window.gBrowser.tabContainer.getItemAtIndex(y);
-			tab_group = getTabGroup(e, window, tab);
+			tab = aWindow.gBrowser.tabContainer.getItemAtIndex(y);
+			tab_group = getTabGroup(e, aWindow, tab);
 
 			if(typeof tab_group.title == 'string' && tab_group.id == parent_id && first_group_item)
 			{
@@ -554,30 +463,30 @@ var tabsGroupsMenu = function (e, window, refresh)
 		}
 	}
 
-	makePopupMenu(e, window, "tabsGroupsMenu", tabs, refresh);
+	makePopupMenu(e, aWindow, "tabsGroupsMenu", tabs, refresh);
 }
 
 
-var toggleDownloadsSidebar = function (window) {
-	window.toggleSidebar("viewDownloadsSidebar");
+var toggleDownloadsSidebar = function (aWindow) {
+	aWindow.toggleSidebar("viewDownloadsSidebar");
 	//emclogger("toggleDownloadsSidebar");
 }
 
 
-var toggleHistorySidebar = function (window) {
-	window.toggleSidebar("viewHistorySidebar");
+var toggleHistorySidebar = function (aWindow) {
+	aWindow.toggleSidebar("viewHistorySidebar");
 	//emclogger("toggleHistorySidebar");
 }
 
 
-var toggleBookmarsSidebar = function (window) {
-	window.toggleSidebar("viewBookmarksSidebar");
+var toggleBookmarsSidebar = function (aWindow) {
+	aWindow.toggleSidebar("viewBookmarksSidebar");
 	//emclogger("toggleBookmarksSidebar");
 }
 
 
-var toggleTabView = function (window) {
-	window.TabView.toggle();
+var toggleTabView = function (aWindow) {
+	aWindow.TabView.toggle();
 	//emclogger("toggleTabView");
 }
 
@@ -743,8 +652,8 @@ function shutdown(data, reason) {
 
 	// When the application is shutting down we normally don't have to clean
 	// up any UI changes made
-	if( reason == APP_SHUTDOWN )
-		return;
+	//if( reason == APP_SHUTDOWN )
+	//	return;
 
 	// let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
 
@@ -757,4 +666,129 @@ function shutdown(data, reason) {
 		let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
 		unloadFromWindow(domWindow);
 	}
+
 }
+
+
+var emcInit = function(aWindow) {
+	//emclogger("init");
+	// init tabview in the background so _tabViewTabItem gets added to tabs
+
+	if(emc_browser_delayed && typeof(aWindow.TabView) != 'undefined' && typeof(aWindow.gBrowser) != 'undefined' && typeof(aWindow.gBrowser.tabContainer.getItemAtIndex(0)._tabViewTabItem) == 'undefined') {
+		//emclogger("emc_browser_delayed");
+		aWindow.TabView._initFrame();
+		return true;
+	}
+
+	return false;
+}
+
+
+// https://developer.mozilla.org/en/docs/Observer_Notifications
+emcObserverDelayedStartup = {
+	observe: function(subject, topic, data) {
+			switch (topic) {
+				// this is for the very first opened browser
+				case 'browser-delayed-startup-finished':
+					//emclogger("observe browser-delayed-startup-finish");
+					emc_browser_delayed = true;
+
+					emcInit(subject);
+
+					Services.obs.removeObserver(emcObserverDelayedStartup, "browser-delayed-startup-finished");
+					break;
+			}
+		},
+}
+
+
+var loadIntoWindow = function(aWindow) {
+	if (!aWindow)
+		return;
+	// Add any persistent UI elements
+	// Perform any other initialization
+	//emclogger("add click listener");
+
+	// FIXME: make and emc class so everything will be in one place !
+	aWindow.emcCloseTab = emcCloseTab;
+
+	// Create menus
+	if(aWindow.document.getElementById('emc.tabsMenu') == null) {
+		let tabsMenu = aWindow.document.createElement("menupopup");
+		tabsMenu.setAttribute("id", "emc.tabsMenu");
+		tabsMenu.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
+		aWindow.tabsMenu = tabsMenu;
+		aWindow.document.getElementById("mainPopupSet").appendChild(tabsMenu);
+	}
+
+	if(aWindow.document.getElementById('emc.tabsGroupsMenu') == null) {
+		let tabsGroupsMenu  = aWindow.document.createElement("menupopup");
+		tabsGroupsMenu.setAttribute("id", "emc.tabsGroupsMenu");
+		tabsGroupsMenu.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
+		aWindow.tabsGroupsMenu = tabsGroupsMenu;
+		aWindow.document.getElementById("mainPopupSet").appendChild(tabsGroupsMenu);
+	}
+
+	if(aWindow.document.getElementById('emc.historyMenu') == null) {
+		let history_popup = aWindow.document.createElement("menupopup");
+		history_popup.setAttribute("id", "emc.historyMenu");
+		history_popup.setAttribute("oncommand", "gotoHistoryIndex(event); event.stopPropagation();");
+		history_popup.setAttribute("onclick", "checkForMiddleClick(this, event);");
+		aWindow.history_popup = history_popup;
+		aWindow.document.getElementById("mainPopupSet").appendChild(history_popup);
+	}
+
+	// true, to execute before selection buffer on linux
+	aWindow.addEventListener("click", clicker, true);
+
+	// just in case browser delay failed
+	emcInit(aWindow);
+}
+
+
+var unloadFromWindow = function(aWindow) {
+	if (!aWindow)
+		return;
+	// Remove any persistent UI elements
+	// Perform any other cleanup
+	//emclogger("cleaning up and saying bye");
+	var node = aWindow.document.getElementById("emc.tabsMenu");
+	if (node.parentNode) {
+		//emclogger("remove tabsMenu");
+		node.parentNode.removeChild(node);
+	}
+
+	var node = aWindow.document.getElementById("emc.tabsGroupsMenu");
+	if (node.parentNode) {
+		//emclogger("remove tabsGroupsMenu");
+		node.parentNode.removeChild(node);
+	}
+
+	var node = aWindow.document.getElementById("emc.historyMenu");
+	if (node.parentNode) {
+		//emclogger("remove historyMenu");
+		node.parentNode.removeChild(node);
+	}
+
+	aWindow.removeEventListener("click", clicker, true);
+	//removed when initiated
+	//Services.obs.removeObserver(emcObserverDelayedStartup, "browser-delayed-startup-finished");
+
+}
+
+
+var windowListener = {
+	onOpenWindow: function(aWindow) {
+		// Wait for the window to finish loading
+		let domWindow = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindow);
+		domWindow.addEventListener("load", function() {
+			domWindow.removeEventListener("load", arguments.callee, false);
+			loadIntoWindow(domWindow);
+		}, false);
+	},
+
+	onCloseWindow: function(aWindow) {},
+	onWindowTitleChange: function(aWindow, aTitle) {}
+};
+
+
