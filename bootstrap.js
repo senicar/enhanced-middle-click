@@ -11,6 +11,8 @@
 * 
 *******************************************************************************/
 
+// TODO: Comment and code cleanup, remove unused parts
+
 // ************************************************************************** //
 // XPCOM
 
@@ -34,9 +36,10 @@ Cu.import("resource://gre/modules/Services.jsm");
 const DBG_EMC = true;
 const BRANCH = Services.prefs.getBranch("extensions.enhancedmiddleclick.");
 const DEFAULT_PREFS = {
+	// deprecated: toggleDownloadsSidebar
 	// available actions:
 	// historyMenu, tabsMenu, tabsGroupsMenu,
-	// toggleBookmarksSidebar, toggleHistorySidebar, toggleDownloadSidebar, toggleTabView
+	// toggleBookmarksSidebar, toggleHistorySidebar, toggleTabView
 	// disable
 	primaryAction: "historyMenu",
 	secondaryAction: "disable",
@@ -220,9 +223,11 @@ var runAction = function(e, aWindow) {
 		toggleBookmarksSidebar(aWindow);
 	}
 
+	/*
 	if( action == 'toggleDownloadsSidebar' || action == 'downloadSidebarToggle' ) {
 		toggleDownloadsSidebar(aWindow);
 	}
+	*/
 
 	if( action == 'toggleHistorySidebar' || action == 'historySidebarToggle' ) {
 		toggleHistorySidebar(aWindow);
@@ -467,10 +472,19 @@ var tabsGroupsMenu = function (e, aWindow, refresh)
 }
 
 
+/*
 var toggleDownloadsSidebar = function (aWindow) {
-	aWindow.toggleSidebar("viewDownloadsSidebar");
+	// Deprecated, no longer works sinde the new download button/interface
+	// aWindow.toggleSidebar("viewDownloadsSidebar");
+
+	if(aWindow.document.getElementById("downloads-button") != null)
+		aWindow.DownloadsIndicatorView.onCommand(aWindow.event);
+	else
+		aWindow.DownloadsPanel.showDownloadsHistory();
+
 	//emclogger("toggleDownloadsSidebar");
 }
+*/
 
 
 var toggleHistorySidebar = function (aWindow) {
@@ -479,7 +493,7 @@ var toggleHistorySidebar = function (aWindow) {
 }
 
 
-var toggleBookmarsSidebar = function (aWindow) {
+var toggleBookmarksSidebar = function (aWindow) {
 	aWindow.toggleSidebar("viewBookmarksSidebar");
 	//emclogger("toggleBookmarksSidebar");
 }
@@ -790,5 +804,3 @@ var windowListener = {
 	onCloseWindow: function(aWindow) {},
 	onWindowTitleChange: function(aWindow, aTitle) {}
 };
-
-
