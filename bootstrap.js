@@ -35,6 +35,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 // %s/\temclogger/\\t/\/emclogger/gc
 const DBG_EMC = true;
 const BRANCH = Services.prefs.getBranch("extensions.enhancedmiddleclick.");
+const FFVERSION = Services.prefs.getBranch("extensions.").getCharPref("lastPlatformVersion");
 const DEFAULT_PREFS = {
 	// deprecated: toggleDownloadsSidebar
 	// available actions:
@@ -681,16 +682,19 @@ function shutdown(data, reason) {
 		unloadFromWindow(domWindow);
 	}
 
+	Services.obs.removeObserver(emcObserverDelayedStartup, "browser-delayed-startup-finished");
 }
 
 
 var emcInit = function(aWindow) {
-	//emclogger("init");
 	// init tabview in the background so _tabViewTabItem gets added to tabs
-
-	if(emc_browser_delayed && typeof(aWindow.TabView) != 'undefined' && typeof(aWindow.gBrowser) != 'undefined' && typeof(aWindow.gBrowser.tabContainer.getItemAtIndex(0)._tabViewTabItem) == 'undefined') {
-		//emclogger("emc_browser_delayed");
-		aWindow.TabView._initFrame();
+	if(typeof(aWindow.TabView) != 'undefined' && typeof(aWindow.gBrowser) != 'undefined' && typeof(aWindow.gBrowser.tabContainer.getItemAtIndex(0)._tabViewTabItem) == 'undefined') {
+		// v23 doesn't have enough browser delay for tabview to this
+		// is an ugly hack just for v23, remove this as soon as possible
+		if(aWindow.parseInt(FFVERSION) < aWindow.parseInt('24'))
+			aWindow.setTimeout(function() { aWindow.TabView._initFrame(); }, 450);
+		else
+			aWindow.TabView._initFrame();
 		return true;
 	}
 
@@ -709,7 +713,6 @@ emcObserverDelayedStartup = {
 
 					emcInit(subject);
 
-					Services.obs.removeObserver(emcObserverDelayedStartup, "browser-delayed-startup-finished");
 					break;
 			}
 		},
@@ -755,8 +758,6 @@ var loadIntoWindow = function(aWindow) {
 	// true, to execute before selection buffer on linux
 	aWindow.addEventListener("click", clicker, true);
 
-	// just in case browser delay failed
-	emcInit(aWindow);
 }
 
 
