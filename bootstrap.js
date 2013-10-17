@@ -248,6 +248,7 @@ var makePopupMenu = function(e, aWindow, action, items, refresh)
 	items = ( typeof items == 'undefined' ) ? false : items;
 
 	let popupMenu = aWindow.document.getElementById("emc." + action);
+	popupMenu.classList.add("emc-popupMenu");
 
 	while(popupMenu.hasChildNodes())
 		popupMenu.removeChild(popupMenu.firstChild);
@@ -282,6 +283,13 @@ var makePopupMenu = function(e, aWindow, action, items, refresh)
 			menuItem.setAttribute("index", item._tPos);
 			menuItem.setAttribute("label", item.label);
 			menuItem.setAttribute("data-action", action);
+			// this comes from updateTabsVisibilityStatus
+			emclogger(item.getAttribute('tabIsVisible'));
+			if(item.getAttribute('tabIsVisible'))
+				menuItem.setAttribute('tabIsVisible', 'true');
+
+			// firefox uses .alltabs-item[tabIsNotVisible] to style visible tabs
+			menuItem.classList.add("alltabs-item");
 			
 			// if page has no favicon show default
 			if(!item.getAttribute("image"))
@@ -299,6 +307,33 @@ var makePopupMenu = function(e, aWindow, action, items, refresh)
 	if(!refresh)
 	{
 		popupMenu.openPopupAtScreen(e.screenX, e.screenY, true);
+	}
+}
+
+
+// http://mxr.mozilla.org/mozilla-central/source/browser/base/content/tabbrowser.xml#4751
+var updateTabsVisibilityStatus = function updateTabsVisibilityStatus(aWindow, tabs) {
+	var tabContainer = aWindow.gBrowser.tabContainer;
+
+	// We don't want menu item decoration unless there is overflow.
+	if (tabContainer.getAttribute("overflow") != "true")
+		return;
+
+	// tabContainer.mTabstrip.scrollBoxObject = tabContainer.mTabstrip.boxObject;
+	let tabstripBO = tabContainer.mTabstrip.boxObject;
+
+	for (var i = 0; i < tabs.length; i++) {
+		let curTab = tabs[i];
+
+		if (typeof curTab == 'string') // "Tab Groups" menuitem and its menuseparator
+			continue;
+
+		let curTabBO = curTab.boxObject;
+		if (curTabBO.screenX >= tabstripBO.screenX &&
+				curTabBO.screenX + curTabBO.width <= tabstripBO.screenX + tabstripBO.width)
+			tabs[i].setAttribute("tabIsVisible", "true");
+		else
+			tabs[i].removeAttribute("tabIsVisible");
 	}
 }
 
@@ -417,6 +452,9 @@ var tabsMenu = function (e, aWindow, refresh)
 	if(typeof group.title == 'string')
 		tabs.unshift(group.title);
 
+	// check and add tabIsVisible attribute
+	updateTabsVisibilityStatus(aWindow, tabs);
+
 	makePopupMenu(e, aWindow, "tabsMenu", tabs, refresh);
 }
 
@@ -468,6 +506,9 @@ var tabsGroupsMenu = function (e, aWindow, refresh)
 
 		}
 	}
+
+	// check and add tabIsVisible attribute
+	updateTabsVisibilityStatus(aWindow, tabs);
 
 	makePopupMenu(e, aWindow, "tabsGroupsMenu", tabs, refresh);
 }
