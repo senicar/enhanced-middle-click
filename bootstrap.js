@@ -23,12 +23,14 @@ var {classes: Cc, interfaces: Ci, utils: Cu} = Components;
 Cu.import("resource://gre/modules/Services.jsm");
 
 
-
+var sss = Components.classes["@mozilla.org/content/style-sheet-service;1"]
+                    .getService(Components.interfaces.nsIStyleSheetService);
 
 
 // ************************************************************************** //
 // Constants
 
+const STYLE_URI = Services.io.newURI("chrome://enhancedmiddleclick/skin/overlay.css", null, null);
 
 // vim search and replace for more speed
 // %s/\(.\)\/\/emclogger/\emclogger/gc
@@ -248,7 +250,7 @@ var makePopupMenu = function(e, aWindow, action, items, refresh)
 	items = ( typeof items == 'undefined' ) ? false : items;
 
 	let popupMenu = aWindow.document.getElementById("emc." + action);
-	popupMenu.classList.add("emc-popupMenu");
+	popupMenu.classList.add("emc-popupmenu");
 
 	while(popupMenu.hasChildNodes())
 		popupMenu.removeChild(popupMenu.firstChild);
@@ -268,10 +270,6 @@ var makePopupMenu = function(e, aWindow, action, items, refresh)
 			menuItem.setAttribute("label", item);
 			menuItem.setAttribute("disabled", true);
 			// TODO: style in a separate css file
-			menuItem.style.setProperty("font-weight:", "normal");
-			menuItem.style.setProperty("text-align", "center");
-			menuItem.style.setProperty("opacity", "0.3");
-			menuItem.style.setProperty("margin", "3px");
 			menuItem.classList.add("emc-grouptitle");
 		}
 		else if (typeof item == 'object')
@@ -284,7 +282,6 @@ var makePopupMenu = function(e, aWindow, action, items, refresh)
 			menuItem.setAttribute("label", item.label);
 			menuItem.setAttribute("data-action", action);
 			// this comes from updateTabsVisibilityStatus
-			emclogger(item.getAttribute('tabIsVisible'));
 			if(item.getAttribute('tabIsVisible'))
 				menuItem.setAttribute('tabIsVisible', 'true');
 
@@ -299,8 +296,10 @@ var makePopupMenu = function(e, aWindow, action, items, refresh)
 
 			menuItem.classList.add("menuitem-iconic");
 
-			if (item.selected)
+			if (item.selected) {
 				menuItem.classList.add("unified-nav-current");
+				menuItem.focus();
+			}
 		}
 	}
 
@@ -703,6 +702,9 @@ function startup(data, reason) {
 
 	// Load into any new windows
 	Services.wm.addListener(windowListener);
+
+	if(!sss.sheetRegistered(STYLE_URI, sss.USER_SHEET))
+		sss.loadAndRegisterSheet(STYLE_URI, sss.USER_SHEET);
 }
 
 
@@ -729,6 +731,9 @@ function shutdown(data, reason) {
 	}
 
 	Services.obs.removeObserver(emcObserverDelayedStartup, "browser-delayed-startup-finished");
+
+	if(!sss.sheetRegistered(STYLE_URI, sss.USER_SHEET))
+		sss.unregisterSheet(STYLE_URI, sss.USER_SHEET);
 }
 
 

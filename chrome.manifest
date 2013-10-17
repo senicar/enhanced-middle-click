@@ -1,8 +1,10 @@
 content  enhancedmiddleclick chrome/content/
-skin     enhancedmiddleclick classic/1.0   chrome/skin/classic/
+skin     enhancedmiddleclick classic/1.0   chrome/skin/
 locale   enhancedmiddleclick en-US         chrome/locale/en-US/
 
 # The extension is bootstrapped in this scenario
 # To switch to XUL overlay based extension change 'em:bootstrap' to false in install.rdf
 # and use the following line:
 #overlay chrome://firebug/content/firebugOverlay.xul         chrome://hellobootamd/content/mainOverlay.xul
+#style chrome://enhancedmiddleclick/content/skin/overlay.css chrome://enhancedmiddleclic/content/skin/overlay.css
+

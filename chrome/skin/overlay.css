@@ -1,9 +1,7 @@
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
-.emc-grouptitle:hover,
-.emc-grouptitle
-{
+.emc-grouptitle {
 	font-weight: normal;
-	opacity: 0.3;
+	opacity: 0.4;
 	text-align: center !important;
 	margin: 2px;
 	/* not working
@@ -15,3 +13,28 @@
 	background-image: none !important;
 	border: none !important;
 }
+
+/* http://mxr.mozilla.org/mozilla-central/source/browser/themes/linux/browser.css#1890 */
+
+.emc-popupmenu .alltabs-item[tabIsVisible].unified-nav-current:hover,
+.emc-popupmenu .alltabs-item[tabIsVisible] {
+	/* box-shadow instead of background-color to work around native styling */
+	/* box-shadow: inset -7px 0 rgba(0,100,250,0.5) !important; */
+	box-shadow: inset -7px 0 ThreeDShadow !important;
+}
+
+/*
+.emc-popupmenu .alltabs-item[tabIsVisible].unified-nav-current {
+	box-shadow: inset -7px 0 rgba(0,100,250,0.5),
+				inset 2px 200px 0 rgba(141, 246, 141, 0.3) !important;
+}
+
+.emc-popupmenu .unified-nav-current {
+	box-shadow: inset 2px 200px 0 rgba(141, 246, 141, 0.3) !important;
+}
+
+.emc-popupmenu .unified-nav-current:hover {
+	box-shadow: none !important;
+}
+
+*/
