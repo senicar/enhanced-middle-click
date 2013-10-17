@@ -1,4 +1,11 @@
-Vearsion 0.4.0
+Version 0.4.1
+$ bugfix: sometimes TabView would not load in a new window
+$ bugfix: middle click on group name caption closed first tab
+$ bugfix: better cleanup on shutdown
+$ bugfix: toogleSidebars, downloads sidebar is gone due to the new download manager
+- Dropping support below Firefox 23. Firefox changed significantly in recent versions
+
+Version 0.4.0
 + restartless
 + toggle tab groups (Panorama)
 + disable middlemouse.contentLoadURL

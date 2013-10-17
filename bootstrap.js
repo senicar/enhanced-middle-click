@@ -594,14 +594,19 @@ function install(data, reason) {
 			/*
 			// SAMPLE CODE FOR NOTIFICATIONS
 			//emclogger("restartless notification");
+			//*/
 
 			let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
+
+			if(browserWindow.parseInt(oldVersion.replace(/\./g,'')) >= browserWindow.parseInt(addon.version.replace(/\./g,'')) || oldVersion == '0')
+				return;
+
 			// https://developer.mozilla.org/en-US/docs/XUL/notificationbox
 			let nb = browserWindow.gBrowser.getNotificationBox();
 			let acceptButton = new Object();
-			let message = "Enhanced Middle Click "+ addon.version +" installed - Check out new preference \"Toggle tab groups\"";
+			let message = "[Enhanced Middle Click upgraded] \"Toggle Download Sidebar\" action has been removed because of the incompatibility with the new Download Manager";
 
-			acceptButton.label = "Check preferences";
+			acceptButton.label = "Please check preferences";
 			acceptButton.accessKey = ""
 			acceptButton.popup = null;
 			acceptButton.callback = function() { 
@@ -614,7 +619,7 @@ function install(data, reason) {
 				message, "enhancedmiddleclick-upgrade-to-restartless-notification",
 				"",
 				nb.PRIORITY_INFO_HIGH, [ acceptButton ]);
-			*/
+			/**/
 		});
 	}
 }
