@@ -281,6 +281,7 @@ var makePopupMenu = function(e, aWindow, action, items, refresh)
 			menuItem.setAttribute("index", item._tPos);
 			menuItem.setAttribute("label", item.label);
 			menuItem.setAttribute("data-action", action);
+
 			// this comes from updateTabsVisibilityStatus
 			if(item.getAttribute('tabIsVisible'))
 				menuItem.setAttribute('tabIsVisible', 'true');
@@ -298,7 +299,6 @@ var makePopupMenu = function(e, aWindow, action, items, refresh)
 
 			if (item.selected) {
 				menuItem.classList.add("unified-nav-current");
-				menuItem.focus();
 			}
 		}
 	}
@@ -314,6 +314,8 @@ var makePopupMenu = function(e, aWindow, action, items, refresh)
 var updateTabsVisibilityStatus = function updateTabsVisibilityStatus(aWindow, tabs) {
 	var tabContainer = aWindow.gBrowser.tabContainer;
 
+	// TODO: if refreshing open menu (when closing tab) than you don't need to loop all tabs
+
 	// We don't want menu item decoration unless there is overflow.
 	if (tabContainer.getAttribute("overflow") != "true")
 		return;
@@ -321,6 +323,7 @@ var updateTabsVisibilityStatus = function updateTabsVisibilityStatus(aWindow, ta
 	// tabContainer.mTabstrip.scrollBoxObject = tabContainer.mTabstrip.boxObject;
 	let tabstripBO = tabContainer.mTabstrip.boxObject;
 
+	// list of tabs
 	for (var i = 0; i < tabs.length; i++) {
 		let curTab = tabs[i];
 
@@ -372,7 +375,8 @@ var emcCloseTab = function(e)
 {
 	//emclogger("closetab");
 	let aWindow = Services.wm.getMostRecentWindow("navigator:browser");
-	var tab = aWindow.gBrowser.tabContainer.getItemAtIndex(e.target.getAttribute('index'));
+	let tabIndex = e.target.getAttribute('index');
+	var tab = aWindow.gBrowser.tabContainer.getItemAtIndex(tabIndex);
 	var refresh = BRANCH.getBoolPref("refreshOnTabClose");
 
 	let item = this;
@@ -390,6 +394,14 @@ var emcCloseTab = function(e)
 		{
 			if( action == 'tabs' || action == 'tabsMenu' || action == 'visibleTabsMenu' )
 				tabsMenu(menu, aWindow, refresh);
+				
+				/*
+				for(var i=0; i<menu.childNodes.length; i++) {
+					let itemIndex = menu.childNodes[i].getAttribute('index');
+					if(itemIndex == tabIndex)
+						menu.removeChild(menu.childNodes[i]);
+				}
+				*/
 
 			if( action  == 'tabsGroupsMenu')
 				tabsGroupsMenu(menu, aWindow, refresh);
@@ -451,7 +463,6 @@ var tabsMenu = function (e, aWindow, refresh)
 	if(typeof group.title == 'string')
 		tabs.unshift(group.title);
 
-	// check and add tabIsVisible attribute
 	updateTabsVisibilityStatus(aWindow, tabs);
 
 	makePopupMenu(e, aWindow, "tabsMenu", tabs, refresh);
@@ -506,7 +517,6 @@ var tabsGroupsMenu = function (e, aWindow, refresh)
 		}
 	}
 
-	// check and add tabIsVisible attribute
 	updateTabsVisibilityStatus(aWindow, tabs);
 
 	makePopupMenu(e, aWindow, "tabsGroupsMenu", tabs, refresh);
