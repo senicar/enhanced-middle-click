@@ -311,13 +311,23 @@ var makePopupMenu = function(e, aWindow, action, items, refresh)
 
 
 // http://mxr.mozilla.org/mozilla-central/source/browser/base/content/tabbrowser.xml#4751
-var updateTabsVisibilityStatus = function updateTabsVisibilityStatus(aWindow, tabs) {
+var updateTabsVisibilityStatus = function updateTabsVisibilityStatus(aWindow, tabs, action = null) {
 	var tabContainer = aWindow.gBrowser.tabContainer;
 
 	// TODO: if refreshing open menu (when closing tab) than you don't need to loop all tabs
 
-	// We don't want menu item decoration unless there is overflow.
-	if (tabContainer.getAttribute("overflow") != "true")
+	// But we need it to run always due to all tab groups
+	//
+	// We don't want menu item decoration unless there is overflow or we are
+	// showing all tab groups
+	for (var i = 0; i < tabs.length; i++) {
+		let curTab = tabs[i];
+		if (typeof curTab == 'string') // "Tab Groups" menuitem and its menuseparator
+			continue;
+		tabs[i].removeAttribute("tabIsVisible");
+	}
+
+	if ( action != 'tabsGroupsMenu' && tabContainer.getAttribute("overflow") != "true")
 		return;
 
 	// tabContainer.mTabstrip.scrollBoxObject = tabContainer.mTabstrip.boxObject;
@@ -327,7 +337,7 @@ var updateTabsVisibilityStatus = function updateTabsVisibilityStatus(aWindow, ta
 	for (var i = 0; i < tabs.length; i++) {
 		let curTab = tabs[i];
 
-		if (typeof curTab == 'string') // "Tab Groups" menuitem and its menuseparator
+		if (typeof curTab == 'string' || curTab.pinned) // "Tab Groups" menuitem and its menuseparator
 			continue;
 
 		let curTabBO = curTab.boxObject;
@@ -463,7 +473,7 @@ var tabsMenu = function (e, aWindow, refresh)
 	if(typeof group.title == 'string')
 		tabs.unshift(group.title);
 
-	updateTabsVisibilityStatus(aWindow, tabs);
+	updateTabsVisibilityStatus(aWindow, tabs, 'tabsMenu');
 
 	makePopupMenu(e, aWindow, "tabsMenu", tabs, refresh);
 }
@@ -517,7 +527,7 @@ var tabsGroupsMenu = function (e, aWindow, refresh)
 		}
 	}
 
-	updateTabsVisibilityStatus(aWindow, tabs);
+	updateTabsVisibilityStatus(aWindow, tabs, 'tabsGroupsMenu');
 
 	makePopupMenu(e, aWindow, "tabsGroupsMenu", tabs, refresh);
 }
