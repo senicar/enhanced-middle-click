@@ -654,7 +654,7 @@ function install(data, reason) {
 			/*
 			// SAMPLE CODE FOR NOTIFICATIONS
 			//emclogger("restartless notification");
-			//*/
+			//*
 
 			let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
 
