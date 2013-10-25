@@ -161,6 +161,7 @@ var areaValidator = function(e, aWindow)
 	) { disallow.xul = true; }
 
 	if( t.baseURI == 'about:addons' ||
+		t.baseURI == 'chrome://mozapps/content/extensions/extensions.xul' ||
 		t.localName == 'tabbrowser'
 	) { allow.xul = true ; }
 
