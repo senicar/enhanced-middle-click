@@ -13,6 +13,9 @@
 				<menuitem label="&label-toggleHistorySidebar;" value="toggleHistorySidebar" />
 				<!--<menuitem label="&label-toggleDownloadsSidebar;" value="toggleDownloadsSidebar" />-->
 				<menuitem label="&label-toggleTabView;" value="toggleTabView" />
+				<menuitem label="&loadSearchFromContext-label;" value="loadSearchFromContext" />
+				<menuitem label="&bookmarksToolbarFolderPopup-label;" value="bookmarksToolbarFolderPopup" />
+				<menuitem label="&bookmarksMenuPopup-label;" value="bookmarksMenuPopup" />
 			</menupopup>
 		</menulist>
 	</setting>
@@ -28,6 +31,9 @@
 				<menuitem label="&label-toggleHistorySidebar;" value="toggleHistorySidebar" />
 				<!--<menuitem label="&label-toggleDownloadsSidebar;" value="toggleDownloadsSidebar" />-->
 				<menuitem label="&label-toggleTabView;" value="toggleTabView" />
+				<menuitem label="&loadSearchFromContext-label;" value="loadSearchFromContext" />
+				<menuitem label="&bookmarksToolbarFolderPopup-label;" value="bookmarksToolbarFolderPopup" />
+				<menuitem label="&bookmarksMenuPopup-label;" value="bookmarksMenuPopup" />
 			</menupopup>
 		</menulist>
 	</setting>
