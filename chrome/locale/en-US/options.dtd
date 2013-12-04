@@ -21,3 +21,6 @@
 
 <!ENTITY title-displayGroupName "Display group name">
 <!ENTITY desc-displayGroupName "If tab group name is set, display it in the menu">
+
+<!ENTITY title-timeout "Timeout [miliseconds]">
+<!ENTITY desc-timeout "If you hold down middle mouse button for longer than n-miliseconds all actions will be ignored">

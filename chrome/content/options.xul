@@ -39,4 +39,5 @@
 	</setting>
 	<setting type="bool" pref="extensions.enhancedmiddleclick.refreshOnTabClose" title="&title-refreshOnTabClose;" desc="&desc-refreshOnTabClose;" />
 	<setting type="bool" pref="extensions.enhancedmiddleclick.displayGroupName" title="&title-displayGroupName;" desc="&desc-displayGroupName;" />
+	<setting type="integer" pref="extensions.enhancedmiddleclick.timeout" title="&title-timeout;" desc="&desc-timeout;" />
 </vbox>

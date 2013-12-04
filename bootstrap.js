@@ -50,10 +50,13 @@ const DEFAULT_PREFS = {
 	secondaryAction: "disable",
 	refreshOnTabClose: false,
 	displayGroupName: false,
-	autoscrolling: false
+	autoscrolling: false,
+	timeout: 999999999, 
 };
 
 var emc_browser_delayed = false;
+
+var emc_timer = 0;
 
 
 // Default preferences for bootstrap extensions are registered dynamically.
@@ -106,9 +109,19 @@ var emclogger = function(msg)
 var clicker = function(e) {
 	//emclogger("clicker");
 	let aWindow = this.window;
+	
+	let timeout = BRANCH.getIntPref("timeout");
+	let end = +new Date();
+	let time_diff = end - emc_timer;
+
+	if( timeout == 0 )
+		timeout = 999999999;
+
+	//emclogger(timeout);
+	//emclogger(time_diff);
 
 	// accept only middle click on a valid area thus the enhanced-middle-click
-	if( areaValidator(e, aWindow) && e.button === 1 ) {
+	if( areaValidator(e, aWindow) && e.button === 1 && time_diff < timeout ) {
 		// e.cancelBubble = true;
 		e.stopPropagation();
 		//emclogger("area accepted");
@@ -620,14 +633,14 @@ var loadSearchFromContext = function (aWindow, e) {
 
 
 var bookmarksMenuPopup = function (aWindow, e) {
-	emclogger('bookmarksMenuPopup');
+	//emclogger('bookmarksMenuPopup');
 	let popup = aWindow.document.getElementById('emc-bookmarksMenuPopup');
 	popup.openPopupAtScreen(e.screenX, e.screenY, true);
 }
 
 
 var bookmarksToolbarFolderPopup = function (aWindow, e) {
-	emclogger('bookmarksToolbarFolderPopup');
+	//emclogger('bookmarksToolbarFolderPopup');
 	let popup = aWindow.document.getElementById('emc-bookmarksToolbarFolderPopup');
 	popup.openPopupAtScreen(e.screenX, e.screenY, true);
 }
@@ -914,7 +927,7 @@ var loadIntoWindow = function(aWindow) {
 
 		let onpopup = "BookmarkingUI.onPopupShowing(event); if (!this._placesView) this._placesView = new PlacesMenu(event, 'place:folder=BOOKMARKS_MENU');";
 
-		//popup.setAttribute('placespopup','true');
+		popup.setAttribute('placespopup','true'); // this enables drag/drop
 		popup.setAttribute('context','placesContext');
 		popup.setAttribute('onpopupshowing', onpopup);
 
@@ -924,6 +937,9 @@ var loadIntoWindow = function(aWindow) {
 		toolbar.setAttribute('label', aWindow.document.getElementById('bookmarksToolbarFolderMenu').getAttribute('label'));
 
 		let toolbarPopup = aWindow.document.createElement("menupopup");
+		toolbarPopup.setAttribute('placespopup','true'); // this enables drag/drop
+		popup.setAttribute('context','placesContext');
+
 		let toolbarOnPopup = "PlacesCommandHook.updateBookmarkAllTabsCommand(); if (!this._placesView) this._placesView = new PlacesMenu(event, 'place:folder=TOOLBAR');";
 		toolbar.setAttribute('onpopupshowing', toolbarOnPopup);
 
@@ -951,7 +967,7 @@ var loadIntoWindow = function(aWindow) {
 
 		let onpopup = "PlacesCommandHook.updateBookmarkAllTabsCommand(); if (!this._placesView) this._placesView = new PlacesMenu(event, 'place:folder=TOOLBAR');";
 
-		popup.setAttribute('placespopup','true');
+		popup.setAttribute('placespopup','true'); // this enables drag/drop
 		popup.setAttribute('context','placesContext');
 		popup.setAttribute('onpopupshowing', onpopup);
 		emcPopupGroup.appendChild(popup);
@@ -959,7 +975,12 @@ var loadIntoWindow = function(aWindow) {
 
 	// true, to execute before selection buffer on linux
 	aWindow.addEventListener("click", clicker, true);
+	aWindow.addEventListener("mousedown", clickerStartTimer, true);
+}
 
+
+var clickerStartTimer = function(e) {
+	emc_timer = +new Date();
 }
 
 
@@ -976,6 +997,7 @@ var unloadFromWindow = function(aWindow) {
 	}
 
 	aWindow.removeEventListener("click", clicker, true);
+	aWindow.removeEventListener("mousedown", clickerStartTimer, true);
 	//removed when initiated
 	//Services.obs.removeObserver(emcObserverDelayedStartup, "browser-delayed-startup-finished");
 
