@@ -109,7 +109,9 @@ var emclogger = function(msg)
 var clicker = function(e) {
 	//emclogger("clicker");
 	let aWindow = this.window;
-	
+
+	//let autoscroll = Services.prefs.getBoolPref("general.autoScroll");
+
 	let timeout = BRANCH.getIntPref("timeout");
 	let end = +new Date();
 	let time_diff = end - emc_timer;
@@ -608,25 +610,27 @@ var toggleTabView = function (aWindow) {
 
 // stackoverflow.com/questions/2444430/how-to-get-a-word-under-cursor-using-javascript
 var loadSearchFromContext = function (aWindow, e) {
-	let range = e.target.parentNode.ownerDocument.createRange();
+	//let range = e.target.parentNode.ownerDocument.createRange();
 
-	range.selectNode(e.rangeParent);
-	let str = range.toString();
+	//range.selectNode(e.rangeParent);
+	//let str = range.toString();
 
-	range.detach();
+	//range.detach();
 
-	let word_under = getWordAt(str, e.rangeOffset);
+	//let word_under = getWordAt(str, e.rangeOffset);
 	let selection = aWindow.getBrowserSelection();
 
 	if( selection.length > 0 ) {
 		aWindow.BrowserSearch.loadSearchFromContext(selection);
 	}
+	/*
 	else if( word_under.length > 1 ) {
 		if(e && e.rangeParent && e.rangeParent.nodeType == e.rangeParent.TEXT_NODE
 				&& e.rangeParent.parentNode == e.target) {
 			aWindow.BrowserSearch.loadSearchFromContext(word_under);
 		}
 	}
+	*/
 
 	return;
 }
@@ -785,7 +789,7 @@ function startup(data, reason) {
 		loadIntoWindow(domWindow);
 
 		// restartless addon can also be installed/enabled after browser-delayed-startup-finished
-		if( reason == ADDON_DOWNGRADE || reason == ADDON_INSTALL || reason == ADDON_UPGRADE || reason == ADDON_ENABLE )
+		if( (reason == ADDON_DOWNGRADE || reason == ADDON_INSTALL || reason == ADDON_UPGRADE || reason == ADDON_ENABLE) && ! emc_browser_delayed )
 			emcInit(domWindow);
 	}
 
@@ -837,9 +841,11 @@ function shutdown(data, reason) {
 
 
 var emcInit = function(aWindow) {
+	// TODO : still a problem on mac os
+
 	// init tabview in the background so _tabViewTabItem gets added to tabs
 	if(typeof(aWindow.TabView) != 'undefined' && typeof(aWindow.gBrowser) != 'undefined' && typeof(aWindow.gBrowser.tabContainer.getItemAtIndex(0)._tabViewTabItem) == 'undefined') {
-		// v23 doesn't have enough browser delay for tabview to this
+		// v23 doesn't have enough browser delay for tabview, so this
 		// is an ugly hack just for v23, remove this as soon as possible
 		if(aWindow.parseInt(FFVERSION) < aWindow.parseInt('24'))
 			aWindow.setTimeout(function() { aWindow.TabView._initFrame(); }, 450);
@@ -878,9 +884,13 @@ var loadIntoWindow = function(aWindow) {
 
 	// FIXME: make and emc class so everything will be in one place !
 	aWindow.emcCloseTab = emcCloseTab;
- 
+
+	if(aWindow.document.getElementById("mainPopupSet") == null)
+		return;
+
 	let emcPopupGroup = aWindow.document.createElement('popupset');
 	emcPopupGroup.setAttribute('id', 'emc-popupGroup');
+
 	aWindow.document.getElementById("mainPopupSet").appendChild(emcPopupGroup);
 
 	// Create menus
@@ -934,7 +944,10 @@ var loadIntoWindow = function(aWindow) {
 		let toolbar = aWindow.document.createElement("menu");
 		toolbar.setAttribute('id', 'emc-bookmarksMenuPopup-toolbarFolderMenu');
 		toolbar.setAttribute('class', 'menu-iconic bookmark-item emc-toolbarMenuIcon');
-		toolbar.setAttribute('label', aWindow.document.getElementById('bookmarksToolbarFolderMenu').getAttribute('label'));
+		if(aWindow.document.getElementById('bookmarksToolbarFolderMenu') != null)
+			toolbar.setAttribute('label', aWindow.document.getElementById('bookmarksToolbarFolderMenu').getAttribute('label'));
+		else
+			toolbar.setAttribute('label', 'Toolbar Bookmarks');
 
 		let toolbarPopup = aWindow.document.createElement("menupopup");
 		toolbarPopup.setAttribute('placespopup','true'); // this enables drag/drop

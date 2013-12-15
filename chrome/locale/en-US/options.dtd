@@ -12,7 +12,7 @@
 <!ENTITY label-toggleHistorySidebar "Toggle history sidebar">
 <!ENTITY label-toggleDownloadsSidebar "Toggle downloads sidebar">
 <!ENTITY label-toggleTabView "Toggle tab groups (Panorama)">
-<!ENTITY loadSearchFromContext-label "Search selection/word under cursor">
+<!ENTITY loadSearchFromContext-label "Search selection">
 <!ENTITY bookmarksToolbarFolderPopup-label "Bookmarks Toolbar Menu">
 <!ENTITY bookmarksMenuPopup-label "Bookmarks Menu">
 
