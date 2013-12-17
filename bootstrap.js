@@ -43,15 +43,20 @@ const DEFAULT_PREFS = {
 	// available actions:
 	// historyMenu, tabsMenu, tabsGroupsMenu,
 	// toggleBookmarksSidebar, toggleHistorySidebar, toggleTabView
+	// loadSearchFromContext
+	// bookmarksMenuPopup, bookmarksToolbarFolderPopup
 	// disable
 	primaryAction: "historyMenu",
 	secondaryAction: "disable",
 	refreshOnTabClose: false,
 	displayGroupName: false,
-	autoscrolling: false
+	autoscrolling: false,
+	timeout: 999999999, 
 };
 
 var emc_browser_delayed = false;
+
+var emc_timer = 0;
 
 
 // Default preferences for bootstrap extensions are registered dynamically.
@@ -105,8 +110,20 @@ var clicker = function(e) {
 	//emclogger("clicker");
 	let aWindow = this.window;
 
+	//let autoscroll = Services.prefs.getBoolPref("general.autoScroll");
+
+	let timeout = BRANCH.getIntPref("timeout");
+	let end = +new Date();
+	let time_diff = end - emc_timer;
+
+	if( timeout == 0 )
+		timeout = 999999999;
+
+	//emclogger(timeout);
+	//emclogger(time_diff);
+
 	// accept only middle click on a valid area thus the enhanced-middle-click
-	if( areaValidator(e, aWindow) && e.button === 1 ) {
+	if( areaValidator(e, aWindow) && e.button === 1 && time_diff < timeout ) {
 		// e.cancelBubble = true;
 		e.stopPropagation();
 		//emclogger("area accepted");
@@ -239,6 +256,18 @@ var runAction = function(e, aWindow) {
 
 	if( action == 'toggleTabView' ) {
 		toggleTabView(aWindow);
+	}
+
+	if( action == 'loadSearchFromContext' ) {
+		loadSearchFromContext(aWindow, e);
+	}
+
+	if( action == 'bookmarksToolbarFolderPopup' ) {
+		bookmarksToolbarFolderPopup(aWindow, e);
+	}
+
+	if( action == 'bookmarksMenuPopup' ) {
+		bookmarksMenuPopup(aWindow, e);
 	}
 
 };
@@ -423,6 +452,19 @@ var emcCloseTab = function(e)
 }
 
 
+function getWordAt(s, pos) {
+  // make pos point to a character of the word
+  while (s[pos] == " ") pos--;
+  // find the space before that word
+  // (add 1 to be at the begining of that word)
+  // (note that it works even if there is no space before that word)
+  pos = s.lastIndexOf(" ", pos) + 1;
+  // find the end of the word
+  var end = s.indexOf(" ", pos);
+  if (end == -1) end = s.length; // set to length if it was the last word
+  // return the result
+  return s.substring(pos, end);
+}
 
 
 
@@ -567,6 +609,47 @@ var toggleTabView = function (aWindow) {
 }
 
 
+// stackoverflow.com/questions/2444430/how-to-get-a-word-under-cursor-using-javascript
+var loadSearchFromContext = function (aWindow, e) {
+	//let range = e.target.parentNode.ownerDocument.createRange();
+
+	//range.selectNode(e.rangeParent);
+	//let str = range.toString();
+
+	//range.detach();
+
+	//let word_under = getWordAt(str, e.rangeOffset);
+	let selection = aWindow.getBrowserSelection();
+
+	if( selection.length > 0 ) {
+		aWindow.BrowserSearch.loadSearchFromContext(selection);
+	}
+	/*
+	else if( word_under.length > 1 ) {
+		if(e && e.rangeParent && e.rangeParent.nodeType == e.rangeParent.TEXT_NODE
+				&& e.rangeParent.parentNode == e.target) {
+			aWindow.BrowserSearch.loadSearchFromContext(word_under);
+		}
+	}
+	*/
+
+	return;
+}
+
+
+var bookmarksMenuPopup = function (aWindow, e) {
+	//emclogger('bookmarksMenuPopup');
+	let popup = aWindow.document.getElementById('emc-bookmarksMenuPopup');
+	popup.openPopupAtScreen(e.screenX, e.screenY, true);
+}
+
+
+var bookmarksToolbarFolderPopup = function (aWindow, e) {
+	//emclogger('bookmarksToolbarFolderPopup');
+	let popup = aWindow.document.getElementById('emc-bookmarksToolbarFolderPopup');
+	popup.openPopupAtScreen(e.screenX, e.screenY, true);
+}
+
 
 
 
@@ -707,7 +790,7 @@ function startup(data, reason) {
 		loadIntoWindow(domWindow);
 
 		// restartless addon can also be installed/enabled after browser-delayed-startup-finished
-		if( reason == ADDON_DOWNGRADE || reason == ADDON_INSTALL || reason == ADDON_UPGRADE || reason == ADDON_ENABLE )
+		if( (reason == ADDON_DOWNGRADE || reason == ADDON_INSTALL || reason == ADDON_UPGRADE || reason == ADDON_ENABLE) && ! emc_browser_delayed )
 			emcInit(domWindow);
 	}
 
@@ -759,9 +842,11 @@ function shutdown(data, reason) {
 
 
 var emcInit = function(aWindow) {
+	// TODO : still a problem on mac os
+
 	// init tabview in the background so _tabViewTabItem gets added to tabs
 	if(typeof(aWindow.TabView) != 'undefined' && typeof(aWindow.gBrowser) != 'undefined' && typeof(aWindow.gBrowser.tabContainer.getItemAtIndex(0)._tabViewTabItem) == 'undefined') {
-		// v23 doesn't have enough browser delay for tabview to this
+		// v23 doesn't have enough browser delay for tabview, so this
 		// is an ugly hack just for v23, remove this as soon as possible
 		if(aWindow.parseInt(FFVERSION) < aWindow.parseInt('24'))
 			aWindow.setTimeout(function() { aWindow.TabView._initFrame(); }, 450);
@@ -801,35 +886,115 @@ var loadIntoWindow = function(aWindow) {
 	// FIXME: make and emc class so everything will be in one place !
 	aWindow.emcCloseTab = emcCloseTab;
 
+	if(aWindow.document.getElementById("mainPopupSet") == null)
+		return;
+
+	let emcPopupGroup = aWindow.document.createElement('popupset');
+	emcPopupGroup.setAttribute('id', 'emc-popupGroup');
+
+	aWindow.document.getElementById("mainPopupSet").appendChild(emcPopupGroup);
+
 	// Create menus
 	if(aWindow.document.getElementById('emc.tabsMenu') == null) {
-		let tabsMenu = aWindow.document.createElement("menupopup");
-		tabsMenu.setAttribute("id", "emc.tabsMenu");
-		tabsMenu.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
-		aWindow.tabsMenu = tabsMenu;
-		aWindow.document.getElementById("mainPopupSet").appendChild(tabsMenu);
+		let popup = aWindow.document.createElement("menupopup");
+		popup.setAttribute("id", "emc.tabsMenu");
+		popup.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
+		aWindow.tabsMenu = popup;
+		emcPopupGroup.appendChild(popup);
 	}
 
 	if(aWindow.document.getElementById('emc.tabsGroupsMenu') == null) {
-		let tabsGroupsMenu  = aWindow.document.createElement("menupopup");
-		tabsGroupsMenu.setAttribute("id", "emc.tabsGroupsMenu");
-		tabsGroupsMenu.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
-		aWindow.tabsGroupsMenu = tabsGroupsMenu;
-		aWindow.document.getElementById("mainPopupSet").appendChild(tabsGroupsMenu);
+		let popup = aWindow.document.createElement("menupopup");
+		popup.setAttribute("id", "emc.tabsGroupsMenu");
+		popup.setAttribute("oncommand", "gBrowser.tabContainer.selectedIndex = event.target.getAttribute('index');");
+		aWindow.tabsGroupsMenu = popup;
+		emcPopupGroup.appendChild(popup);
 	}
 
 	if(aWindow.document.getElementById('emc.historyMenu') == null) {
-		let history_popup = aWindow.document.createElement("menupopup");
-		history_popup.setAttribute("id", "emc.historyMenu");
-		history_popup.setAttribute("oncommand", "gotoHistoryIndex(event); event.stopPropagation();");
-		history_popup.setAttribute("onclick", "checkForMiddleClick(this, event);");
-		aWindow.history_popup = history_popup;
-		aWindow.document.getElementById("mainPopupSet").appendChild(history_popup);
+		let popup = aWindow.document.createElement("menupopup");
+		popup.setAttribute("id", "emc.historyMenu");
+		popup.setAttribute("oncommand", "gotoHistoryIndex(event); event.stopPropagation();");
+		popup.setAttribute("onclick", "checkForMiddleClick(this, event);");
+		aWindow.history_popup = popup;
+		emcPopupGroup.appendChild(popup);
+	}
+
+	if(aWindow.document.getElementById('emc-bookmarksMenuPopup') == null) {
+		let popup = aWindow.document.createElement("menupopup");
+		let menu = aWindow.document.getElementById('bookmarksMenuPopup');
+		//popup = menu.querySelector('#bookmarksMenuPopup').cloneNode(true);
+		popup.setAttribute("id", "emc-bookmarksMenuPopup");
+		popup.setAttribute("open", "true");
+		popup.setAttribute("_moz-menuactive", "true");
+		//popup.setAttribute('ondragenter','PlacesMenuDNDHandler.onDragEnter(event);');
+		//popup.setAttribute('ondragover','PlacesMenuDNDHandler.onDragOver(event);');
+		//popup.setAttribute('ondrop','PlacesMenuDNDHandler.onDrop(event);');
+		popup.setAttribute('openInTabs','children');
+		popup.setAttribute('tooltip','bhTooltip');
+		popup.setAttribute('popupsinherittooltip','true');
+		popup.setAttribute('onclick','BookmarksEventHandler.onClick(event, this._placesView);');
+		popup.setAttribute('oncommand','event.preventDefault(); BookmarksEventHandler.onCommand(event, this._placesView);');
+
+		let onpopup = "BookmarkingUI.onPopupShowing(event); if (!this._placesView) this._placesView = new PlacesMenu(event, 'place:folder=BOOKMARKS_MENU');";
+
+		popup.setAttribute('placespopup','true'); // this enables drag/drop
+		popup.setAttribute('context','placesContext');
+		popup.setAttribute('onpopupshowing', onpopup);
+
+		let toolbar = aWindow.document.createElement("menu");
+		toolbar.setAttribute('id', 'emc-bookmarksMenuPopup-toolbarFolderMenu');
+		toolbar.setAttribute('class', 'menu-iconic bookmark-item emc-toolbarMenuIcon');
+		if(aWindow.document.getElementById('bookmarksToolbarFolderMenu') != null)
+			toolbar.setAttribute('label', aWindow.document.getElementById('bookmarksToolbarFolderMenu').getAttribute('label'));
+		else
+			toolbar.setAttribute('label', 'Toolbar Bookmarks');
+
+		let toolbarPopup = aWindow.document.createElement("menupopup");
+		toolbarPopup.setAttribute('placespopup','true'); // this enables drag/drop
+		popup.setAttribute('context','placesContext');
+
+		let toolbarOnPopup = "PlacesCommandHook.updateBookmarkAllTabsCommand(); if (!this._placesView) this._placesView = new PlacesMenu(event, 'place:folder=TOOLBAR');";
+		toolbar.setAttribute('onpopupshowing', toolbarOnPopup);
+
+		toolbar.appendChild(toolbarPopup);
+		popup.appendChild(toolbar);
+		popup.appendChild(aWindow.document.createElement("menuseparator"));
+		emcPopupGroup.appendChild(popup);
+	}
+
+	if(aWindow.document.getElementById('emc-bookmarksToolbarFolderPopup') == null) {
+		let popup = aWindow.document.createElement("menupopup");
+		let menu = aWindow.document.getElementById('bookmarksMenu');
+		//popup = menu.querySelector('#bookmarksToolbarFolderPopup').cloneNode(true);
+		popup.setAttribute("id", "emc-bookmarksToolbarFolderPopup");
+		popup.setAttribute("open", "true");
+		popup.setAttribute("_moz-menuactive", "true");
+		//popup.setAttribute('ondragenter','PlacesMenuDNDHandler.onDragEnter(event);');
+		//popup.setAttribute('ondragover','PlacesMenuDNDHandler.onDragOver(event);');
+		//popup.setAttribute('ondrop','PlacesMenuDNDHandler.onDrop(event);');
+		popup.setAttribute('openInTabs','children');
+		popup.setAttribute('tooltip','bhTooltip');
+		popup.setAttribute('popupsinherittooltip','true');
+		popup.setAttribute('onclick','BookmarksEventHandler.onClick(event, this._placesView);');
+		popup.setAttribute('oncommand','BookmarksEventHandler.onCommand(event, this._placesView);');
+
+		let onpopup = "PlacesCommandHook.updateBookmarkAllTabsCommand(); if (!this._placesView) this._placesView = new PlacesMenu(event, 'place:folder=TOOLBAR');";
+
+		popup.setAttribute('placespopup','true'); // this enables drag/drop
+		popup.setAttribute('context','placesContext');
+		popup.setAttribute('onpopupshowing', onpopup);
+		emcPopupGroup.appendChild(popup);
 	}
 
 	// true, to execute before selection buffer on linux
 	aWindow.addEventListener("click", clicker, true);
+	aWindow.addEventListener("mousedown", clickerStartTimer, true);
+}
 
+
+var clickerStartTimer = function(e) {
+	emc_timer = +new Date();
 }
 
 
@@ -839,25 +1004,14 @@ var unloadFromWindow = function(aWindow) {
 	// Remove any persistent UI elements
 	// Perform any other cleanup
 	//emclogger("cleaning up and saying bye");
-	var node = aWindow.document.getElementById("emc.tabsMenu");
-	if (node.parentNode) {
-		//emclogger("remove tabsMenu");
-		node.parentNode.removeChild(node);
-	}
 
-	var node = aWindow.document.getElementById("emc.tabsGroupsMenu");
+	var node = aWindow.document.getElementById("emc-popupGroup");
 	if (node.parentNode) {
-		//emclogger("remove tabsGroupsMenu");
-		node.parentNode.removeChild(node);
-	}
-
-	var node = aWindow.document.getElementById("emc.historyMenu");
-	if (node.parentNode) {
-		//emclogger("remove historyMenu");
 		node.parentNode.removeChild(node);
 	}
 
 	aWindow.removeEventListener("click", clicker, true);
+	aWindow.removeEventListener("mousedown", clickerStartTimer, true);
 	//removed when initiated
 	//Services.obs.removeObserver(emcObserverDelayedStartup, "browser-delayed-startup-finished");
 
