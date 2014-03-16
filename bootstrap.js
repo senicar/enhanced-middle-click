@@ -836,7 +836,7 @@ function shutdown(data, reason) {
 
 	Services.obs.removeObserver(emcObserverDelayedStartup, "browser-delayed-startup-finished");
 
-	if(!sss.sheetRegistered(STYLE_URI, sss.USER_SHEET))
+	if(sss.sheetRegistered(STYLE_URI, sss.USER_SHEET))
 		sss.unregisterSheet(STYLE_URI, sss.USER_SHEET);
 }
 
