@@ -272,6 +272,10 @@ var runAction = function(e, aWindow) {
 		aWindow.gBrowser.selectedBrowser.startScroll(e);
 	}
 
+	if( action == 'removeCurrentTab' ) {
+		aWindow.gBrowser.removeCurrentTab();
+	}
+
 };
 
 

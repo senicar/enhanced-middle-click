@@ -17,6 +17,7 @@
 				<menuitem label="&bookmarksToolbarFolderPopup-label;" value="bookmarksToolbarFolderPopup" />
 				<menuitem label="&bookmarksMenuPopup-label;" value="bookmarksMenuPopup" />
 				<menuitem label="&autoScroll-label;" value="autoScroll" />
+				<menuitem label="&removeCurrentTab-label;" value="removeCurrentTab" />
 			</menupopup>
 		</menulist>
 	</setting>
@@ -36,6 +37,7 @@
 				<menuitem label="&bookmarksToolbarFolderPopup-label;" value="bookmarksToolbarFolderPopup" />
 				<menuitem label="&bookmarksMenuPopup-label;" value="bookmarksMenuPopup" />
 				<menuitem label="&autoScroll-label;" value="autoScroll" />
+				<menuitem label="&removeCurrentTab-label;" value="removeCurrentTab" />
 			</menupopup>
 		</menulist>
 	</setting>
