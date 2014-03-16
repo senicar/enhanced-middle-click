@@ -3,12 +3,12 @@
 *  Extension: Enhanced Middle Click
 *  Author: senicar
 *
-*  Thanks to: 
+*  Thanks to:
 *  ttaubert ( #fx-team )
 *  mfinkle ( #extdev )
 *  gMinus (Tab History Menu)
 *  keremonal (Middle Click To Go Back)
-* 
+*
 *******************************************************************************/
 
 // TODO: Comment and code cleanup, remove unused parts
@@ -51,7 +51,7 @@ const DEFAULT_PREFS = {
 	refreshOnTabClose: false,
 	displayGroupName: false,
 	autoscrolling: false,
-	timeout: 999999999, 
+	timeout: 999999999,
 };
 
 var emc_browser_delayed = false;
@@ -210,17 +210,15 @@ var runAction = function(e, aWindow) {
 	let action = null;
 
 	if(!e.ctrlKey && !e.shiftKey) {
-		//emclogger("primaryAction"); 
+		//emclogger("primaryAction");
 		action = BRANCH.getCharPref("primaryAction");
 
 	} else if(!e.ctrlKey && e.shiftKey && BRANCH.getCharPref("secondaryAction") !== "disable") {
-		//emclogger("secondaryAction"); 
+		//emclogger("secondaryAction");
 		action = BRANCH.getCharPref("secondaryAction");
-
 	} else {
-		//emclogger("no action"); 
+		//emclogger("no action");
 		return false;
-
 	}
 
 	//emclogger("action -> " + action);
@@ -318,7 +316,7 @@ var makePopupMenu = function(e, aWindow, action, items, refresh)
 
 			// firefox uses .alltabs-item[tabIsNotVisible] to style visible tabs
 			menuItem.classList.add("alltabs-item");
-			
+
 			// if page has no favicon show default
 			if(!item.getAttribute("image"))
 				menuItem.setAttribute("image", 'chrome://mozapps/skin/places/defaultFavicon.png');
@@ -397,7 +395,7 @@ var getTabGroup = function(e, aWindow, tab)
 
 			return group;
 		}
-		else if (tab.pinned) 
+		else if (tab.pinned)
 		{
 			group.id = 0;
 			group.title = null;
@@ -434,7 +432,7 @@ var emcCloseTab = function(e)
 		{
 			if( action == 'tabs' || action == 'tabsMenu' || action == 'visibleTabsMenu' )
 				tabsMenu(menu, aWindow, refresh);
-				
+
 				/*
 				for(var i=0; i<menu.childNodes.length; i++) {
 					let itemIndex = menu.childNodes[i].getAttribute('index');
@@ -482,7 +480,7 @@ var historyMenu = function (e, aWindow)
 
 	let hasHistory = aWindow.FillHistoryMenu(history_popup);
 	let selectedTab = aWindow.gBrowser.tabContainer.selectedItem;
-	
+
 	if(!hasHistory)
 	{
 		let menuitem = history_popup.appendChild(aWindow.document.createElement("menuitem"));
@@ -494,7 +492,7 @@ var historyMenu = function (e, aWindow)
 		menuitem.setAttribute("tooltiptext", tooltipCurrent);
 
 	}
-	
+
 	history_popup.openPopupAtScreen(e.screenX, e.screenY, true);
 }
 
@@ -553,7 +551,7 @@ var tabsGroupsMenu = function (e, aWindow, refresh)
 			tabs.push('separator');
 
 		let first_group_item = true;
-		for ( let y = 0; y < num; y++) 
+		for ( let y = 0; y < num; y++)
 		{
 			tab = aWindow.gBrowser.tabContainer.getItemAtIndex(y);
 			tab_group = getTabGroup(e, aWindow, tab);
@@ -679,7 +677,7 @@ function install(data, reason) {
 	// tabs -> tabsMenu
 	//
 	// this work only the first install because of the pref reset
-	
+
 	let oldVersion = '0';
 	if( BRANCH.prefHasUserValue("version") )
 		oldVersion = BRANCH.getCharPref('version');
@@ -753,7 +751,7 @@ function install(data, reason) {
 			acceptButton.label = "Please check preferences";
 			acceptButton.accessKey = ""
 			acceptButton.popup = null;
-			acceptButton.callback = function() { 
+			acceptButton.callback = function() {
 				// https://developer.mozilla.org/en-US/docs/Working_with_windows_in_chrome_code#Example_3:_Using_nsIWindowMediator_when_opener_is_not_enough
 
 				// http://mxr.mozilla.org/mozilla-central/source/browser/base/content/browser.js#6120
@@ -780,7 +778,7 @@ function uninstall(data, reason) {
 
 function startup(data, reason) {
 	//emclogger("startup reason: " + reason);
-	
+
 	// Load into any existing windows
 	// bootstrap.js is not loaded into a window so we have to do it manually
 	// let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
@@ -799,8 +797,8 @@ function startup(data, reason) {
 	//
 	// needs eventListener on "load" so it runs on every new window
 	// needs observer to listen for browser-delayed-startup-finished, SSWindowStateReady doesn't fire in new windows
-	// 
-	// https://developer.mozilla.org/en-US/docs/DOM/Mozilla_event_reference 
+	//
+	// https://developer.mozilla.org/en-US/docs/DOM/Mozilla_event_reference
 
 	Services.obs.addObserver(emcObserverDelayedStartup, "browser-delayed-startup-finished", false);
 
