@@ -268,6 +268,10 @@ var runAction = function(e, aWindow) {
 		bookmarksMenuPopup(aWindow, e);
 	}
 
+	if( action == 'autoScroll' ) {
+		aWindow.gBrowser.selectedBrowser.startScroll(e);
+	}
+
 };
 
 

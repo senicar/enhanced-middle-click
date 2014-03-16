@@ -16,6 +16,7 @@
 				<menuitem label="&loadSearchFromContext-label;" value="loadSearchFromContext" />
 				<menuitem label="&bookmarksToolbarFolderPopup-label;" value="bookmarksToolbarFolderPopup" />
 				<menuitem label="&bookmarksMenuPopup-label;" value="bookmarksMenuPopup" />
+				<menuitem label="&autoScroll-label;" value="autoScroll" />
 			</menupopup>
 		</menulist>
 	</setting>
@@ -34,6 +35,7 @@
 				<menuitem label="&loadSearchFromContext-label;" value="loadSearchFromContext" />
 				<menuitem label="&bookmarksToolbarFolderPopup-label;" value="bookmarksToolbarFolderPopup" />
 				<menuitem label="&bookmarksMenuPopup-label;" value="bookmarksMenuPopup" />
+				<menuitem label="&autoScroll-label;" value="autoScroll" />
 			</menupopup>
 		</menulist>
 	</setting>

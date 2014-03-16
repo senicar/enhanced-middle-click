@@ -15,6 +15,7 @@
 <!ENTITY loadSearchFromContext-label "Search selection">
 <!ENTITY bookmarksToolbarFolderPopup-label "Bookmarks Toolbar Menu">
 <!ENTITY bookmarksMenuPopup-label "Bookmarks Menu">
+<!ENTITY autoScroll-label "AutoScrolling">
 
 <!ENTITY title-refreshOnTabClose "Refresh menu on tab close">
 <!ENTITY desc-refreshOnTabClose "Don't close the menu when closing a tab with middle click">
