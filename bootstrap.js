@@ -45,6 +45,7 @@ const DEFAULT_PREFS = {
 	// toggleBookmarksSidebar, toggleHistorySidebar, toggleTabView
 	// loadSearchFromContext
 	// bookmarksMenuPopup, bookmarksToolbarFolderPopup
+	// removeCurrentTab, autoScroll
 	// disable
 	primaryAction: "historyMenu",
 	secondaryAction: "disable",
@@ -273,7 +274,7 @@ var runAction = function(e, aWindow) {
 	}
 
 	if( action == 'removeCurrentTab' ) {
-		aWindow.gBrowser.removeCurrentTab();
+		aWindow.gBrowser.removeCurrentTab({animate: true, byMouse: false});
 	}
 
 };
@@ -434,7 +435,7 @@ var emcCloseTab = function(e)
 
 	if(e.button == 1)
 	{
-		aWindow.gBrowser.removeTab(tab);
+		aWindow.gBrowser.removeTab(tab,{animate: true, byMouse: false});
 
 		if(refresh)
 		{
