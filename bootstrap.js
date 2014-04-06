@@ -45,7 +45,7 @@ const DEFAULT_PREFS = {
 	// toggleBookmarksSidebar, toggleHistorySidebar, toggleTabView
 	// loadSearchFromContext
 	// bookmarksMenuPopup, bookmarksToolbarFolderPopup
-	// removeCurrentTab, autoScroll
+	// removeCurrentTab, autoScroll, undoCloseTab
 	// disable
 	primaryAction: "historyMenu",
 	secondaryAction: "disable",
@@ -275,6 +275,10 @@ var runAction = function(e, aWindow) {
 
 	if( action == 'removeCurrentTab' ) {
 		aWindow.gBrowser.removeCurrentTab({animate: true, byMouse: false});
+	}
+
+	if( action == 'undoCloseTab' ) {
+		aWindow.undoCloseTab(0);
 	}
 
 };

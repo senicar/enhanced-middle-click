@@ -18,6 +18,7 @@
 				<menuitem label="&bookmarksMenuPopup-label;" value="bookmarksMenuPopup" />
 				<menuitem label="&autoScroll-label;" value="autoScroll" />
 				<menuitem label="&removeCurrentTab-label;" value="removeCurrentTab" />
+				<menuitem label="&undoCloseTab-label;" value="undoCloseTab" />
 			</menupopup>
 		</menulist>
 	</setting>
@@ -38,6 +39,7 @@
 				<menuitem label="&bookmarksMenuPopup-label;" value="bookmarksMenuPopup" />
 				<menuitem label="&autoScroll-label;" value="autoScroll" />
 				<menuitem label="&removeCurrentTab-label;" value="removeCurrentTab" />
+				<menuitem label="&undoCloseTab-label;" value="undoCloseTab" />
 			</menupopup>
 		</menulist>
 	</setting>
