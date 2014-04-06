@@ -938,9 +938,6 @@ var loadIntoWindow = function(aWindow) {
 		popup.setAttribute("id", "emc-bookmarksMenuPopup");
 		popup.setAttribute("open", "true");
 		popup.setAttribute("_moz-menuactive", "true");
-		//popup.setAttribute('ondragenter','PlacesMenuDNDHandler.onDragEnter(event);');
-		//popup.setAttribute('ondragover','PlacesMenuDNDHandler.onDragOver(event);');
-		//popup.setAttribute('ondrop','PlacesMenuDNDHandler.onDrop(event);');
 		popup.setAttribute('openInTabs','children');
 		popup.setAttribute('tooltip','bhTooltip');
 		popup.setAttribute('popupsinherittooltip','true');
@@ -981,9 +978,6 @@ var loadIntoWindow = function(aWindow) {
 		popup.setAttribute("id", "emc-bookmarksToolbarFolderPopup");
 		popup.setAttribute("open", "true");
 		popup.setAttribute("_moz-menuactive", "true");
-		//popup.setAttribute('ondragenter','PlacesMenuDNDHandler.onDragEnter(event);');
-		//popup.setAttribute('ondragover','PlacesMenuDNDHandler.onDragOver(event);');
-		//popup.setAttribute('ondrop','PlacesMenuDNDHandler.onDrop(event);');
 		popup.setAttribute('openInTabs','children');
 		popup.setAttribute('tooltip','bhTooltip');
 		popup.setAttribute('popupsinherittooltip','true');
