@@ -439,7 +439,15 @@ var emcCloseTab = function(e)
 
 	if(e.button == 1)
 	{
-		aWindow.gBrowser.removeTab(tab,{animate: true, byMouse: false});
+		// TODO: closing tab with animation is async and slower so tabsMenu
+		// and tabsGroupsMenu can redraw before tab is removed if closing
+		// in quick succession and tab is still visible in the menu even
+		// though it has been removed
+		//
+		// Try implementing removeTabsProgressListener or something similar
+		//
+		// aWindow.gBrowser.removeTab(tab,{animate: true, byMouse: false});
+		aWindow.gBrowser.removeTab(tab);
 
 		if(refresh)
 		{
