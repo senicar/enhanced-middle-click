@@ -19,6 +19,8 @@
 				<menuitem label="&autoScroll-label;" value="autoScroll" />
 				<menuitem label="&removeCurrentTab-label;" value="removeCurrentTab" />
 				<menuitem label="&undoCloseTab-label;" value="undoCloseTab" />
+				<menuitem label="&toggleFavTabPosition-label;" value="toggleFavTabPosition" />
+				<menuitem label="&runCustomScript-label;" value="runCustomScript" />
 			</menupopup>
 		</menulist>
 	</setting>
@@ -40,10 +42,38 @@
 				<menuitem label="&autoScroll-label;" value="autoScroll" />
 				<menuitem label="&removeCurrentTab-label;" value="removeCurrentTab" />
 				<menuitem label="&undoCloseTab-label;" value="undoCloseTab" />
+				<menuitem label="&toggleFavTabPosition-label;" value="toggleFavTabPosition" />
+				<menuitem label="&runCustomScript-label;" value="runCustomScript" />
 			</menupopup>
 		</menulist>
 	</setting>
+
+	<setting pref="extensions.enhancedmiddleclick.tertiaryAction" type="menulist" title="&title-tertiaryAction;" desc="&desc-tertiaryAction;">
+		<menulist>
+			<menupopup>
+				<menuitem label="&label-disable;" value="disable" />
+				<menuitem label="&label-historyMenu;" value="historyMenu" />
+				<menuitem label="&label-tabsMenu;" value="tabsMenu" />
+				<menuitem label="&label-tabsGroupsMenu;" value="tabsGroupsMenu" />
+				<menuitem label="&label-toggleBookmarksSidebar;" value="toggleBookmarksSidebar" />
+				<menuitem label="&label-toggleHistorySidebar;" value="toggleHistorySidebar" />
+				<!--<menuitem label="&label-toggleDownloadsSidebar;" value="toggleDownloadsSidebar" />-->
+				<menuitem label="&label-toggleTabView;" value="toggleTabView" />
+				<menuitem label="&loadSearchFromContext-label;" value="loadSearchFromContext" />
+				<menuitem label="&bookmarksToolbarFolderPopup-label;" value="bookmarksToolbarFolderPopup" />
+				<menuitem label="&bookmarksMenuPopup-label;" value="bookmarksMenuPopup" />
+				<menuitem label="&autoScroll-label;" value="autoScroll" />
+				<menuitem label="&removeCurrentTab-label;" value="removeCurrentTab" />
+				<menuitem label="&undoCloseTab-label;" value="undoCloseTab" />
+				<menuitem label="&toggleFavTabPosition-label;" value="toggleFavTabPosition" />
+				<menuitem label="&runCustomScript-label;" value="runCustomScript" />
+			</menupopup>
+		</menulist>
+	</setting>
+
 	<setting type="bool" pref="extensions.enhancedmiddleclick.refreshOnTabClose" title="&title-refreshOnTabClose;" desc="&desc-refreshOnTabClose;" />
 	<setting type="bool" pref="extensions.enhancedmiddleclick.displayGroupName" title="&title-displayGroupName;" desc="&desc-displayGroupName;" />
+	<setting type="string" multiline="multiline" pref="extensions.enhancedmiddleclick.customScript" title="&title-customScript;" desc="&desc-customScript;" />
+	<setting type="integer" pref="extensions.enhancedmiddleclick.favTabPosition" title="&title-favTabPosition;" desc="&desc-favTabPosition;" />
 	<setting type="integer" pref="extensions.enhancedmiddleclick.timeout" title="&title-timeout;" desc="&desc-timeout;" />
 </vbox>

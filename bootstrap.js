@@ -46,13 +46,20 @@ const DEFAULT_PREFS = {
 	// loadSearchFromContext
 	// bookmarksMenuPopup, bookmarksToolbarFolderPopup
 	// removeCurrentTab, autoScroll, undoCloseTab
+	// toggleFavTabPosition
+	// runCustomScript
 	// disable
+	//
 	primaryAction: "historyMenu",
 	secondaryAction: "disable",
+	tertiaryAction: "disable",
 	refreshOnTabClose: false,
 	displayGroupName: false,
 	autoscrolling: false,
 	timeout: 999999999,
+	favTabPosition: 0,
+	favTabPositionRestore: 0,
+	customScript: 'aWindow.console.log("Enhanced middle click says *Hi*, visit options to change this message.");',
 };
 
 var emc_browser_delayed = false;
@@ -217,6 +224,11 @@ var runAction = function(e, aWindow) {
 	} else if(!e.ctrlKey && e.shiftKey && BRANCH.getCharPref("secondaryAction") !== "disable") {
 		//emclogger("secondaryAction");
 		action = BRANCH.getCharPref("secondaryAction");
+
+	} else if(e.ctrlKey && e.shiftKey && BRANCH.getCharPref("tertiaryAction") !== "disable") {
+		//emclogger("secondaryAction");
+		action = BRANCH.getCharPref("tertiaryAction");
+
 	} else {
 		//emclogger("no action");
 		return false;
@@ -270,7 +282,9 @@ var runAction = function(e, aWindow) {
 	}
 
 	if( action == 'autoScroll' ) {
-		aWindow.gBrowser.selectedBrowser.startScroll(e);
+		let scrolldir = aWindow.gBrowser._autoScrollPopup;
+		console.log(scrolldir);
+		aWindow.gBrowser.selectedBrowser.startScroll("NS", e.screenX, e.screenY);
 	}
 
 	if( action == 'removeCurrentTab' ) {
@@ -278,9 +292,16 @@ var runAction = function(e, aWindow) {
 	}
 
 	if( action == 'undoCloseTab' ) {
-		aWindow.undoCloseTab(0);
+		awindow.undoCloseTab(0);
 	}
 
+	if( action == 'runCustomScript' ) {
+		runCustomScript(aWindow, e)
+	}
+
+	if( action == 'toggleFavTabPosition' ) {
+		toggleFavTabPosition(aWindow, e)
+	}
 };
 
 
@@ -670,6 +691,54 @@ var bookmarksToolbarFolderPopup = function (aWindow, e) {
 }
 
 
+var runCustomScript = function (aWindow, e) {
+	if(BRANCH.getCharPref('customScript').length > 0) {
+		eval(BRANCH.getCharPref('customScript'));
+	}
+}
+
+
+var toggleFavTabPosition = function (aWindow, e) {
+	// get current tabs
+	let favTabPosition = BRANCH.getIntPref('favTabPosition');
+	let tabs = [];
+	tabs.push.apply(tabs, aWindow.gBrowser.visibleTabs);
+
+	let currentTab = aWindow.gBrowser.tabContainer.selectedItem;
+	let currentTabIndex = tabs.indexOf(currentTab);
+
+	if(currentTabIndex != favTabPosition) {
+	}
+
+	if(currentTabIndex != favTabPosition && favTabPositionRestore >= tabs.length) {
+		BRANCH.setIntPref('favTabPositionRestore', currentTabIndex);
+	}
+
+	let favTabPositionRestore = BRANCH.getIntPref('favTabPositionRestore');
+
+	if(favTabPosition >= tabs.length) {
+		if(currentTabIndex != tabs.length - 1) {
+			// let set current tab so we can toggle back to it
+			BRANCH.setIntPref('favTabPositionRestore', currentTabIndex);
+			aWindow.gBrowser.tabContainer.selectedIndex = tabs[tabs.length - 1]._tPos;
+		}
+		else {
+			aWindow.gBrowser.tabContainer.selectedIndex = tabs[favTabPositionRestore]._tPos;
+		}
+	}
+	else if(currentTabIndex != favTabPosition) {
+		// let set current tab so we can toggle back to it
+		BRANCH.setIntPref('favTabPositionRestore', currentTabIndex);
+		aWindow.gBrowser.tabContainer.selectedIndex = tabs[favTabPosition]._tPos;
+	}
+	else if(favTabPositionRestore >= 0) {
+		aWindow.gBrowser.tabContainer.selectedIndex = tabs[favTabPositionRestore]._tPos;
+	}
+
+	// if everything else fails do nothing
+
+}
+
 
 
 // ************************************************************************** //
@@ -828,6 +897,9 @@ function startup(data, reason) {
 
 	if(!sss.sheetRegistered(STYLE_URI, sss.USER_SHEET))
 		sss.loadAndRegisterSheet(STYLE_URI, sss.USER_SHEET);
+
+	// reset favTabPositionRestore, we want to start fresh everytime we boot up emc
+	BRANCH.setIntPref("favTabPositionRestore", -1);
 }
 
 
