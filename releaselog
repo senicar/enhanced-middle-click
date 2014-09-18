@@ -1,3 +1,7 @@
+Version 0.4.6
++ custom script
++ toggle tab position
+
 Version 0.4.5
 $ bugfix: fast closing tabs with animation via tabsMenu can be slower than menu redraw
 

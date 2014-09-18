@@ -101,7 +101,7 @@ function setDefaultPrefs(reset) {
 
 
 /**
- * It's responible for proper output of debug messages to error console
+ * It's responsible for proper output of debug messages to error console
  */
 var emclogger = function(msg)
 {
@@ -282,8 +282,7 @@ var runAction = function(e, aWindow) {
 	}
 
 	if( action == 'autoScroll' ) {
-		let scrolldir = aWindow.gBrowser._autoScrollPopup;
-		console.log(scrolldir);
+		// FIXME : not working
 		aWindow.gBrowser.selectedBrowser.startScroll("NS", e.screenX, e.screenY);
 	}
 
@@ -292,7 +291,7 @@ var runAction = function(e, aWindow) {
 	}
 
 	if( action == 'undoCloseTab' ) {
-		awindow.undoCloseTab(0);
+		aWindow.undoCloseTab(0);
 	}
 
 	if( action == 'runCustomScript' ) {

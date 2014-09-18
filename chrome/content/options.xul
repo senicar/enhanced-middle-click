@@ -16,7 +16,7 @@
 				<menuitem label="&loadSearchFromContext-label;" value="loadSearchFromContext" />
 				<menuitem label="&bookmarksToolbarFolderPopup-label;" value="bookmarksToolbarFolderPopup" />
 				<menuitem label="&bookmarksMenuPopup-label;" value="bookmarksMenuPopup" />
-				<menuitem label="&autoScroll-label;" value="autoScroll" />
+				<!--<menuitem label="&autoScroll-label;" value="autoScroll" />-->
 				<menuitem label="&removeCurrentTab-label;" value="removeCurrentTab" />
 				<menuitem label="&undoCloseTab-label;" value="undoCloseTab" />
 				<menuitem label="&toggleFavTabPosition-label;" value="toggleFavTabPosition" />
@@ -39,7 +39,7 @@
 				<menuitem label="&loadSearchFromContext-label;" value="loadSearchFromContext" />
 				<menuitem label="&bookmarksToolbarFolderPopup-label;" value="bookmarksToolbarFolderPopup" />
 				<menuitem label="&bookmarksMenuPopup-label;" value="bookmarksMenuPopup" />
-				<menuitem label="&autoScroll-label;" value="autoScroll" />
+				<!--<menuitem label="&autoScroll-label;" value="autoScroll" />-->
 				<menuitem label="&removeCurrentTab-label;" value="removeCurrentTab" />
 				<menuitem label="&undoCloseTab-label;" value="undoCloseTab" />
 				<menuitem label="&toggleFavTabPosition-label;" value="toggleFavTabPosition" />
@@ -62,7 +62,7 @@
 				<menuitem label="&loadSearchFromContext-label;" value="loadSearchFromContext" />
 				<menuitem label="&bookmarksToolbarFolderPopup-label;" value="bookmarksToolbarFolderPopup" />
 				<menuitem label="&bookmarksMenuPopup-label;" value="bookmarksMenuPopup" />
-				<menuitem label="&autoScroll-label;" value="autoScroll" />
+				<!--<menuitem label="&autoScroll-label;" value="autoScroll" />-->
 				<menuitem label="&removeCurrentTab-label;" value="removeCurrentTab" />
 				<menuitem label="&undoCloseTab-label;" value="undoCloseTab" />
 				<menuitem label="&toggleFavTabPosition-label;" value="toggleFavTabPosition" />
