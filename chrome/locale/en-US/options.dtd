@@ -5,7 +5,7 @@
 <!ENTITY desc-secondaryAction "Select a secondary action (shift + mmb)">
 
 <!ENTITY title-tertiaryAction "Tertiary action">
-<!ENTITY desc-tertiaryAction "Select a tertiary action (ctrl + shift + mmb)">
+<!ENTITY desc-tertiaryAction "Select a tertiary action (alt + shift + mmb)">
 
 <!ENTITY label-disable "[ Disabled ]">
 <!ENTITY label-historyMenu "Display history menu">

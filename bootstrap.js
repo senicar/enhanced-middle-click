@@ -217,16 +217,16 @@ var runAction = function(e, aWindow) {
 	//emclogger("getting action");
 	let action = null;
 
-	if(!e.ctrlKey && !e.shiftKey) {
+	if(!e.ctrlKey && ! e.altKey && !e.shiftKey) {
 		//emclogger("primaryAction");
 		action = BRANCH.getCharPref("primaryAction");
 
-	} else if(!e.ctrlKey && e.shiftKey && BRANCH.getCharPref("secondaryAction") !== "disable") {
+	} else if(!e.ctrlKey && !e.altKey && e.shiftKey && BRANCH.getCharPref("secondaryAction") !== "disable") {
 		//emclogger("secondaryAction");
 		action = BRANCH.getCharPref("secondaryAction");
 
-	} else if(e.ctrlKey && e.shiftKey && BRANCH.getCharPref("tertiaryAction") !== "disable") {
-		//emclogger("secondaryAction");
+	} else if(!e.ctrlKey && e.altKey && e.shiftKey && BRANCH.getCharPref("tertiaryAction") !== "disable") {
+		//emclogger("tertiaryAction");
 		action = BRANCH.getCharPref("tertiaryAction");
 
 	} else {
@@ -950,7 +950,7 @@ var emcInit = function(aWindow) {
 
 
 // https://developer.mozilla.org/en/docs/Observer_Notifications
-emcObserverDelayedStartup = {
+var emcObserverDelayedStartup = {
 	observe: function(subject, topic, data) {
 			switch (topic) {
 				// this is for the very first opened browser
