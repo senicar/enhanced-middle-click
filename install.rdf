@@ -4,7 +4,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>enhancedmiddleclick@senicar.net</em:id>
-    <em:version>0.4.6beta1</em:version>
+    <em:version>0.4.6</em:version>
     <em:type>2</em:type>
     <em:bootstrap>true</em:bootstrap>
 
@@ -13,8 +13,8 @@
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!-- Firefox -->
-        <em:minVersion>31.0</em:minVersion>
-        <em:maxVersion>32.0</em:maxVersion>
+        <em:minVersion>32.0</em:minVersion>
+        <em:maxVersion>33.0</em:maxVersion>
       </Description>
     </em:targetApplication>
 
@@ -25,6 +25,6 @@
     <!-- Front End MetaData -->
     <em:creator>Senicar</em:creator>
     <em:name>Enhanced Middle Click</em:name>
-    <em:description>Display history menu, tab list menu or toggle various sidebars with middle mouse button.</em:description>
+    <em:description>Display history menu, tab list menu or use other available actions with middle mouse button.</em:description>
   </Description>
 </RDF>

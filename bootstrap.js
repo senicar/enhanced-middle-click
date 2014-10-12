@@ -59,7 +59,7 @@ const DEFAULT_PREFS = {
 	timeout: 999999999,
 	favTabPosition: 0,
 	favTabPositionRestore: 0,
-	customScript: 'aWindow.console.log("Enhanced middle click says *Hi*, visit options to change this message.");',
+	customScript: 'aWindow.console.log("Enhanced middle click says *Hi*, visit addon options to change this message.");',
 };
 
 var emc_browser_delayed = false;
@@ -730,10 +730,12 @@ var toggleFavTabPosition = function (aWindow, e) {
 		BRANCH.setIntPref('favTabPositionRestore', currentTabIndex);
 		aWindow.gBrowser.tabContainer.selectedIndex = tabs[favTabPosition]._tPos;
 	}
-	else if(favTabPositionRestore >= 0) {
+	else if(favTabPositionRestore >= 0 && (favTabPositionRestore in tabs)) {
 		aWindow.gBrowser.tabContainer.selectedIndex = tabs[favTabPositionRestore]._tPos;
 	}
-
+	else {
+		emclogger("Sorry no tab to restore or jump to");
+	}
 	// if everything else fails do nothing
 
 }
