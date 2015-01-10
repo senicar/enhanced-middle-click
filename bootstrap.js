@@ -688,14 +688,14 @@ var toggleFavTabPosition = function (aWindow, e) {
 	let currentTab = aWindow.gBrowser.tabContainer.selectedItem;
 	let currentTabIndex = tabs.indexOf(currentTab);
 
+	let favTabPositionRestore = BRANCH.getIntPref('favTabPositionRestore');
+
 	if(currentTabIndex != favTabPosition) {
 	}
 
 	if(currentTabIndex != favTabPosition && favTabPositionRestore >= tabs.length) {
 		BRANCH.setIntPref('favTabPositionRestore', currentTabIndex);
 	}
-
-	let favTabPositionRestore = BRANCH.getIntPref('favTabPositionRestore');
 
 	if(favTabPosition >= tabs.length) {
 		if(currentTabIndex != tabs.length - 1) {

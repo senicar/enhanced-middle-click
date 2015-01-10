@@ -19,7 +19,7 @@ Services.prefs.getBranch("extensions.enhancedmiddleclick.").setIntPref("favTabPo
 
 ### Toggle tab position
 
-When *position* number is bigger than the number of all tabs in current tab group (visible tabs) it will toggle the last tab. Other wise it will jump to the tab at specified position. Usually this number is used to quickly toggle pined tabs.
+When *position* number is bigger than the number of all tabs in current tab group (visible tabs) it will toggle the last tab. Otherwise it will jump to the tab at specified position. Usually this number is used to quickly toggle pined tabs.
 
 
 
