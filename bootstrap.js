@@ -116,7 +116,8 @@ var emclogger = function(msg)
  */
 var clicker = function(e) {
 	//emclogger("clicker");
-	let aWindow = this.window;
+	//let aWindow = this.window;
+	let aWindow = Services.wm.getMostRecentWindow("navigator:browser");
 
 	//let autoscroll = Services.prefs.getBoolPref("general.autoScroll");
 
