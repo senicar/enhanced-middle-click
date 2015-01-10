@@ -51,5 +51,10 @@
 	 */
 }
 
+.emc-popupmenu .emc-pinned {
+	position: absolute;
+	box-shadow: inset -5px 0 ThreeDShadow;
+}
+
 /*
 */

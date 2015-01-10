@@ -343,6 +343,9 @@ var makePopupMenu = function(e, aWindow, action, items, refresh)
 			menuItem.setAttribute("label", item.label);
 			menuItem.setAttribute("data-action", action);
 
+			if(item.pinned)
+				menuItem.classList.add('emc-pinned');
+
 			// this comes from updateTabsVisibilityStatus
 			if(item.getAttribute('tabIsVisible'))
 				menuItem.setAttribute('tabIsVisible', 'true');
