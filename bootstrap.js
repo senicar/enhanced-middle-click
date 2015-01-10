@@ -410,37 +410,6 @@ var updateTabsVisibilityStatus = function updateTabsVisibilityStatus(aWindow, ta
 }
 
 
-var getTabGroup = function(e, aWindow, tab)
-{
-	//emclogger("getTabGroup");
-	var group = {};
-	var tabviewtab;
-
-	if(typeof tab != 'undefined')
-	{
-		// use _tabViewTabItem if available its more predictable
-		if(typeof tab._tabViewTabItem != 'undefined' && !tab.pinned)
-		{
-			group.id = tab._tabViewTabItem.parent.id
-			group.title = tab._tabViewTabItem.parent.getTitle();
-			//emclogger(group.title);
-
-			return group;
-		}
-		else if (tab.pinned)
-		{
-			group.id = 0;
-			group.title = null;
-			//emclogger("tab pinned");
-
-			return group;
-		}
-		else { return false; }
-	}
-	else { return false; }
-}
-
-
 var emcCloseTab = function(e)
 {
 	//emclogger("closetab");
@@ -505,6 +474,108 @@ function getWordAt(s, pos) {
 }
 
 
+var getTabGroup = function(aWindow, tab)
+{
+	//emclogger("getTabGroup");
+	var group = {};
+	var tabviewtab;
+
+	if(typeof tab != 'undefined')
+	{
+		// use _tabViewTabItem if available its more predictable
+		if(typeof tab._tabViewTabItem != 'undefined' && !tab.pinned)
+		{
+			group.id = tab._tabViewTabItem.parent.id
+			group.title = tab._tabViewTabItem.parent.getTitle();
+			//emclogger(group.title);
+
+			return group;
+		}
+		else if (tab.pinned)
+		{
+			group.id = 0;
+			group.title = null;
+			//emclogger("tab pinned");
+
+			return group;
+		}
+		else { return false; }
+	}
+	else { return false; }
+}
+
+
+function containsGroup(obj, groups) {
+	let i;
+	for (i = 0; i < groups.length; i++) {
+		if (JSON.stringify(groups[i]) === JSON.stringify(obj)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+
+function getGroups(aWindow) {
+	let tab;
+	let tab_group;
+	let groups = [];
+
+	for( let x = 0; x<aWindow.gBrowser.browsers.length; x++)
+	{
+		tab = aWindow.gBrowser.tabContainer.getItemAtIndex(x);
+
+		tab_group = getTabGroup(aWindow, tab);
+		//emclogger(tab_group);
+
+		// make unique array of groups
+		if( ! containsGroup(tab_group, groups) )
+			groups.push(tab_group);
+	}
+
+	return groups;
+}
+
+
+function getGroupTabs(aWindow, group) {
+	let tabs = [];
+
+	// tabContainer.mTabstrip.scrollBoxObject = tabContainer.mTabstrip.boxObject;
+	let tabstripBO = aWindow.gBrowser.tabContainer.mTabstrip.boxObject;
+
+	for ( let y = 0; y < aWindow.gBrowser.browsers.length; y++) {
+		let tab = aWindow.gBrowser.tabContainer.getItemAtIndex(y);
+		let tab_group = getTabGroup(aWindow, tab);
+
+		// if all tabs are visible there is no need to show the stripe
+		//if(tabs.length * tabs[i].boxObject.width)
+
+		if(tab_group.id >= 0 && tab_group.id == group.id) {
+			// we'll readd tabIsVisible it afterwards
+			tab.removeAttribute("tabIsVisible");
+			tabs.push(tab);
+		}
+	}
+
+	/*
+	if( (tabs.length * tabs[0].boxObject.width) > tabstripBO.width ) {
+
+		for(let i = 0; i < tabs.length; i++) {
+			let curTabBO = tabs[i].boxObject;
+			if (curTabBO.screenX >= tabstripBO.screenX &&
+				curTabBO.screenX + curTabBO.width <= tabstripBO.screenX + tabstripBO.width)
+				tabs[i].setAttribute("tabIsVisible", "true");
+			else
+				tabs[i].removeAttribute("tabIsVisible");
+		}
+	}
+	*/
+
+
+	return tabs;
+}
+
+
 
 // ************************************************************************** //
 // Actions
@@ -550,11 +621,11 @@ var tabsMenu = function (e, aWindow, refresh)
 
 	// pick last tab, less possible to be pinned
 	// and prepend title if exists
-	group = getTabGroup(e, aWindow, tabs[tabs.length-1]);
+	group = getTabGroup(aWindow, tabs[tabs.length-1]);
 	if(typeof group.title == 'string')
 		tabs.unshift(group.title);
 
-	updateTabsVisibilityStatus(aWindow, tabs, 'tabsMenu');
+	updateTabsVisibilityStatus(aWindow, tabs, 'tabsGroupsMenu');
 
 	makePopupMenu(e, aWindow, "tabsMenu", tabs, refresh);
 }
@@ -566,45 +637,26 @@ var tabsGroupsMenu = function (e, aWindow, refresh)
 	if( typeof refresh == 'undefined' ) refresh = false;
 	let num = aWindow.gBrowser.browsers.length;
 	let tab;
-	let tab_group;
 	let parent_id;
-	let groups = [];
 	let tabs = [];
 
-	for( let x = 0; x< num; x++)
-	{
-		tab = aWindow.gBrowser.tabContainer.getItemAtIndex(x);
-
-		tab_group = getTabGroup(e, aWindow, tab);
-		//emclogger(tab_group);
-
-		// make unique array of groups
-		if(groups.indexOf(tab_group.id) == -1)
-			groups.push(tab_group.id);
-	}
+	let groups = getGroups(aWindow);
 
 	for( let x = 0; x < groups.length; x++ )
 	{
+		let tab_group;
 		parent_id = groups[x];
 
 		if(x != 0)
 			tabs.push('separator');
 
-		let first_group_item = true;
-		for ( let y = 0; y < num; y++)
-		{
-			tab = aWindow.gBrowser.tabContainer.getItemAtIndex(y);
-			tab_group = getTabGroup(e, aWindow, tab);
+		if(typeof groups[x].title == 'string') {
+			tabs.push(groups[x].title);
+		}
 
-			if(typeof tab_group.title == 'string' && tab_group.id == parent_id && first_group_item)
-			{
-				tabs.push(tab_group.title);
-				first_group_item = false;
-			}
-
-			if(tab_group.id >= 0 && tab_group.id == parent_id)
-				tabs.push(tab);
-
+		let group_tabs = getGroupTabs(aWindow, groups[x]);
+		if(group_tabs.length > 0) {
+			tabs = tabs.concat(group_tabs);
 		}
 	}
 
