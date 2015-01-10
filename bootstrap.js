@@ -255,12 +255,6 @@ var runAction = function(e, aWindow) {
 		toggleBookmarksSidebar(aWindow);
 	}
 
-	/*
-	if( action == 'toggleDownloadsSidebar' || action == 'downloadSidebarToggle' ) {
-		toggleDownloadsSidebar(aWindow);
-	}
-	*/
-
 	if( action == 'toggleHistorySidebar' || action == 'historySidebarToggle' ) {
 		toggleHistorySidebar(aWindow);
 	}
@@ -616,21 +610,6 @@ var tabsGroupsMenu = function (e, aWindow, refresh)
 
 	makePopupMenu(e, aWindow, "tabsGroupsMenu", tabs, refresh);
 }
-
-
-/*
-var toggleDownloadsSidebar = function (aWindow) {
-	// Deprecated, no longer works sinde the new download button/interface
-	// aWindow.toggleSidebar("viewDownloadsSidebar");
-
-	if(aWindow.document.getElementById("downloads-button") != null)
-		aWindow.DownloadsIndicatorView.onCommand(aWindow.event);
-	else
-		aWindow.DownloadsPanel.showDownloadsHistory();
-
-	//emclogger("toggleDownloadsSidebar");
-}
-*/
 
 
 var toggleHistorySidebar = function (aWindow) {
