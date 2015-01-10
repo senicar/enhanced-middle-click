@@ -1,3 +1,6 @@
+Version 0.4.7
+$ bugfix: not working in firefox 37
+
 Version 0.4.6
 + custom script
 + toggle tab position
