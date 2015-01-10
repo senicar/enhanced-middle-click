@@ -827,35 +827,6 @@ function install(data, reason) {
 			// really disable loading URL on middle click
 			Services.prefs.setBoolPref("middlemouse.contentLoadURL", false);
 
-			/*
-			// SAMPLE CODE FOR NOTIFICATIONS
-			//emclogger("restartless notification");
-			//*
-
-			let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
-
-			if(browserWindow.parseInt(oldVersion.replace(/\./g,'')) >= browserWindow.parseInt(addon.version.replace(/\./g,'')) || oldVersion == '0')
-				return;
-
-			// https://developer.mozilla.org/en-US/docs/XUL/notificationbox
-			let nb = browserWindow.gBrowser.getNotificationBox();
-			let acceptButton = new Object();
-			let message = "[Enhanced Middle Click upgraded] \"Toggle Download Sidebar\" action has been removed because of the incompatibility with the new Download Manager";
-
-			acceptButton.label = "Please check preferences";
-			acceptButton.accessKey = ""
-			acceptButton.popup = null;
-			acceptButton.callback = function() {
-				// https://developer.mozilla.org/en-US/docs/Working_with_windows_in_chrome_code#Example_3:_Using_nsIWindowMediator_when_opener_is_not_enough
-
-				// http://mxr.mozilla.org/mozilla-central/source/browser/base/content/browser.js#6120
-				browserWindow.BrowserOpenAddonsMgr("addons://detail/enhancedmiddleclick@senicar.net");
-			};
-			nb.appendNotification(
-				message, "enhancedmiddleclick-upgrade-to-restartless-notification",
-				"",
-				nb.PRIORITY_INFO_HIGH, [ acceptButton ]);
-			/**/
 		});
 	}
 }
