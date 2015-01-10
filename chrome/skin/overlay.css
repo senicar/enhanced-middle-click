@@ -20,37 +20,6 @@
 
 /* http://mxr.mozilla.org/mozilla-central/source/browser/themes/linux/browser.css#1890 */
 
-.emc-popupmenu .alltabs-item[tabIsVisible].unified-nav-current:hover,
-.emc-popupmenu .alltabs-item[tabIsVisible] {
-	/* box-shadow instead of background-color to work around native styling */
-	/*
-	box-shadow: inset -7px 0 rgba(10,110,250,0.5) !important;
-	box-shadow: inset -7px 0 ThreeDShadow !important;
-	/**/
-}
-
-.emc-popupmenu .alltabs-item[tabIsVisible].unified-nav-current {
-	/*
-	box-shadow: inset -7px 0 (10,110,250,0.5),
-				inset 2px 200px 0 rgba(125, 125, 125, 0.25) !important;
-	box-shadow: inset -7px 0 rgba(10,110,250,0.5),
-				inset 2px 200px 0 rgba(141, 246, 141, 0.25) !important;
-				/**/
-}
-
-.emc-popupmenu .unified-nav-current {
-	/*
-	box-shadow: inset 2px 200px 0 rgba(125, 125, 125, 0.25) !important;
-	box-shadow: inset 2px 200px 0 rgba(141, 246, 141, 0.25) !important;
-	/**/
-}
-
-.emc-popupmenu .unified-nav-current:hover {
-	/*
-	box-shadow: none !important;
-	 */
-}
-
 .emc-popupmenu .emc-pinned {
 	position: absolute;
 	box-shadow: inset -5px 0 ThreeDShadow;
