@@ -1,5 +1,7 @@
 Version 0.4.7
 $ bugfix: not working in firefox 37
+$ restore general.autoScroll and middlemouse.contentLoadURL configs on addon shutdown
+- dropping support below 36
 
 Version 0.4.6
 + custom script

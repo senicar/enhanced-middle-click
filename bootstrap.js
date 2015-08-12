@@ -39,17 +39,18 @@ const DBG_EMC = true;
 const BRANCH = Services.prefs.getBranch("extensions.enhancedmiddleclick.");
 const FFVERSION = Services.prefs.getBranch("extensions.").getCharPref("lastPlatformVersion");
 const DEFAULT_PREFS = {
-	// deprecated: toggleDownloadsSidebar
+	// deprecated: toggleDownloadsSidebar, autoScroll
 	// available actions:
 	// historyMenu, tabsMenu, tabsGroupsMenu,
 	// toggleBookmarksSidebar, toggleHistorySidebar, toggleTabView
 	// loadSearchFromContext
 	// bookmarksMenuPopup, bookmarksToolbarFolderPopup
-	// removeCurrentTab, autoScroll, undoCloseTab
+	// removeCurrentTab, undoCloseTab
 	// toggleFavTabPosition
 	// runCustomScript
 	// disable
 	//
+	initialConfigs: '',
 	primaryAction: "historyMenu",
 	secondaryAction: "disable",
 	tertiaryAction: "disable",
@@ -116,10 +117,7 @@ var emclogger = function(msg)
  */
 var clicker = function(e) {
 	//emclogger("clicker");
-	//let aWindow = this.window;
 	let aWindow = Services.wm.getMostRecentWindow("navigator:browser");
-
-	//let autoscroll = Services.prefs.getBoolPref("general.autoScroll");
 
 	let timeout = BRANCH.getIntPref("timeout");
 	let end = +new Date();
@@ -834,17 +832,8 @@ function install(data, reason) {
 	}
 
 	// AddonManager callback somehow runs after extenstion startup ?
-	// that is why everythin is inside that callback
+	// that is why everything is inside that callback
 	Cu.import("resource://gre/modules/AddonManager.jsm");
-
-	// this is an old preferences so set it only if fresh install
-	if( reason == ADDON_INSTALL ) {
-		/* Code related to firstrun */
-		//emclogger("upgradeGrace -> firstrun");
-
-		// set autoScroll to false, only on fresh install
-		Services.prefs.setBoolPref("general.autoScroll", false);
-	}
 
 	// new preferences, set them all
 	if( reason == ADDON_INSTALL || reason == ADDON_UPGRADE || reason == ADDON_DOWNGRADE ) {
@@ -856,10 +845,6 @@ function install(data, reason) {
 			setDefaultPrefs();
 
 			BRANCH.setCharPref('version', addon.version);
-
-			// really disable loading URL on middle click
-			Services.prefs.setBoolPref("middlemouse.contentLoadURL", false);
-
 		});
 	}
 }
@@ -876,6 +861,22 @@ function uninstall(data, reason) {
 
 function startup(data, reason) {
 	//emclogger("startup reason: " + reason);
+
+	emclogger(reason);
+
+	// save current config, so we can restore it back and set our custom
+	if( reason == ADDON_ENABLE || reason == ADDON_INSTALL ) {
+		let configs = {
+			'general_autoScroll': Services.prefs.getBoolPref("general.autoScroll"),
+			'middlemouse_contentLoadURL': Services.prefs.getBoolPref("middlemouse.contentLoadURL"),
+		};
+
+		BRANCH.setCharPref('initialConfigs', JSON.stringify(configs));
+
+		// really disable loading URL on middle click
+		Services.prefs.setBoolPref("middlemouse.contentLoadURL", false);
+		Services.prefs.setBoolPref("general.autoScroll", false);
+	}
 
 	// Load into any existing windows
 	// bootstrap.js is not loaded into a window so we have to do it manually
@@ -923,6 +924,17 @@ function shutdown(data, reason) {
 
 	// let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
 
+	// restore configs
+	emclogger(reason);
+	if( reason == ADDON_DISABLE || reason == ADDON_UNINSTALL ) {
+		let configs = JSON.parse(BRANCH.getCharPref('initialConfigs'));
+
+		Services.prefs.setBoolPref("middlemouse.contentLoadURL", configs.middlemouse_contentLoadURL);
+		Services.prefs.setBoolPref("general.autoScroll", configs.general_autoScroll);
+
+		BRANCH.setCharPref('initialConfigs','');
+	}
+
 	// Stop listening for new windows
 	Services.wm.removeListener(windowListener);
 
@@ -941,16 +953,14 @@ function shutdown(data, reason) {
 
 
 var emcInit = function(aWindow) {
-	// TODO : still a problem on mac os
+	// TODO : still a problem on mac os, but random and rarely
 
 	// init tabview in the background so _tabViewTabItem gets added to tabs
 	if(typeof(aWindow.TabView) != 'undefined' && typeof(aWindow.gBrowser) != 'undefined' && typeof(aWindow.gBrowser.tabContainer.getItemAtIndex(0)._tabViewTabItem) == 'undefined') {
-		// v23 doesn't have enough browser delay for tabview, so this
-		// is an ugly hack just for v23, remove this as soon as possible
-		if(aWindow.parseInt(FFVERSION) < aWindow.parseInt('24'))
-			aWindow.setTimeout(function() { aWindow.TabView._initFrame(); }, 450);
-		else
-			aWindow.TabView._initFrame();
+		// This used to be delayed just a few milisecs more because it fired
+		// too early in v23 and the errors breaked the Panorama view functionallity.
+		// Hopefully this shouldn't happen in never versions
+		aWindow.TabView._initFrame();
 		return true;
 	}
 
@@ -964,7 +974,7 @@ var emcObserverDelayedStartup = {
 			switch (topic) {
 				// this is for the very first opened browser
 				case 'browser-delayed-startup-finished':
-					//emclogger("observe browser-delayed-startup-finish");
+					emclogger("observe browser-delayed-startup-finish");
 					emc_browser_delayed = true;
 
 					emcInit(subject);
