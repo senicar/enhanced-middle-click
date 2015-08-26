@@ -23,6 +23,9 @@
 <!ENTITY undoCloseTab-label "Restore recently closed tab">
 <!ENTITY toggleFavTabPosition-label "Toggle tab at position #">
 <!ENTITY runCustomScript-label "Run custom script">
+<!ENTITY historyBack-label "Go back one page">
+<!ENTITY historyForward-label "Go forward one page">
+<!ENTITY reload-label "Reload current page">
 
 <!ENTITY title-refreshOnTabClose "Refresh menu on tab close">
 <!ENTITY desc-refreshOnTabClose "Don't close the menu when closing a tab with middle click">

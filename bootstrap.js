@@ -295,8 +295,23 @@ var runAction = function(e, aWindow) {
 	if( action == 'toggleFavTabPosition' ) {
 		toggleFavTabPosition(aWindow, e)
 	}
-};
 
+	if( action == 'historyBack' ) {
+		if(aWindow.gBrowser.canGoBack) {
+			aWindow.gBrowser.goBack();
+		}
+	}
+
+	if( action == 'historyForward' ) {
+		if(aWindow.gBrowser.canGoForward) {
+			aWindow.gBrowser.goForward();
+		}
+	}
+
+	if( action == 'reload' ) {
+		aWindow.gBrowser.reload();
+	}
+};
 
 var makePopupMenu = function(e, aWindow, action, items, refresh)
 {

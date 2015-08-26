@@ -21,6 +21,9 @@
 				<menuitem label="&undoCloseTab-label;" value="undoCloseTab" />
 				<menuitem label="&toggleFavTabPosition-label;" value="toggleFavTabPosition" />
 				<menuitem label="&runCustomScript-label;" value="runCustomScript" />
+				<menuitem label="&historyBack-label;" value="historyBack" />
+				<menuitem label="&historyForward-label;" value="historyForward" />
+				<menuitem label="&reload-label;" value="reload" />
 			</menupopup>
 		</menulist>
 	</setting>
@@ -44,6 +47,9 @@
 				<menuitem label="&undoCloseTab-label;" value="undoCloseTab" />
 				<menuitem label="&toggleFavTabPosition-label;" value="toggleFavTabPosition" />
 				<menuitem label="&runCustomScript-label;" value="runCustomScript" />
+				<menuitem label="&historyBack-label;" value="historyBack" />
+				<menuitem label="&historyForward-label;" value="historyForward" />
+				<menuitem label="&reload-label;" value="reload" />
 			</menupopup>
 		</menulist>
 	</setting>
@@ -67,6 +73,9 @@
 				<menuitem label="&undoCloseTab-label;" value="undoCloseTab" />
 				<menuitem label="&toggleFavTabPosition-label;" value="toggleFavTabPosition" />
 				<menuitem label="&runCustomScript-label;" value="runCustomScript" />
+				<menuitem label="&historyBack-label;" value="historyBack" />
+				<menuitem label="&historyForward-label;" value="historyForward" />
+				<menuitem label="&reload-label;" value="reload" />
 			</menupopup>
 		</menulist>
 	</setting>
