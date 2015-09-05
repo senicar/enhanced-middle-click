@@ -68,9 +68,7 @@ const DEFAULT_PREFS = {
 	favTabPosition: 0,
 	favTabPositionRestore: 0,
 	customScript: 'new aWindow.Notification("Enhanced middle click", { body: "Hi, visit addon preferences to change this script."});',
-	download: {
-		dir: '', // empty value will use default download location
-	},
+	'download.dir': '', // empty value will use default download location
 };
 
 var emc_browser_delayed = false;
@@ -643,9 +641,13 @@ var saveImage = function(e, aWindow, skipPrompt = true) {
 	e.stopPropagation();
 
 	var imageSrc = e.originalTarget.src;
+	emclogger(imageSrc);
 	var referrerURI = Services.io.newURI(imageSrc,null,null).QueryInterface(Components.interfaces.nsIURL);
 	var initDocument = e.target.ownerDocument;
-	var saveToDir = BRANCH.getCharPref("download.dir");
+	var saveToDir = '';
+	if(BRANCH.prefHasUserValue("download.dir")) {
+		saveToDir = BRANCH.getCharPref("download.dir");
+	}
 	var savedTo = '';
 
 	if( skipPrompt ) {
