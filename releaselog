@@ -1,7 +1,13 @@
+Version 0.4.8
+$ bugfix: not always working on about:preferences page
++ new actions saveImage, refresh, goBack, goForward
+- dropping support below 37
+
 Version 0.4.7
 $ bugfix: not working in firefox 37
 $ restore general.autoScroll and middlemouse.contentLoadURL configs on addon shutdown
 - dropping support below 36
+- removing toogleDownloadSidebar
 
 Version 0.4.6
 + custom script

@@ -55,6 +55,8 @@ const DEFAULT_PREFS = {
 	// removeCurrentTab, undoCloseTab
 	// toggleFavTabPosition
 	// runCustomScript
+	// saveImage, saveImageTo
+	// reload, historyForward, historyBack
 	// disable
 	//
 	initialConfigs: '',
