@@ -26,5 +26,15 @@
     <em:creator>Senicar</em:creator>
     <em:name>Enhanced Middle Click</em:name>
     <em:description>Display history menu, tab list menu or use other available actions with middle mouse button.</em:description>
+
+	<!-- localized -->
+	<em:localized>
+		<Description>
+			<em:locale>en-US</em:locale>
+			<em:creator>Senicar</em:creator>
+			<em:name>Enhanced Middle Click</em:name>
+			<em:description>Display history menu, tab list menu or use other available actions with middle mouse button.</em:description>
+		</Description>
+	</em:localized>
   </Description>
 </RDF>

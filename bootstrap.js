@@ -21,6 +21,8 @@ var {classes: Cc, interfaces: Ci, utils: Cu} = Components;
 // https://developer.mozilla.org/en-US/docs/Mozilla/JavaScript_code_modules/Services.jsm
 // Gives access to prefs, console, cookies...
 Components.utils.import("resource://gre/modules/Services.jsm");
+
+// Used for saving images
 Components.utils.import("resource://gre/modules/Downloads.jsm");
 Components.utils.import("resource://gre/modules/Task.jsm");
 Components.utils.import("resource://gre/modules/osfile.jsm");
@@ -29,6 +31,8 @@ Components.utils.import("resource://gre/modules/FileUtils.jsm");
 var sss = Components.classes["@mozilla.org/content/style-sheet-service;1"]
                     .getService(Components.interfaces.nsIStyleSheetService);
 
+// Localization for javascript strings
+var emcStrings = Services.strings.createBundle('chrome://enhancedmiddleclick/locale/bootstrap.properties?' + Math.random());
 
 // ************************************************************************** //
 // Constants
@@ -63,7 +67,7 @@ const DEFAULT_PREFS = {
 	timeout: 999999999,
 	favTabPosition: 0,
 	favTabPositionRestore: 0,
-	customScript: 'aWindow.console.log("Enhanced middle click says *Hi*, visit addon options to change this message.");',
+	customScript: 'new aWindow.Notification("Enhanced middle click", { body: "Hi, visit addon preferences to change this script."});',
 	download: {
 		dir: '', // empty value will use default download location
 	},
@@ -113,7 +117,7 @@ function setDefaultPrefs(reset) {
 var emclogger = function(msg)
 {
 	if(DBG_EMC) {
-		Services.console.logStringMessage("enhancedmiddleclick: " + msg);
+		Services.console.logStringMessage("enhancedmiddleclick: ", msg);
 	}
 }
 
@@ -211,15 +215,22 @@ var areaValidator = function(e, aWindow)
 
 	// best way to disable all xul elements is by instanceof XULElement
 	if( t instanceof aWindow.XULControllers ||
+		t.nodeName == 'button' ||
+		t.nodeName == 'checkbox' ||
+		t.nodeName == 'filefield' ||
+		t.nodeName == 'textobject' ||
+		t.nodeName == 'menulist' ||
+		t.nodeName == 'treechildren' ||
+		t.nodeName == 'treecol' ||
 		t.nodeName == 'textbox' ||
 		t.nodeName == 'toolbarbutton' ||
 		t.nodeName == 'richlistitem' ||
 		t.nodeName == 'menuitem'
 	) { disallow.xul = true; }
 
-	if( t.baseURI == 'about:addons' ||
+	if( t.baseURI.indexOf('about:addons') > -1 ||
+		t.baseURI.indexOf('about:preferences') > -1 ||
 		t.baseURI == 'chrome://mozapps/content/extensions/extensions.xul' ||
-		t.baseURI == 'about:preferences' ||
 		t.localName == 'tabbrowser'
 	) { allow.xul = true ; }
 
@@ -238,7 +249,11 @@ var areaValidator = function(e, aWindow)
 	}
 
 	// allow image save on middle click even if linked
-	if( ! disallow.html && e.originalTarget instanceof aWindow.HTMLImageElement && getAction(e, aWindow) == 'saveImage' ) {
+	if( disallow.html &&
+		e.originalTarget instanceof aWindow.HTMLImageElement &&
+		( getAction(e, aWindow) == 'saveImage' ||
+		getAction(e, aWindow) == 'saveImageTo' )
+	) {
 		disallow.html = false;
 	}
 
@@ -340,66 +355,6 @@ var runAction = function(e, aWindow) {
 		aWindow.gBrowser.reload();
 	}
 };
-
-
-var saveImage = function(e, aWindow, skipPrompt = true) {
-	e.preventDefault();
-	e.stopPropagation();
-
-	var imageSrc = e.originalTarget.src;
-	console.log(imageSrc);
-	var referrerURI = Services.io.newURI(imageSrc,null,null).QueryInterface(Components.interfaces.nsIURL);
-	var initDocument = e.target.ownerDocument;
-	var saveToDir = BRANCH.getCharPref("download.dir");
-	var savedTo = '';
-
-	if( skipPrompt ) {
-		Task.spawn(function () {
-
-		let list = yield Downloads.getList(Downloads.ALL);
-		let dirExists = yield OS.File.exists(saveToDir);
-
-		if( saveToDir.length == 0 ) {
-			saveToDir = yield Downloads.getPreferredDownloadsDirectory();
-		}
-
-		let imageTarget = new FileUtils.File(saveToDir);
-		imageTarget.append(aWindow.getNormalizedLeafName(referrerURI.fileName, referrerURI.fileExt));
-
-		try {
-			let download = yield Downloads.createDownload({ source: imageSrc, target: imageTarget, });
-			list.add(download);
-			download.start();
-		} finally {
-			yield list.removeView(view);
-		}
-
-		}).then(null, Components.utils.reportError);
-
-	} else {
-		aWindow.saveImageURL(imageSrc, null, null, false, false, referrerURI, initDocument);
-	}
-}
-
-var getDefaultDownloadLocation = function() {
-	var folderList = Services.prefs.getIntPref("browser.download.folderList");
-	var saveToDir = '';
-	if( folderList == 0 ) {
-		emclogger("Desk");
-		saveToDir = Services.dirsvc.get("Desk", Components.interfaces.nsIFile);
-		return saveToDir.path;
-	}
-	if( folderList == 1 ) {
-		emclogger("DfltDwnld");
-		saveToDir = Services.dirsvc.get("DfltDwnld", Components.interfaces.nsIFile);
-		return saveToDir.path;
-	}
-	if( folderList == 2 && Services.prefs.prefHasUserValue("browser.download.dir") ) {
-		emclogger("browser.download.dir");
-		saveToDir = Services.prefs.getCharPref("browser.download.dir");
-		return saveToDir;
-	}
-}
 
 
 var makePopupMenu = function(e, aWindow, action, items, refresh)
@@ -683,6 +638,59 @@ function getGroupTabs(aWindow, group) {
 // Actions
 
 
+var saveImage = function(e, aWindow, skipPrompt = true) {
+	e.preventDefault();
+	e.stopPropagation();
+
+	var imageSrc = e.originalTarget.src;
+	var referrerURI = Services.io.newURI(imageSrc,null,null).QueryInterface(Components.interfaces.nsIURL);
+	var initDocument = e.target.ownerDocument;
+	var saveToDir = BRANCH.getCharPref("download.dir");
+	var savedTo = '';
+
+	if( skipPrompt ) {
+		Task.spawn(function () {
+
+		let list = yield Downloads.getList(Downloads.ALL);
+		let dirExists = yield OS.File.exists(saveToDir);
+
+		if( ! dirExists && saveToDir.length > 0 ) {
+			new aWindow.Notification(emcStrings.GetStringFromName('emcAddonName'), {
+				body: emcStrings.formatStringFromName('emcMissingCustomDownloadDir', [saveToDir], 1)
+			});
+		}
+
+		if( saveToDir.length == 0 ) {
+			saveToDir = yield Downloads.getPreferredDownloadsDirectory();
+		}
+
+		let imageTarget = new FileUtils.File(saveToDir);
+		imageTarget.append(aWindow.getNormalizedLeafName(referrerURI.fileName, referrerURI.fileExt));
+		aWindow.uniqueFile(imageTarget);
+
+		let view = {
+		//onDownloadAdded: download => console.log("Added", download),
+		//onDownloadChanged: download => console.log("Changed", download),
+		//onDownloadRemoved: download => console.log("Removed", download)
+		};
+
+		//yield list.addView(view);
+		try {
+			let download = yield Downloads.createDownload({ source: imageSrc, target: imageTarget, });
+			list.add(download);
+			download.start();
+		} finally {
+			yield list.removeView(view);
+		}
+
+		}).then(null, Components.utils.reportError);
+
+	} else {
+		aWindow.saveImageURL(imageSrc, null, null, false, false, referrerURI, initDocument);
+	}
+}
+
+
 var historyMenu = function (e, aWindow)
 {
 	//emclogger("historyMenu");
@@ -872,7 +880,9 @@ var toggleFavTabPosition = function (aWindow, e) {
 		aWindow.gBrowser.tabContainer.selectedIndex = tabs[favTabPositionRestore]._tPos;
 	}
 	else {
-		emclogger("Sorry no tab to restore or jump to");
+		new aWindow.Notification(emcStrings.GetStringFromName('emcAddonName'), {
+			body: emcStrings.formatStringFromName('emcNoTabToJump', [saveToDir], 1)
+		});
 	}
 	// if everything else fails do nothing
 

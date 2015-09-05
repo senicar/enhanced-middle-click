@@ -27,7 +27,7 @@
 <!ENTITY historyForward-label "Go forward one page">
 <!ENTITY reload-label "Reload current page">
 <!ENTITY saveImageToDefault-label "Save image">
-<!ENTITY saveImageTo-label "Save image (select location)">
+<!ENTITY saveImageTo-label "Save image (with dialog)">
 
 <!ENTITY title-refreshOnTabClose "Refresh menu on tab close">
 <!ENTITY desc-refreshOnTabClose "Don't close the menu when closing a tab with middle click">
@@ -43,6 +43,7 @@
 
 <!ENTITY title-customScript "Custom script">
 <!ENTITY desc-customScript "Variable *aWindow* available. Works with *Run custom script* action">
+<!ENTITY desc-customScriptExampleToggleTabPosition "A script to set current tab as *Toggle tab position*">
 
 <!ENTITY title-saveToDirectory "Download directory">
 <!ENTITY desc-saveToDirectory "Directory for *Save image* command, if not set default download location is used">
