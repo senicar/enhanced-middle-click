@@ -20,8 +20,11 @@ var {classes: Cc, interfaces: Ci, utils: Cu} = Components;
 
 // https://developer.mozilla.org/en-US/docs/Mozilla/JavaScript_code_modules/Services.jsm
 // Gives access to prefs, console, cookies...
-Cu.import("resource://gre/modules/Services.jsm");
-
+Components.utils.import("resource://gre/modules/Services.jsm");
+Components.utils.import("resource://gre/modules/Downloads.jsm");
+Components.utils.import("resource://gre/modules/Task.jsm");
+Components.utils.import("resource://gre/modules/osfile.jsm");
+Components.utils.import("resource://gre/modules/FileUtils.jsm");
 
 var sss = Components.classes["@mozilla.org/content/style-sheet-service;1"]
                     .getService(Components.interfaces.nsIStyleSheetService);
@@ -61,6 +64,9 @@ const DEFAULT_PREFS = {
 	favTabPosition: 0,
 	favTabPositionRestore: 0,
 	customScript: 'aWindow.console.log("Enhanced middle click says *Hi*, visit addon options to change this message.");',
+	download: {
+		dir: '', // empty value will use default download location
+	},
 };
 
 var emc_browser_delayed = false;
@@ -130,7 +136,7 @@ var clicker = function(e) {
 	//emclogger(time_diff);
 
 	// accept only middle click on a valid area thus the enhanced-middle-click
-	if( areaValidator(e, aWindow) && e.button === 1 && time_diff < timeout ) {
+	if( e.button === 1 && time_diff < timeout && areaValidator(e, aWindow) ) {
 		// e.cancelBubble = true;
 		e.stopPropagation();
 		//emclogger("area accepted");
@@ -138,6 +144,33 @@ var clicker = function(e) {
 		runAction(e, aWindow);
 	} else return false;
 };
+
+
+var getAction = function(e, aWindow) {
+	//emclogger("getting action");
+	let action = null;
+
+	if(!e.ctrlKey && ! e.altKey && !e.shiftKey) {
+		//emclogger("primaryAction");
+		action = BRANCH.getCharPref("primaryAction");
+
+	} else if(!e.ctrlKey && !e.altKey && e.shiftKey && BRANCH.getCharPref("secondaryAction") !== "disable") {
+		//emclogger("secondaryAction");
+		action = BRANCH.getCharPref("secondaryAction");
+
+	} else if(!e.ctrlKey && e.altKey && e.shiftKey && BRANCH.getCharPref("tertiaryAction") !== "disable") {
+		//emclogger("tertiaryAction");
+		action = BRANCH.getCharPref("tertiaryAction");
+
+	} else {
+		//emclogger("no action");
+		return false;
+	}
+
+	//emclogger("action -> " + action);
+
+	return action;
+}
 
 
 /**
@@ -196,10 +229,17 @@ var areaValidator = function(e, aWindow)
 
 	// check if element is child of anchor
 	// we realy dont want to break links
+	// except for saveImage
 	while(t && !(t instanceof aWindow.HTMLAnchorElement)) {
 		t = t.parentNode;
 		if(t instanceof aWindow.HTMLAnchorElement)
 			disallow.html = true;
+
+	}
+
+	// allow image save on middle click even if linked
+	if( ! disallow.html && e.originalTarget instanceof aWindow.HTMLImageElement && getAction(e, aWindow) == 'saveImage' ) {
+		disallow.html = false;
 	}
 
 	//emclogger("disHTML: " + disallow.html + ", allHTML: " + allow.html);
@@ -214,27 +254,7 @@ var areaValidator = function(e, aWindow)
 
 var runAction = function(e, aWindow) {
 
-	//emclogger("getting action");
-	let action = null;
-
-	if(!e.ctrlKey && ! e.altKey && !e.shiftKey) {
-		//emclogger("primaryAction");
-		action = BRANCH.getCharPref("primaryAction");
-
-	} else if(!e.ctrlKey && !e.altKey && e.shiftKey && BRANCH.getCharPref("secondaryAction") !== "disable") {
-		//emclogger("secondaryAction");
-		action = BRANCH.getCharPref("secondaryAction");
-
-	} else if(!e.ctrlKey && e.altKey && e.shiftKey && BRANCH.getCharPref("tertiaryAction") !== "disable") {
-		//emclogger("tertiaryAction");
-		action = BRANCH.getCharPref("tertiaryAction");
-
-	} else {
-		//emclogger("no action");
-		return false;
-	}
-
-	//emclogger("action -> " + action);
+	let action = getAction(e, aWindow);
 
 	//updateAndReset();
 
@@ -296,6 +316,14 @@ var runAction = function(e, aWindow) {
 		toggleFavTabPosition(aWindow, e)
 	}
 
+	if( action == 'saveImage' && e.originalTarget instanceof aWindow.HTMLImageElement ) {
+		saveImage(e, aWindow);
+	}
+
+	if( action == 'saveImageTo' && e.originalTarget instanceof aWindow.HTMLImageElement ) {
+		saveImage(e, aWindow, false);
+	}
+
 	if( action == 'historyBack' ) {
 		if(aWindow.gBrowser.canGoBack) {
 			aWindow.gBrowser.goBack();
@@ -312,6 +340,67 @@ var runAction = function(e, aWindow) {
 		aWindow.gBrowser.reload();
 	}
 };
+
+
+var saveImage = function(e, aWindow, skipPrompt = true) {
+	e.preventDefault();
+	e.stopPropagation();
+
+	var imageSrc = e.originalTarget.src;
+	console.log(imageSrc);
+	var referrerURI = Services.io.newURI(imageSrc,null,null).QueryInterface(Components.interfaces.nsIURL);
+	var initDocument = e.target.ownerDocument;
+	var saveToDir = BRANCH.getCharPref("download.dir");
+	var savedTo = '';
+
+	if( skipPrompt ) {
+		Task.spawn(function () {
+
+		let list = yield Downloads.getList(Downloads.ALL);
+		let dirExists = yield OS.File.exists(saveToDir);
+
+		if( saveToDir.length == 0 ) {
+			saveToDir = yield Downloads.getPreferredDownloadsDirectory();
+		}
+
+		let imageTarget = new FileUtils.File(saveToDir);
+		imageTarget.append(aWindow.getNormalizedLeafName(referrerURI.fileName, referrerURI.fileExt));
+
+		try {
+			let download = yield Downloads.createDownload({ source: imageSrc, target: imageTarget, });
+			list.add(download);
+			download.start();
+		} finally {
+			yield list.removeView(view);
+		}
+
+		}).then(null, Components.utils.reportError);
+
+	} else {
+		aWindow.saveImageURL(imageSrc, null, null, false, false, referrerURI, initDocument);
+	}
+}
+
+var getDefaultDownloadLocation = function() {
+	var folderList = Services.prefs.getIntPref("browser.download.folderList");
+	var saveToDir = '';
+	if( folderList == 0 ) {
+		emclogger("Desk");
+		saveToDir = Services.dirsvc.get("Desk", Components.interfaces.nsIFile);
+		return saveToDir.path;
+	}
+	if( folderList == 1 ) {
+		emclogger("DfltDwnld");
+		saveToDir = Services.dirsvc.get("DfltDwnld", Components.interfaces.nsIFile);
+		return saveToDir.path;
+	}
+	if( folderList == 2 && Services.prefs.prefHasUserValue("browser.download.dir") ) {
+		emclogger("browser.download.dir");
+		saveToDir = Services.prefs.getCharPref("browser.download.dir");
+		return saveToDir;
+	}
+}
+
 
 var makePopupMenu = function(e, aWindow, action, items, refresh)
 {
@@ -915,6 +1004,7 @@ function startup(data, reason) {
 	// https://developer.mozilla.org/en-US/docs/DOM/Mozilla_event_reference
 
 	Services.obs.addObserver(emcObserverDelayedStartup, "browser-delayed-startup-finished", false);
+	Services.obs.addObserver(emcPreferenceObserver, "addon-options-displayed", false);
 
 	// Load into any new windows
 	Services.wm.addListener(windowListener);
@@ -961,6 +1051,7 @@ function shutdown(data, reason) {
 	}
 
 	Services.obs.removeObserver(emcObserverDelayedStartup, "browser-delayed-startup-finished");
+	Services.obs.removeObserver(emcPreferenceObserver, "addon-options-displayed", false);
 
 	if(sss.sheetRegistered(STYLE_URI, sss.USER_SHEET))
 		sss.unregisterSheet(STYLE_URI, sss.USER_SHEET);
@@ -997,6 +1088,21 @@ var emcObserverDelayedStartup = {
 					break;
 			}
 		},
+}
+
+
+var emcPreferenceObserver = {
+	observe: function(subject, topic, data) {
+		 if (topic !== 'addon-options-displayed' || data !== 'enhancedmiddleclick@senicar.net') {
+			 return;
+		 }
+		 let document = subject.QueryInterface(Ci.nsIDOMDocument);
+		 document.getElementById('resetCustomDownloadDirButton').addEventListener('command', this.resetCustomDownloadDir);
+	 },
+	resetCustomDownloadDir: function(event) {
+		emclogger('resetCustomDownloadDir');
+		BRANCH.setCharPref('download.dir','');
+	}
 }
 
 

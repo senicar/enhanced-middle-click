@@ -24,6 +24,8 @@
 				<menuitem label="&historyBack-label;" value="historyBack" />
 				<menuitem label="&historyForward-label;" value="historyForward" />
 				<menuitem label="&reload-label;" value="reload" />
+				<menuitem label="&saveImageToDefault-label;" value="saveImage" />
+				<menuitem label="&saveImageTo-label;" value="saveImageTo" />
 			</menupopup>
 		</menulist>
 	</setting>
@@ -50,6 +52,8 @@
 				<menuitem label="&historyBack-label;" value="historyBack" />
 				<menuitem label="&historyForward-label;" value="historyForward" />
 				<menuitem label="&reload-label;" value="reload" />
+				<menuitem label="&saveImageToDefault-label;" value="saveImage" />
+				<menuitem label="&saveImageTo-label;" value="saveImageTo" />
 			</menupopup>
 		</menulist>
 	</setting>
@@ -76,6 +80,8 @@
 				<menuitem label="&historyBack-label;" value="historyBack" />
 				<menuitem label="&historyForward-label;" value="historyForward" />
 				<menuitem label="&reload-label;" value="reload" />
+				<menuitem label="&saveImageToDefault-label;" value="saveImage" />
+				<menuitem label="&saveImageTo-label;" value="saveImageTo" />
 			</menupopup>
 		</menulist>
 	</setting>
@@ -85,4 +91,9 @@
 	<setting type="string" multiline="multiline" pref="extensions.enhancedmiddleclick.customScript" title="&title-customScript;" desc="&desc-customScript;" />
 	<setting type="integer" pref="extensions.enhancedmiddleclick.favTabPosition" title="&title-favTabPosition;" desc="&desc-favTabPosition;" />
 	<setting type="integer" pref="extensions.enhancedmiddleclick.timeout" title="&title-timeout;" desc="&desc-timeout;" />
+	<setting type="directory" pref="extensions.enhancedmiddleclick.download.dir" title="&title-saveToDirectory;" desc="&desc-saveToDirectory;" />
+
+	<setting title="" type="control">
+		<button id="resetCustomDownloadDirButton" label="&title-resetSaveToDirectory;"/>
+	</setting>
 </vbox>
