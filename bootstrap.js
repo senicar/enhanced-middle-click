@@ -249,6 +249,8 @@ var areaValidator = function(e, aWindow)
 	}
 
 	// allow image save on middle click even if linked
+	// saveImage is only available on secondaryAction and tertiaryAction
+	// so we can be safe not to override default link functionallity
 	if( disallow.html &&
 		e.originalTarget instanceof aWindow.HTMLImageElement &&
 		( getAction(e, aWindow) == 'saveImage' ||

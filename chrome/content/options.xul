@@ -24,8 +24,6 @@
 				<menuitem label="&historyBack-label;" value="historyBack" />
 				<menuitem label="&historyForward-label;" value="historyForward" />
 				<menuitem label="&reload-label;" value="reload" />
-				<menuitem label="&saveImageToDefault-label;" value="saveImage" />
-				<menuitem label="&saveImageTo-label;" value="saveImageTo" />
 			</menupopup>
 		</menulist>
 	</setting>
