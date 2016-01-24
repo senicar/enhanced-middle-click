@@ -846,6 +846,17 @@ function install(data, reason) {
 			BRANCH.setCharPref('secondaryAction', oldSecondary);
 	}
 
+	// in version 0.4.8 we depricated tabsGroupsMenu since panorama will be removed in FF45
+	if(BRANCH.getCharPref('primaryAction') == 'tabsGroupsMenu') {
+		BRANCH.setCharPref('primaryAction', 'tabsMenu');
+	}
+	if(BRANCH.getCharPref('secondaryAction') == 'tabsGroupsMenu') {
+		BRANCH.setCharPref('secondaryAction', 'tabsMenu');
+	}
+	if(BRANCH.getCharPref('tertiaryAction') == 'tabsGroupsMenu') {
+		BRANCH.setCharPref('tertiaryAction', 'tabsMenu');
+	}
+
 	// AddonManager callback somehow runs after extenstion startup ?
 	// that is why everything is inside that callback
 	Cu.import("resource://gre/modules/AddonManager.jsm");

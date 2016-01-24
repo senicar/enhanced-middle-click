@@ -8,7 +8,6 @@
 			<menupopup>
 				<menuitem label="&label-historyMenu;" value="historyMenu" />
 				<menuitem label="&label-tabsMenu;" value="tabsMenu" />
-				<menuitem label="&label-tabsGroupsMenu;" value="tabsGroupsMenu" />
 				<menuitem label="&label-toggleBookmarksSidebar;" value="toggleBookmarksSidebar" />
 				<menuitem label="&label-toggleHistorySidebar;" value="toggleHistorySidebar" />
 				<!--<menuitem label="&label-toggleDownloadsSidebar;" value="toggleDownloadsSidebar" />-->
@@ -34,7 +33,6 @@
 				<menuitem label="&label-disable;" value="disable" />
 				<menuitem label="&label-historyMenu;" value="historyMenu" />
 				<menuitem label="&label-tabsMenu;" value="tabsMenu" />
-				<menuitem label="&label-tabsGroupsMenu;" value="tabsGroupsMenu" />
 				<menuitem label="&label-toggleBookmarksSidebar;" value="toggleBookmarksSidebar" />
 				<menuitem label="&label-toggleHistorySidebar;" value="toggleHistorySidebar" />
 				<!--<menuitem label="&label-toggleDownloadsSidebar;" value="toggleDownloadsSidebar" />-->
@@ -60,7 +58,6 @@
 				<menuitem label="&label-disable;" value="disable" />
 				<menuitem label="&label-historyMenu;" value="historyMenu" />
 				<menuitem label="&label-tabsMenu;" value="tabsMenu" />
-				<menuitem label="&label-tabsGroupsMenu;" value="tabsGroupsMenu" />
 				<menuitem label="&label-toggleBookmarksSidebar;" value="toggleBookmarksSidebar" />
 				<menuitem label="&label-toggleHistorySidebar;" value="toggleHistorySidebar" />
 				<!--<menuitem label="&label-toggleDownloadsSidebar;" value="toggleDownloadsSidebar" />-->
