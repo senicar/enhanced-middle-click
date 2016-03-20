@@ -60,7 +60,7 @@ const DEFAULT_PREFS = {
 	timeout: 999999999,
 	favTabPosition: 0,
 	favTabPositionRestore: 0,
-	customScript: 'aWindow.console.log("Enhanced middle click says *Hi*, visit addon options to change this message.");',
+	customScript: 'new aWindow.Notification("Enhanced middle click", { body: "Hi, visit addon preferences to change this script."});',
 };
 
 var emc_browser_delayed = false;
@@ -107,7 +107,7 @@ function setDefaultPrefs(reset) {
 var emclogger = function(msg)
 {
 	if(DBG_EMC) {
-		Services.console.logStringMessage("enhancedmiddleclick: " + msg);
+		Services.console.logStringMessage("enhancedmiddleclick: ", msg);
 	}
 }
 
@@ -178,6 +178,13 @@ var areaValidator = function(e, aWindow)
 
 	// best way to disable all xul elements is by instanceof XULElement
 	if( t instanceof aWindow.XULControllers ||
+		t.nodeName == 'button' ||
+		t.nodeName == 'checkbox' ||
+		t.nodeName == 'filefield' ||
+		t.nodeName == 'textobject' ||
+		t.nodeName == 'menulist' ||
+		t.nodeName == 'treechildren' ||
+		t.nodeName == 'treecol' ||
 		t.nodeName == 'textbox' ||
 		t.nodeName == 'toolbarbutton' ||
 		t.nodeName == 'richlistitem' ||
@@ -187,6 +194,8 @@ var areaValidator = function(e, aWindow)
 	if( t.baseURI == 'about:addons' ||
 		t.baseURI == 'chrome://mozapps/content/extensions/extensions.xul' ||
 		t.baseURI == 'about:preferences' ||
+		t.baseURI.indexOf('about:addons') > -1 ||
+		t.baseURI.indexOf('about:preferences') > -1 ||
 		t.localName == 'tabbrowser'
 	) { allow.xul = true ; }
 

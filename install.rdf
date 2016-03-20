@@ -4,7 +4,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>enhancedmiddleclick@senicar.net</em:id>
-    <em:version>0.4.8</em:version>
+    <em:version>0.4.9</em:version>
     <em:type>2</em:type>
     <em:bootstrap>true</em:bootstrap>
 
