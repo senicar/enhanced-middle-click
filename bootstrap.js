@@ -857,6 +857,16 @@ function install(data, reason) {
 		BRANCH.setCharPref('tertiaryAction', 'tabsMenu');
 	}
 
+	if(BRANCH.getCharPref('primaryAction') == 'toggleTabView') {
+		BRANCH.setCharPref('primaryAction', 'tabsMenu');
+	}
+	if(BRANCH.getCharPref('secondaryAction') == 'toggleTabView') {
+		BRANCH.setCharPref('secondaryAction', 'tabsMenu');
+	}
+	if(BRANCH.getCharPref('tertiaryAction') == 'toggleTabView') {
+		BRANCH.setCharPref('tertiaryAction', 'tabsMenu');
+	}
+
 	// AddonManager callback somehow runs after extenstion startup ?
 	// that is why everything is inside that callback
 	Cu.import("resource://gre/modules/AddonManager.jsm");

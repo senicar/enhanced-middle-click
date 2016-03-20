@@ -1,5 +1,6 @@
 Version 0.4.8
 - removed tabsGroupsMenu, due to removal of tab groups (panorama)
+- removed toggleTabView, due to removal of tab groups (panorama)
 
 Version 0.4.7
 $ bugfix: not working in firefox 37
