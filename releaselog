@@ -1,3 +1,7 @@
+Version 0.4.10
+$ bugfix - FillHistoryMenu hides manual menuitem when it returns false
+$ bugfix - missing BRANCH prefs error before they are set actually set
+
 Version 0.4.9
 $ bugfix: not always working on about:preferences page
 - removed tabsGroupsMenu, due to removal of tab groups (panorama)
