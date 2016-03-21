@@ -912,7 +912,7 @@ function uninstall(data, reason) {
 function startup(data, reason) {
 	//emclogger("startup reason: " + reason);
 
-	emclogger(reason);
+	//emclogger(reason);
 
 	// save current config, so we can restore it back and set our custom
 	if( reason == ADDON_ENABLE || reason == ADDON_INSTALL ) {
@@ -975,7 +975,7 @@ function shutdown(data, reason) {
 	// let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
 
 	// restore configs
-	emclogger(reason);
+	//emclogger(reason);
 	if( reason == ADDON_DISABLE || reason == ADDON_UNINSTALL ) {
 		let configs = JSON.parse(BRANCH.getCharPref('initialConfigs'));
 
@@ -1024,7 +1024,7 @@ var emcObserverDelayedStartup = {
 			switch (topic) {
 				// this is for the very first opened browser
 				case 'browser-delayed-startup-finished':
-					emclogger("observe browser-delayed-startup-finish");
+					//emclogger("observe browser-delayed-startup-finish");
 					emc_browser_delayed = true;
 
 					emcInit(subject);
