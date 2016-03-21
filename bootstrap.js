@@ -119,12 +119,17 @@ var clicker = function(e) {
 	//emclogger("clicker");
 	let aWindow = Services.wm.getMostRecentWindow("navigator:browser");
 
-	let timeout = BRANCH.getIntPref("timeout");
+	let timeout = 0;
+	if( BRANCH.prefHasUserValue("timeout") ) {
+		timeout = BRANCH.getIntPref("timeout");
+	}
+
 	let end = +new Date();
 	let time_diff = end - emc_timer;
 
-	if( timeout == 0 )
+	if( timeout == 0 ) {
 		timeout = 999999999;
+	}
 
 	//emclogger(timeout);
 	//emclogger(time_diff);
@@ -856,23 +861,23 @@ function install(data, reason) {
 	}
 
 	// in version 0.4.8 we depricated tabsGroupsMenu since panorama will be removed in FF45
-	if(BRANCH.getCharPref('primaryAction') == 'tabsGroupsMenu') {
+	if(BRANCH.prefHasUserValue("primaryAction") && BRANCH.getCharPref('primaryAction') == 'tabsGroupsMenu') {
 		BRANCH.setCharPref('primaryAction', 'tabsMenu');
 	}
-	if(BRANCH.getCharPref('secondaryAction') == 'tabsGroupsMenu') {
+	if(BRANCH.prefHasUserValue("secondaryAction") && BRANCH.getCharPref('secondaryAction') == 'tabsGroupsMenu') {
 		BRANCH.setCharPref('secondaryAction', 'tabsMenu');
 	}
-	if(BRANCH.getCharPref('tertiaryAction') == 'tabsGroupsMenu') {
+	if(BRANCH.prefHasUserValue("tertiaryAction") && BRANCH.getCharPref('tertiaryAction') == 'tabsGroupsMenu') {
 		BRANCH.setCharPref('tertiaryAction', 'tabsMenu');
 	}
 
-	if(BRANCH.getCharPref('primaryAction') == 'toggleTabView') {
+	if(BRANCH.prefHasUserValue("primaryAction") && BRANCH.getCharPref('primaryAction') == 'toggleTabView') {
 		BRANCH.setCharPref('primaryAction', 'tabsMenu');
 	}
-	if(BRANCH.getCharPref('secondaryAction') == 'toggleTabView') {
+	if(BRANCH.prefHasUserValue("secondaryAction") && BRANCH.getCharPref('secondaryAction') == 'toggleTabView') {
 		BRANCH.setCharPref('secondaryAction', 'tabsMenu');
 	}
-	if(BRANCH.getCharPref('tertiaryAction') == 'toggleTabView') {
+	if(BRANCH.prefHasUserValue("tertiaryAction") && BRANCH.getCharPref('tertiaryAction') == 'toggleTabView') {
 		BRANCH.setCharPref('tertiaryAction', 'tabsMenu');
 	}
 
