@@ -616,19 +616,25 @@ var historyMenu = function (e, aWindow)
 	while(history_popup.hasChildNodes())
 		history_popup.removeChild(history_popup.firstChild);
 
-	let hasHistory = aWindow.FillHistoryMenu(history_popup);
+	let hasHistory = aWindow.gBrowser.sessionHistory.count <= 1 ? false : true;
 	let selectedTab = aWindow.gBrowser.tabContainer.selectedItem;
 
 	if(!hasHistory)
 	{
 		let menuitem = history_popup.appendChild(aWindow.document.createElement("menuitem"));
 		menuitem.setAttribute("index", "0");
+		menuitem.setAttribute("type", "radio");
+		menuitem.setAttribute("checked", "true");
+		menuitem.setAttribute("historyindex", "0");
 		menuitem.setAttribute("label", selectedTab.label);
 		menuitem.className = "unified-nav-current";
 		let bundle_browser = aWindow.document.getElementById("bundle_browser");
 		let tooltipCurrent = bundle_browser.getString("tabHistory.current");
 		menuitem.setAttribute("tooltiptext", tooltipCurrent);
-
+	}
+	else
+	{
+		aWindow.FillHistoryMenu(history_popup);
 	}
 
 	history_popup.openPopupAtScreen(e.screenX, e.screenY, true);
