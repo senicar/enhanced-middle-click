@@ -15,21 +15,21 @@ Variable `aWindow` is available that gives access to the window dom element.
 
 **Dispatch a KEY press**
 
-[Key code reference](http://mxr.mozilla.org/mozilla-central/source/dom/interfaces/events/nsIDOMKeyEvent.idl)
+[Key code reference](http://mxr.mozilla.org/mozilla-central/source/dom/interfaces/events/nsIDOMKeyEvent.idl) & [initKeyEvent](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/initKeyEvent)
+
+Toggle Web Developer Tools
 
     let evt = aWindow.document.createEvent('KeyboardEvent');
-    let keycode = evt.DOM_VK_F12;
-    evt.initKeyEvent("keydown", true, true, aWindow, false, false, false, false, keycode, 0);
+    evt.initKeyEvent("keydown", true, true, aWindow, false, false, false, false, evt.DOM_VK_F12, 0);
     aWindow.document.dispatchEvent(evt);
 
     evt = aWindow.document.createEvent('KeyboardEvent');
-    keycode = evt.DOM_VK_F12;
-    evt.initKeyEvent("keypress", true, true, aWindow, false, false, false, false, keycode, 0);
+
+    evt.initKeyEvent("keypress", true, true, aWindow, false, false, false, false, evt.DOM_VK_F12, 0);
     aWindow.document.dispatchEvent(evt);
 
     evt = aWindow.document.createEvent('KeyboardEvent');
-    keycode = evt.DOM_VK_F12;
-    evt.initKeyEvent("keyup", true, true, aWindow, false, false, false, false, keycode, 0);
+    evt.initKeyEvent("keyup", true, true, aWindow, false, false, false, false, evt.DOM_VK_F12, 0);
     aWindow.document.dispatchEvent(evt);
 
 **Focus urlBar**
