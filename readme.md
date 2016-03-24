@@ -9,11 +9,56 @@ Enhanced Middle Click
 
 Variable `aWindow` is available that gives access to the window dom element.
 
-**Set current tab as *Toggle tab position***
+**Set current tab as *Toggle tab position**
 
-```
-Services.prefs.getBranch("extensions.enhancedmiddleclick.").setIntPref("favTabPosition",aWindow.gBrowser.visibleTabs.indexOf(aWindow.gBrowser.tabContainer.selectedItem));
-```
+    Services.prefs.getBranch("extensions.enhancedmiddleclick.").setIntPref("favTabPosition",aWindow.gBrowser.visibleTabs.indexOf(aWindow.gBrowser.tabContainer.selectedItem));
+
+**Dispatch a KEY press**
+
+[Key code reference](http://mxr.mozilla.org/mozilla-central/source/dom/interfaces/events/nsIDOMKeyEvent.idl)
+
+    let evt = aWindow.document.createEvent('KeyboardEvent');
+    let keycode = evt.DOM_VK_F12;
+    evt.initKeyEvent("keydown", true, true, aWindow, false, false, false, false, keycode, 0);
+    aWindow.document.dispatchEvent(evt);
+
+    evt = aWindow.document.createEvent('KeyboardEvent');
+    keycode = evt.DOM_VK_F12;
+    evt.initKeyEvent("keypress", true, true, aWindow, false, false, false, false, keycode, 0);
+    aWindow.document.dispatchEvent(evt);
+
+    evt = aWindow.document.createEvent('KeyboardEvent');
+    keycode = evt.DOM_VK_F12;
+    evt.initKeyEvent("keyup", true, true, aWindow, false, false, false, false, keycode, 0);
+    aWindow.document.dispatchEvent(evt);
+
+**Focus urlBar**
+
+    aWindow.document.getElementById("urlbar").focus();
+
+**Go Back**
+
+    if(aWindow.gBrowser.canGoBack) { aWindow.gBrowser.goBack(); }
+
+**Go Forward**
+
+    if(aWindow.gBrowser.canGoForward) { aWindow.gBrowser.goForward(); }
+
+**Reload**
+
+    aWindow.gBrowser.reload();
+
+**Undo close tab**
+
+    aWindow.undoCloseTab(0);
+
+**Remove current tab**
+
+    aWindow.gBrowser.removeCurrentTab({animate: true, byMouse: false});
+
+**Search selection**
+
+    let selection = aWindow.getBrowserSelection(); if( selection.length > 0 ) { aWindow.BrowserSearch.loadSearchFromContext(selection); }
 
 
 
