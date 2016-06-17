@@ -1,3 +1,6 @@
+Version 0.4.11
+& bugfix - removed TabView init on startup, it should now work with Tab Groups by Quicksaver
+
 Version 0.4.10
 $ bugfix - FillHistoryMenu hides manual menuitem when it returns false
 $ bugfix - missing BRANCH prefs error before they are set actually set
