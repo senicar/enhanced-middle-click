@@ -1009,18 +1009,10 @@ function shutdown(data, reason) {
 
 
 var emcInit = function(aWindow) {
-	// TODO : still a problem on mac os, but random and rarely
-
-	// init tabview in the background so _tabViewTabItem gets added to tabs
-	if(typeof(aWindow.TabView) != 'undefined' && typeof(aWindow.gBrowser) != 'undefined' && typeof(aWindow.gBrowser.tabContainer.getItemAtIndex(0)._tabViewTabItem) == 'undefined') {
-		// This used to be delayed just a few milisecs more because it fired
-		// too early in v23 and the errors breaked the Panorama view functionallity.
-		// Hopefully this shouldn't happen in never versions
-		aWindow.TabView._initFrame();
-		return true;
-	}
-
-	return false;
+  // deprecated: this function was used to init tab view on statup, however
+  // since it was removed from core, it is no longer needed, Tab Groups by Quicksaver
+  // also seems to work without it.
+  return true;
 }
 
 
